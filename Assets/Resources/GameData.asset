@@ -12,29 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1c0f99229265d4ab37778d69cbdeb1, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: Assembly-CSharp::GameData
-  generatorItems:
-  - name: "\u041F\u043E\u043B + \u0427\u0435\u043B\u0438\u043A"
-    color: {r: 0, g: 0, b: 1, a: 1}
-    prefab:
-    - {fileID: 967512219197432187, guid: 321b9688eadc67e48aea41db29cda707, type: 3}
-    - {fileID: 737408394058641935, guid: 8d7ebf0384acfed41b9e8247a8595667, type: 3}
-  - name: "\u041F\u043E\u043B + \u0421\u043F\u0430\u0432\u043D"
-    color: {r: 1, g: 1, b: 0, a: 1}
-    prefab:
-    - {fileID: 8571993143432863419, guid: c413c61bccc1b3d408441fa0b28085b5, type: 3}
-    - {fileID: 967512219197432187, guid: 321b9688eadc67e48aea41db29cda707, type: 3}
-  - name: "\u041F\u043E\u043B"
-    color: {r: 1, g: 1, b: 1, a: 1}
-    prefab:
-    - {fileID: 967512219197432187, guid: 321b9688eadc67e48aea41db29cda707, type: 3}
-  - name: "\u0421\u0442\u0435\u043D\u0430"
-    color: {r: 0, g: 0, b: 0, a: 1}
-    prefab:
-    - {fileID: 2461100899586064837, guid: c532c8552922dcf42a49002c9c462fb6, type: 3}
-  levelManagers:
-  - {fileID: 4743487555137618502, guid: e24ee17d38771ea4eba049738cf52dc8, type: 3}
-  - {fileID: 4743487555137618502, guid: 778bd18b31aaf2342b6c79e8a06ed54e, type: 3}
-  - {fileID: 4743487555137618502, guid: a56b1b407fee1464d8436e2c95e39909, type: 3}
-  playerPrefab: {fileID: 737408394058641935, guid: 57656ad4767841545be5677efc0c5139,
-    type: 3}
-  canvas: {fileID: 6140330116539025362, guid: 93c1f840ab8d52144a21145685ef2058, type: 3}
+  main:
+    playerPrefab: {fileID: 737408394058641935, guid: 57656ad4767841545be5677efc0c5139,
+      type: 3}
+    canvas: {fileID: 6140330116539025362, guid: 93c1f840ab8d52144a21145685ef2058,
+      type: 3}
+    saves: {fileID: 11400000, guid: ba95f1827617af943839024b1362b2b5, type: 2}
+    levelList:
+    - {fileID: 4743487555137618502, guid: e24ee17d38771ea4eba049738cf52dc8, type: 3}
+    - {fileID: 4743487555137618502, guid: 778bd18b31aaf2342b6c79e8a06ed54e, type: 3}
+    - {fileID: 4743487555137618502, guid: a56b1b407fee1464d8436e2c95e39909, type: 3}

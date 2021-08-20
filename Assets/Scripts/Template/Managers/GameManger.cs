@@ -8,45 +8,58 @@ public class GameManger : MonoBehaviour
     [SerializeField] LevelManager currentLevel;
     [SerializeField] GameObject player;
     [SerializeField] Canvas canvas;
+    GameDataObject.GDOMain data;
+
+
+
     private void Start()
     {
+        data = GameDataObject.GetMain();
         OnLevelStarted();
         LoadLevel();
     }
     private void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space))
         {
             NextLevel();
         }
     }
 
+#endif
+
     public static void OnLevelStarted()
     {
-        //Metriki
+        //Старт урованя 
     }
     public static void OnLevelEnd()
     {
-        //Metriki
+        //Конец уровня
     }
     public void LoadLevel()
     {
-        currentLevel = Instantiate(GameDataObject.GetData().levelManagers[(int)SavesDataObject.GetFromPrefs(SavesDataObject.Prefs.Level)]);
+        if (data.saves == null){ Debug.LogError("Yaroslav: Saves Not Found"); return; }
+
+        data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
+        currentLevel = Instantiate(data.levelList[(int)data.saves.GetFromPrefs(Prefs.Level)]);
         //Игрок и канвас
-        if (GameDataObject.GetData().playerPrefab)
+        if (data.playerPrefab)
         {
-            player = Instantiate(GameDataObject.GetData().playerPrefab, currentLevel.playerSpawn.position, Quaternion.identity);
+            Vector3 spawnPoint = Vector3.zero;
             if (currentLevel.playerSpawn != null)
             {
-                player.GetComponent<Player>().SetPoint(Vector3Int.RoundToInt(currentLevel.playerSpawn.position));
+                spawnPoint = currentLevel.playerSpawn.position; // Затычка чтобы заспавнить Темлейт
+                //Настройка игрока
             }
             else
             {
-                Debug.LogError("Spawn Not Found;");
+                Debug.LogError("Yaroslav: Spawn Not Found");
             }
+            player = Instantiate(data.playerPrefab, spawnPoint, Quaternion.identity);
         }
-        if (GameDataObject.GetData().canvas)
-            canvas = Instantiate(GameDataObject.GetData().canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
+        if (data.canvas)
+            canvas = Instantiate(data.canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
     }
     public static void Restart()
     {
@@ -56,8 +69,10 @@ public class GameManger : MonoBehaviour
     public static void NextLevel()
     {
         OnLevelEnd();
-        SavesDataObject.SetValue(SavesDataObject.Prefs.Level, (int)SavesDataObject.GetFromPrefs(SavesDataObject.Prefs.Level) + 1);
-        SavesDataObject.SetLevel((int)SavesDataObject.GetFromPrefs(SavesDataObject.Prefs.Level));
+        var data = GameDataObject.GetMain();
+
+        data.saves.SetValue(Prefs.Level, (int)data.saves.GetFromPrefs(Prefs.Level) + 1);
+        data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
         SceneManager.LoadScene(0);
     }
 }

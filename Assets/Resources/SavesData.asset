@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: SavesData
   m_EditorClassIdentifier: 
   prefsValues:
-  - pref: 0
+  - name: Level
+    pref: 0
     savePref: 1
-  - pref: 1
+  - name: Points
+    pref: 1
     savePref: 1

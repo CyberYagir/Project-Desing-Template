@@ -1,26 +1,27 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 [System.Serializable]
 public class PrefsValues {
-    public SavesDataObject.Prefs pref;
-    public SavesDataObject.SavePref savePref;
+    [ReadOnly]
+    public string name;
+    public Prefs pref;
+    public PrefType savePref;
 }
 
-
-
 [CreateAssetMenu(fileName = "Saves Data", menuName = "Yaroslav/Saves Data", order = 2)]
-public class SavesDataObject : ScriptableObject
-{
-    public enum Prefs {Level, Points}
-    public enum SavePref {String, Int, Float }
-    public List<PrefsValues> prefsValues;
-        
+public class SavesDataObject : AbstractSavesDataObject { };
 
-    public static void SetLevel(int id)
+public enum Prefs { Level, Points} //Добавить элемент для нового префса
+public enum PrefType { String, Int, Float, Bool}
+
+public abstract class AbstractSavesDataObject : ScriptableObject
+{
+    public List<PrefsValues> prefsValues;
+
+
+    public virtual void SetLevel(int id)
     {
-        if (id >= GameDataObject.GetData().levelManagers.Count)
+        if (id >= GameDataObject.GetMain().levelList.Count)
         {
             SetValue(Prefs.Level, 0);
         }
@@ -30,44 +31,69 @@ public class SavesDataObject : ScriptableObject
         }
     }
 
-    public static object GetFromPrefs(Prefs prefs)
+    public virtual object GetFromPrefs(Prefs prefs)
     {
-        var prefType = GetData().prefsValues.Find(x => x.pref == prefs).savePref;
+        var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
         if (PlayerPrefs.HasKey(prefs.ToString()))
         {
-            return prefType == SavePref.Int ?
-                                        (object)PlayerPrefs.GetInt(prefs.ToString()) :
-                                                (prefType == SavePref.Float ? (object)PlayerPrefs.GetFloat(prefs.ToString()) :
-                                                        (object)PlayerPrefs.GetString(prefs.ToString()));
+            switch (prefType)
+            {
+                case PrefType.String:
+                    return PlayerPrefs.GetString(prefs.ToString());
+                case PrefType.Int:
+                    return PlayerPrefs.GetInt(prefs.ToString());
+                case PrefType.Float:
+                    return PlayerPrefs.GetFloat(prefs.ToString());
+                case PrefType.Bool:
+                    return (PlayerPrefs.GetInt(prefs.ToString()) == 1 ? true : false);
+                default:
+                    return 0;
+            }                  
         }
-        return prefType == SavePref.Int ?
-                                        (object)0 :
-                                                (prefType == SavePref.Float ? 0.0f :
-                                                        (object)"NULL");
-    }
-
-    public static void SetValue(Prefs prefs, object value)
-    {
-        var prefType = GetData().prefsValues.Find(x => x.pref == prefs).savePref;
         switch (prefType)
         {
-            case SavePref.String:
+            case PrefType.String:
+                return "NULL";
+            case PrefType.Int:
+                return 0;
+            case PrefType.Float:
+                return 0f;
+            case PrefType.Bool:
+                return false;
+        }
+
+        return 0;
+    }
+
+    public virtual void SetValue(Prefs prefs, object value)
+    {
+        var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
+        switch (prefType)
+        {
+            case PrefType.String:
                 PlayerPrefs.SetString(prefs.ToString(), value.ToString());
                 break;
-            case SavePref.Int:
+            case PrefType.Int:
                 PlayerPrefs.SetInt(prefs.ToString(), (int)value);
                 break;
-            case SavePref.Float:
+            case PrefType.Float:
                 PlayerPrefs.SetFloat(prefs.ToString(), (float)value);
                 break;
+            case PrefType.Bool:
+                PlayerPrefs.SetInt(prefs.ToString(), ((bool)value) == true ? 1 : 0);
+                break;
             default:
-                Debug.LogError("Save Data: Save Case Error; Type not found");
+                Debug.LogError("Yaroslav: Save Data: Save Case Error; Type not found");
                 break;
         }
     }
 
-    public static SavesDataObject GetData()
+
+    public void SetNames()
     {
-        return Resources.Load<SavesDataObject>("SavesData");
+        foreach (var item in prefsValues)
+        {
+            item.name = item.pref.ToString();
+        }
     }
 }

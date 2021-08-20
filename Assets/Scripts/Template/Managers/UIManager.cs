@@ -6,14 +6,27 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject deathUI, winUI;
 
-    public void StopGamePlay()
+
+#if UNITY_EDITOR
+    private void Update()
     {
-        FindObjectOfType<Gun>().enabled = false;
-        FindObjectOfType<Player>().enabled = false;
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Win();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Loose();
+        }
     }
 
+#endif
 
-    
+    public void StopGamePlay()
+    {
+        //Выключение игрока и др.
+    }
+
     public void Win()
     {
         StopGamePlay();
