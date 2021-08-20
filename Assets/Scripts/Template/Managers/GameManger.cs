@@ -3,39 +3,60 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum GameStage { StartWait, Game, EndWait };
 public class GameManger : MonoBehaviour
 {
-    [SerializeField] LevelManager currentLevel;
-    [SerializeField] GameObject player;
-    [SerializeField] Canvas canvas;
+    public static GameManger instance;
+    [ReadOnly] [SerializeField] LevelManager currentLevel;
+    [ReadOnly] [SerializeField] GameObject player;
+    [ReadOnly] [SerializeField] Canvas canvas;
+    [ReadOnly] public GameStage gameStage;
     GameDataObject.GDOMain data;
 
 
 
+    /// Events 
+    public static event System.Action StartGame = delegate { };
+    public static event System.Action EndGame = delegate { };
+
+    public static event System.Action TapToPlayUI = delegate { };
+    
+    public static event System.Action LevelWin = delegate { };
+    public static event System.Action LevelLoose = delegate { };
+
+
+
+
+    #region Mono
     private void Start()
     {
+        instance = this;
         data = GameDataObject.GetMain();
-        OnLevelStarted();
+        OnLevelStarted(data);
         LoadLevel();
+        
     }
     private void Update()
     {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.Space))
+        EditorControls();
+        TapToStartCheck();
+    }
+
+    #endregion
+
+    #region Gameplay
+    public void TapToStartCheck()
+    {
+        if (Input.GetKey(KeyCode.Mouse0))
         {
-            NextLevel();
+            if (data.startByTap && gameStage == GameStage.StartWait)
+            {
+                StartGameByTap();
+                gameStage = GameStage.Game;
+                TapToPlayUI();
+                StartGame();
+            }
         }
-    }
-
-#endif
-
-    public static void OnLevelStarted()
-    {
-        //Старт урованя 
-    }
-    public static void OnLevelEnd()
-    {
-        //Конец уровня
     }
     public void LoadLevel()
     {
@@ -61,6 +82,53 @@ public class GameManger : MonoBehaviour
         if (data.canvas)
             canvas = Instantiate(data.canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
     }
+    public void StopGamePlay()
+    {
+        //Выключение игрока и др.
+    }
+    public void StartGameByTap()
+    {
+        //Включение управления и др.
+    }
+
+    #endregion
+
+    #region Editor
+    public void EditorControls()
+    {
+        #if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            NextLevel();
+        }
+        #endif
+    }
+    #endregion
+
+    #region Static
+    public static void OnLevelStarted(GameDataObject.GDOMain data)
+    {
+        if (data.startByTap)
+        {
+            instance.gameStage = GameStage.StartWait;
+            instance.StopGamePlay();
+        }
+        else
+        {
+            instance.gameStage = GameStage.Game;
+            StartGame();
+        }
+
+        //Старт урованя 
+    }
+    public static void OnLevelEnd(bool win = true)
+    {
+        instance.StopGamePlay();
+        if (win) LevelWin(); else LevelLoose();
+        instance.gameStage = GameStage.EndWait;
+        EndGame();
+        //Конец уровня
+    }
     public static void Restart()
     {
         OnLevelEnd();
@@ -75,4 +143,5 @@ public class GameManger : MonoBehaviour
         data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
         SceneManager.LoadScene(0);
     }
+    #endregion
 }

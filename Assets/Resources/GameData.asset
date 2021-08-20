@@ -18,6 +18,7 @@ MonoBehaviour:
     canvas: {fileID: 6140330116539025362, guid: 93c1f840ab8d52144a21145685ef2058,
       type: 3}
     saves: {fileID: 11400000, guid: ba95f1827617af943839024b1362b2b5, type: 2}
+    startByTap: 0
     levelList:
     - {fileID: 4743487555137618502, guid: e24ee17d38771ea4eba049738cf52dc8, type: 3}
     - {fileID: 4743487555137618502, guid: 778bd18b31aaf2342b6c79e8a06ed54e, type: 3}

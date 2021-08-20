@@ -1,23 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
+
+[CreateAssetMenu(fileName = "Saves Data", menuName = "Yaroslav/Saves Data", order = 2)]
+public class SavesDataObject : AbstractSavesDataObject { };
+
+#region Abstract_Enums 
+public enum Prefs { Level, Points} //Добавить элемент для нового префса
+public enum PrefType { String, Int, Float, Bool }
 [System.Serializable]
-public class PrefsValues {
+public class PrefsValues
+{
     [ReadOnly]
     public string name;
     public Prefs pref;
     public PrefType savePref;
 }
-
-[CreateAssetMenu(fileName = "Saves Data", menuName = "Yaroslav/Saves Data", order = 2)]
-public class SavesDataObject : AbstractSavesDataObject { };
-
-public enum Prefs { Level, Points} //Добавить элемент для нового префса
-public enum PrefType { String, Int, Float, Bool}
-
 public abstract class AbstractSavesDataObject : ScriptableObject
 {
-    public List<PrefsValues> prefsValues;
-
+    public List<PrefsValues> prefsValues = new List<PrefsValues>();
 
     public virtual void SetLevel(int id)
     {
@@ -97,3 +97,4 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         }
     }
 }
+#endregion

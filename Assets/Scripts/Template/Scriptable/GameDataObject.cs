@@ -13,6 +13,7 @@ public class GameDataObject : ScriptableObject
     {
         public GameObject playerPrefab, canvas;
         public AbstractSavesDataObject saves;
+        public bool startByTap;
         public List<LevelManager> levelList = new List<LevelManager>();
     }
 

@@ -5,11 +5,36 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject deathUI, winUI;
+    [SerializeField] GameObject tapToPlay;
 
+    #region Mono
+    private void Awake()
+    {
+        if (tapToPlay != null)
+        {
+            if (GameManger.instance.gameStage == GameStage.StartWait)
+            {
+                tapToPlay.SetActive(true);
+                GameManger.TapToPlayUI += () => { Tweaks.PlayAnim(tapToPlay, "Hide"); };
+            }
+            else
+            {
+                tapToPlay.SetActive(false);
+            }
+        }
+    }
 
-#if UNITY_EDITOR
     private void Update()
     {
+        EditorControls();
+    }
+
+    #endregion
+
+    #region Buttons
+    public void EditorControls()
+    {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.F))
         {
             Win();
@@ -18,19 +43,7 @@ public class UIManager : MonoBehaviour
         {
             Loose();
         }
-    }
-
 #endif
-
-    public void StopGamePlay()
-    {
-        //Выключение игрока и др.
-    }
-
-    public void Win()
-    {
-        StopGamePlay();
-        winUI.SetActive(true);
     }
 
     public void NextLevel()
@@ -43,9 +56,20 @@ public class UIManager : MonoBehaviour
         GameManger.Restart();
     }
 
+    #endregion
+
+    #region Evens_Win_Loose
+    public void Win()
+    {
+        GameManger.OnLevelEnd();
+        winUI.SetActive(true);
+    }
+
     public void Loose()
     {
-        StopGamePlay();
+        GameManger.OnLevelEnd(false);
         deathUI.SetActive(true);
     }
+
+    #endregion
 }
