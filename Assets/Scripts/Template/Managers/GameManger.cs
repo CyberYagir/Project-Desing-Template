@@ -7,27 +7,39 @@ public enum GameStage { StartWait, Game, EndWait };
 public class GameManger : MonoBehaviour
 {
     public static GameManger instance;
+    
+    //Юзабельное
     [ReadOnly] [SerializeField] LevelManager currentLevel;
     [ReadOnly] [SerializeField] GameObject player;
     [ReadOnly] [SerializeField] Canvas canvas;
     [ReadOnly] public GameStage gameStage;
+    
+    //Данные
     GameDataObject.GDOMain data;
 
 
 
-    /// Events 
-    public static event System.Action StartGame = delegate { };
-    public static event System.Action EndGame = delegate { };
+    /// Эвенты 
+    public static event System.Action StartGame = delegate { }; //Когда gameStage становится Game
+    public static event System.Action EndGame = delegate { }; //Когда gameStage становится EndWait
 
-    public static event System.Action TapToPlayUI = delegate { };
+    public static event System.Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
     
-    public static event System.Action LevelWin = delegate { };
-    public static event System.Action LevelLoose = delegate { };
+    public static event System.Action LevelWin = delegate { }; //Когда победил
+    public static event System.Action LevelLoose = delegate { }; //Когда проиграл
 
 
 
 
     #region Mono
+    public void Awake()
+    {
+        StartGame = delegate { };
+        EndGame = delegate { };
+        TapToPlayUI = delegate { };
+        LevelWin = delegate { };
+        LevelLoose = delegate { };
+    }
     private void Start()
     {
         instance = this;
@@ -45,20 +57,23 @@ public class GameManger : MonoBehaviour
     #endregion
 
     #region Gameplay
-    public void TapToStartCheck()
+    public void TapToStartCheck() //Проверка на вервый тап 
     {
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (data.startByTap)
         {
-            if (data.startByTap && gameStage == GameStage.StartWait)
+            if (Input.GetKey(KeyCode.Mouse0))
             {
-                StartGameByTap();
-                gameStage = GameStage.Game;
-                TapToPlayUI();
-                StartGame();
+                if (gameStage == GameStage.StartWait)
+                {
+                    StarGameByTap();
+                    gameStage = GameStage.Game;
+                    TapToPlayUI();
+                    StartGame();
+                }
             }
         }
     }
-    public void LoadLevel()
+    public void LoadLevel() //Создание уровня 
     {
         if (data.saves == null){ Debug.LogError("Yaroslav: Saves Not Found"); return; }
 
@@ -81,12 +96,12 @@ public class GameManger : MonoBehaviour
         }
         if (data.canvas)
             canvas = Instantiate(data.canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
-    }
-    public void StopGamePlay()
+    } 
+    public void StopGamePlay() //Остановка игры (Игрока и тд.) 
     {
         //Выключение игрока и др.
     }
-    public void StartGameByTap()
+    public void StarGameByTap() //Включение при тапе (Игрока и тд.)
     {
         //Включение управления и др.
     }
@@ -105,7 +120,7 @@ public class GameManger : MonoBehaviour
     }
     #endregion
 
-    #region Static
+        #region Static
     public static void OnLevelStarted(GameDataObject.GDOMain data)
     {
         if (data.startByTap)
@@ -138,7 +153,6 @@ public class GameManger : MonoBehaviour
     {
         OnLevelEnd();
         var data = GameDataObject.GetMain();
-
         data.saves.SetValue(Prefs.Level, (int)data.saves.GetFromPrefs(Prefs.Level) + 1);
         data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
         SceneManager.LoadScene(0);

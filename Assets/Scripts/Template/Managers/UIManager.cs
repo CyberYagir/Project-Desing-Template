@@ -8,14 +8,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject tapToPlay;
 
     #region Mono
-    private void Awake()
+    private void Start()
     {
         if (tapToPlay != null)
         {
             if (GameManger.instance.gameStage == GameStage.StartWait)
             {
                 tapToPlay.SetActive(true);
-                GameManger.TapToPlayUI += () => { Tweaks.PlayAnim(tapToPlay, "Hide"); };
+                GameManger.TapToPlayUI += () => { Tweaks.AnimationPlayType(tapToPlay, PlayType.Rewind); }; //Анимации к эвенту тапа
             }
             else
             {
@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-
+    
     private void Update()
     {
         EditorControls();

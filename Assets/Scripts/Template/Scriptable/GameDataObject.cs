@@ -9,7 +9,7 @@ using UnityEngine;
 public class GameDataObject : ScriptableObject
 {
     [System.Serializable]
-    public class GDOMain
+    public class GDOMain //Базовый класс
     {
         public GameObject playerPrefab, canvas;
         public AbstractSavesDataObject saves;
