@@ -21,7 +21,7 @@ public class GameDatasManagerObject : ScriptableObject
         if (datas == null)
             return "GameData";
 
-        var data = datas.gameDatas.Find(x => x.level_id == (int)datas.saves.GetFromPrefs(Prefs.Level));
+        var data = datas.gameDatas.Find(x => x.level_id == (int)datas.saves.GetPref(Prefs.Level));
         if (data != null)
             return data.gameData.name;
 

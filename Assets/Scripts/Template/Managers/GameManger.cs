@@ -79,8 +79,8 @@ public class GameManger : MonoBehaviour
     {
         if (data.saves == null){ Debug.LogError("Yaroslav: Saves Not Found"); return; }
 
-        data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
-        currentLevel = Instantiate(data.levelList[(int)data.saves.GetFromPrefs(Prefs.Level)]);
+        data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
+        currentLevel = Instantiate(data.levelList[(int)data.saves.GetPref(Prefs.Level)]);
         //Игрок и канвас
         SpawnPlayer();
         SpawnCanvas();
@@ -129,6 +129,11 @@ public class GameManger : MonoBehaviour
         {
             NextLevel();
         }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            data.saves.AddToPref(Prefs.Points, 10);
+        }
+
         #endif
     }
     #endregion
@@ -166,8 +171,8 @@ public class GameManger : MonoBehaviour
     {
         OnLevelEnd();
         var data = GameDataObject.GetMain();
-        data.saves.SetValue(Prefs.Level, (int)data.saves.GetFromPrefs(Prefs.Level) + 1);
-        data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
+        data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
+        data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
         SceneManager.LoadScene(0);
     }
     #endregion

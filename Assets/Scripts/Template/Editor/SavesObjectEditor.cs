@@ -34,19 +34,19 @@ public class SavesObjectEditor : Editor
                 switch (item.savePref)
                 {
                     case PrefType.String:
-                        save.SetValue(item.pref, GUILayout.TextField(save.GetFromPrefs(item.pref).ToString()));
+                        save.SetPref(item.pref, GUILayout.TextField(save.GetPref(item.pref).ToString()));
                         break;
                     case PrefType.Int:
-                        save.SetValue(item.pref, EditorGUILayout.IntField((int)save.GetFromPrefs(item.pref)));
+                        save.SetPref(item.pref, EditorGUILayout.IntField((int)save.GetPref(item.pref)));
                         break;
                     case PrefType.Float:
-                        save.SetValue(item.pref, EditorGUILayout.FloatField((float)save.GetFromPrefs(item.pref)));
+                        save.SetPref(item.pref, EditorGUILayout.FloatField((float)save.GetPref(item.pref)));
                         break;
                     case PrefType.Bool:
-                        var _bool = (bool)save.GetFromPrefs(item.pref) == true ? 1 : 0;
+                        var _bool = (bool)save.GetPref(item.pref) == true ? 1 : 0;
                         BoolEnum boolenum = (BoolEnum)_bool;
                         boolenum = (BoolEnum)EditorGUILayout.EnumPopup(boolenum);
-                        save.SetValue(item.pref, boolenum == BoolEnum.True ? true : false);
+                        save.SetPref(item.pref, boolenum == BoolEnum.True ? true : false);
                         break;
                 }
                 GUILayout.EndHorizontal();

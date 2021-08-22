@@ -23,15 +23,15 @@ public abstract class AbstractSavesDataObject : ScriptableObject
     {
         if (id >= GameDataObject.GetMain().levelList.Count)
         {
-            SetValue(Prefs.Level, 0);
+            SetPref(Prefs.Level, 0);
         }
         else
         {
-            SetValue(Prefs.Level, id);
+            SetPref(Prefs.Level, id);
         }
     }
 
-    public virtual object GetFromPrefs(Prefs prefs)
+    public virtual object GetPref(Prefs prefs)
     {
         var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
         if (PlayerPrefs.HasKey(prefs.ToString()))
@@ -65,7 +65,7 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         return 0;
     }
 
-    public virtual void SetValue(Prefs prefs, object value)
+    public virtual void SetPref(Prefs prefs, object value)
     {
         var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
         switch (prefType)
@@ -88,6 +88,51 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         }
     }
 
+    public virtual void AddToPref(Prefs prefs, object value)
+    {
+        var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
+        switch (prefType)
+        {
+            case PrefType.String:
+                SetPref(prefs, (string)GetPref(prefs) + value.ToString());
+                break;
+            case PrefType.Int:
+                SetPref(prefs, (int)GetPref(prefs) + (int)value);
+                break;
+            case PrefType.Float:
+                SetPref(prefs, (float)GetPref(prefs) + (float)value);
+                break;
+            case PrefType.Bool:
+                Debug.LogError("Yaroslav: Save Data: Add Error; Can`t add to Bool");
+                break;
+            default:
+                Debug.LogError("Yaroslav: Save Data: Save Case Error; Type not found");
+                break;
+        }
+    }
+
+    public virtual void SubToPref(Prefs prefs, object value)
+    {
+        var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
+        switch (prefType)
+        {
+            case PrefType.String:
+                SetPref(prefs, GetPref(prefs).ToString().Replace((string)value, ""));
+                break;
+            case PrefType.Int:
+                SetPref(prefs, (int)GetPref(prefs) - (int)value);
+                break;
+            case PrefType.Float:
+                SetPref(prefs, (float)GetPref(prefs) - (float)value);
+                break;
+            case PrefType.Bool:
+                Debug.LogError("Yaroslav: Save Data: Substract Error; Can`t add to Bool");
+                break;
+            default:
+                Debug.LogError("Yaroslav: Save Data: Save Case Error; Type not found");
+                break;
+        }
+    }
 
     public void SetNames()
     {
