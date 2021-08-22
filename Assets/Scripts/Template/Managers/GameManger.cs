@@ -51,6 +51,7 @@ public class GameManger : MonoBehaviour
     }
     private void Update()
     {
+        if (instance == null) instance = this;
         EditorControls();
         TapToStartCheck();
     }

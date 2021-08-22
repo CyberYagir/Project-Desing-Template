@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3192058938815417387}
   - component: {fileID: 9037227328759293828}
   - component: {fileID: 284692455163744479}
+  - component: {fileID: 2641607514181997545}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -67,7 +68,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Canvas\n<size=100>\nChange level: Space \nData saves: In resources folder\nWin/Loose:
-    E/F"
+    F/E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 23fa7a322d01e0b48ab678cee6e64504, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 0632e0fb507af66438a9a8ba7176e3f6, type: 2}
@@ -155,6 +156,18 @@ MonoBehaviour:
   speed: 6
   playOnStart: 1
   startWaitTime: 0.2
+--- !u!114 &2641607514181997545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 629595813223443320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 799664dd1cca2ba4799683fa49552628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3571249989138460997
 GameObject:
   m_ObjectHideFlags: 0

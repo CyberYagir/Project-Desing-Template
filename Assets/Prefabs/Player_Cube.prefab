@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -3902507509017570088}
   - component: {fileID: 2347415505109782433}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Player_Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 7936442015472085520}
   - component: {fileID: 5594091462681636393}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,7 +101,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2641458846826730837}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &7936442015472085520
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -121,7 +121,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 612675dfde5239241beeeca665e4659c, type: 2}
+  - {fileID: 2100000, guid: 7c6c5f02e97ec96499945cf52cbd8c41, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
