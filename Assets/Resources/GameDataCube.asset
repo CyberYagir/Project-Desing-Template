@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf1c0f99229265d4ab37778d69cbdeb1, type: 3}
-  m_Name: GameData
+  m_Name: GameDataCube
   m_EditorClassIdentifier: Assembly-CSharp::GameData
   main:
-    playerPrefab: {fileID: 737408394058641935, guid: 57656ad4767841545be5677efc0c5139,
+    playerPrefab: {fileID: 737408394058641935, guid: a446188be2d78ac499f745a73b20a814,
       type: 3}
     canvas: {fileID: 6140330116539025362, guid: 93c1f840ab8d52144a21145685ef2058,
       type: 3}

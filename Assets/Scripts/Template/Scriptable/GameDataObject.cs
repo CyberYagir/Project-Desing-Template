@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 
-[CreateAssetMenu(fileName = "Game Data", menuName = "Yaroslav/Game Data", order = 1)]
+[CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
 public class GameDataObject : ScriptableObject
 {
     [System.Serializable]
@@ -24,10 +24,10 @@ public class GameDataObject : ScriptableObject
 
     public static GameDataObject GetData()
     {
-        return Resources.Load<GameDataObject>("GameData");
+        return Resources.Load<GameDataObject>(GameDatasManagerObject.GetGameDataByLevel());
     }
     public static GDOMain GetMain()
     {
-        return Resources.Load<GameDataObject>("GameData").main;
+        return GetData().main;
     }
 }

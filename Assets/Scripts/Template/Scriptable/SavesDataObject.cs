@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Saves Data", menuName = "Yaroslav/Saves Data", order = 2)]
+[CreateAssetMenu(fileName = "SavesData", menuName = "Yaroslav/SavesData", order = 2)]
 public class SavesDataObject : AbstractSavesDataObject { };
 
 #region Abstract_Enums 

@@ -7,12 +7,13 @@ public enum GameStage { StartWait, Game, EndWait };
 public class GameManger : MonoBehaviour
 {
     public static GameManger instance;
-    
+        
     //Юзабельное
-    [ReadOnly] [SerializeField] LevelManager currentLevel;
-    [ReadOnly] [SerializeField] GameObject player;
-    [ReadOnly] [SerializeField] Canvas canvas;
-    [ReadOnly] public GameStage gameStage;
+    public static LevelManager currentLevel { get; private set; }
+    public static GameObject player { get; private set; }
+    public static Canvas canvas { get; private set; }
+
+    public GameStage gameStage;
     
     //Данные
     GameDataObject.GDOMain data;
@@ -65,7 +66,7 @@ public class GameManger : MonoBehaviour
             {
                 if (gameStage == GameStage.StartWait)
                 {
-                    StarGameByTap();
+                    StartGameByTap();
                     gameStage = GameStage.Game;
                     TapToPlayUI();
                     StartGame();
@@ -80,12 +81,18 @@ public class GameManger : MonoBehaviour
         data.saves.SetLevel((int)data.saves.GetFromPrefs(Prefs.Level));
         currentLevel = Instantiate(data.levelList[(int)data.saves.GetFromPrefs(Prefs.Level)]);
         //Игрок и канвас
+        SpawnPlayer();
+        SpawnCanvas();
+    } 
+
+    public void SpawnPlayer()
+    {
         if (data.playerPrefab)
         {
             Vector3 spawnPoint = Vector3.zero;
             if (currentLevel.playerSpawn != null)
             {
-                spawnPoint = currentLevel.playerSpawn.position; // Затычка чтобы заспавнить Темлейт
+                spawnPoint = currentLevel.playerSpawn.transform.position;
                 //Настройка игрока
             }
             else
@@ -94,14 +101,19 @@ public class GameManger : MonoBehaviour
             }
             player = Instantiate(data.playerPrefab, spawnPoint, Quaternion.identity);
         }
+    }
+
+    public void SpawnCanvas()
+    {
         if (data.canvas)
             canvas = Instantiate(data.canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
-    } 
+    }
+
     public void StopGamePlay() //Остановка игры (Игрока и тд.) 
     {
         //Выключение игрока и др.
     }
-    public void StarGameByTap() //Включение при тапе (Игрока и тд.)
+    public void StartGameByTap() //Включение при тапе (Игрока и тд.)
     {
         //Включение управления и др.
     }
@@ -120,7 +132,7 @@ public class GameManger : MonoBehaviour
     }
     #endregion
 
-        #region Static
+    #region Static
     public static void OnLevelStarted(GameDataObject.GDOMain data)
     {
         if (data.startByTap)
