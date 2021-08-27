@@ -11,7 +11,8 @@ public class LevelAndGameData
 [CreateAssetMenu(fileName = "GameTypes", menuName = "Yaroslav/GameTypes", order = 5)]
 public class GameDatasManagerObject : ScriptableObject
 {
-    [Header("Standard game type \"GameData\", else set levels")]
+    [Header("—писок уровней где GameData отличаетс€ от стандартной(¬носить только их).")]
+    [Header("Ќужно дл€ создани€ разных режимов игры на разных левелах.")]
     public List<LevelAndGameData> gameDatas = new List<LevelAndGameData>();
     public AbstractSavesDataObject saves;
     public static string GetGameDataByLevel()

@@ -17,6 +17,7 @@ public class GameManger : MonoBehaviour
     
     //Данные
     GameDataObject.GDOMain data;
+    GameDataObject gdata;
 
 
 
@@ -40,11 +41,14 @@ public class GameManger : MonoBehaviour
         TapToPlayUI = delegate { };
         LevelWin = delegate { };
         LevelLoose = delegate { };
+
+        QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
     }
     private void Start()
     {
         instance = this;
         data = GameDataObject.GetMain();
+        gdata = GameDataObject.GetData();
         OnLevelStarted(data);
         LoadLevel();
         
@@ -78,6 +82,7 @@ public class GameManger : MonoBehaviour
     public void LoadLevel() //Создание уровня 
     {
         if (data.saves == null){ Debug.LogError("Yaroslav: Saves Not Found"); return; }
+        if (data.levelList == null || data.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + gdata.name + "\" is empty"); return; }
 
         data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
         currentLevel = Instantiate(data.levelList[(int)data.saves.GetPref(Prefs.Level)]);

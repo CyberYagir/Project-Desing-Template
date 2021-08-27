@@ -21,10 +21,17 @@ public class GameDataObject : ScriptableObject
 
     //Другие переменные
 
+    public GameDataObject()
+    {
+        main = new GDOMain();
+    }
 
     public static GameDataObject GetData()
     {
-        return Resources.Load<GameDataObject>(GameDatasManagerObject.GetGameDataByLevel());
+        var data = Resources.Load<GameDataObject>(GameDatasManagerObject.GetGameDataByLevel());
+
+        if (data == null) { Debug.LogError("Yaroslav: GameData missing. Go to Menu>Tools>Yaroslav..."); return new GameDataObject(); };
+        return data;
     }
     public static GDOMain GetMain()
     {
