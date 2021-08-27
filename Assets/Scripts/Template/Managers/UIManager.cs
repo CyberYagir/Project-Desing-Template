@@ -4,11 +4,18 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager instance;
     [SerializeField] GameObject deathUI, winUI;
     [SerializeField] GameObject tapToPlay;
 
     #region Mono
     private void Start()
+    {
+        instance = this;
+        InitTapToPlay();
+    }
+
+    public void InitTapToPlay()
     {
         if (tapToPlay != null)
         {
