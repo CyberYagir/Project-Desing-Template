@@ -172,6 +172,7 @@ public class GameManger : MonoBehaviour
         var data = GameDataObject.GetMain();
         data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
         data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
+        data.saves.AddToPref(Prefs.CompletedLevels, 1);
         SceneManager.LoadScene(0);
     }
     #endregion

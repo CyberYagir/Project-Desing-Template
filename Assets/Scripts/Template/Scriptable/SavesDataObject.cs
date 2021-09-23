@@ -25,10 +25,6 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         {
             SetPref(Prefs.CompletedLevels, 1);
         }
-        else
-        {
-            AddToPref(Prefs.CompletedLevels, 1);
-        }
         if (id >= GameDataObject.GetMain().levelList.Count)
         {
             SetPref(Prefs.Level, 0);
