@@ -11,18 +11,27 @@ public class LevelAndGameData
 [CreateAssetMenu(fileName = "GameTypes", menuName = "Yaroslav/GameTypes", order = 5)]
 public class GameDatasManagerObject : ScriptableObject
 {
-    [Header("—писок уровней где GameData отличаетс€ от стандартной(¬носить только их).")]
-    [Header("Ќужно дл€ создани€ разных режимов игры на разных левелах.")]
+    [HideInInspector]
     public List<LevelAndGameData> gameDatas = new List<LevelAndGameData>();
-    public AbstractSavesDataObject saves;
+    //public AbstractSavesDataObject saves;
+    public static GameDatasManagerObject instance;
+    public static AbstractSavesDataObject savesData;
+    public static bool isNull = false;
     public static string GetGameDataByLevel()
     {
-        
-        var datas = Resources.Load<GameDatasManagerObject>("GameTypes");
-        if (datas == null)
-            return "GameData";
 
-        var data = datas.gameDatas.Find(x => x.level_id == (int)datas.saves.GetPref(Prefs.Level));
+        if (instance == null && isNull == false)
+        {
+            savesData = GameDataObject.GetData(true).main.saves;
+            instance = Resources.Load<GameDatasManagerObject>("GameTypes");
+            if (instance == null)
+            {
+                isNull = true;
+            }
+        }
+        if (instance == null)
+            return "GameData";
+        var data = instance.gameDatas.Find(x => x.level_id == (int)savesData.GetPref(Prefs.Level));
         if (data != null)
             return data.gameData.name;
 

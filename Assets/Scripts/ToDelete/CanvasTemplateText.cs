@@ -7,8 +7,8 @@ public class CanvasTemplateText : MonoBehaviour
 {
     [TextArea]
     TMP_Text tmp_text;
-    GameDataObject data;
-    GameDataObject.GDOMain main;
+    [SerializeField] GameDataObject data;
+    [SerializeField] GameDataObject.GDOMain main;
     string text;
     private void Start()
     {
@@ -21,10 +21,11 @@ public class CanvasTemplateText : MonoBehaviour
     }
     private void Update()
     {
-        tmp_text.text = text + "\n\n<align=center>-----Data-----\n<align=left>\n" +
-            "Current GameData: <color=\"orange\">" + data.name + (data.name != "GameData" ? " <color=\"yellow\">(GameType change)</color>" : "") + "</color>\n" +
-            "Current Level: <color=\"orange\">" + main.saves.GetPref(Prefs.Level) + "</color>\n" +
-            "Current Points: <color=\"orange\">" + main.saves.GetPref(Prefs.Points) + "</color>\n" +
-            "Start By Tap: <color=\"orange\">" + main.startByTap.ToString() + "</color>";
+        tmp_text.text = text + "\n\n<align=center>-----Data-----\n<align=left>\n";
+        tmp_text.text += "Current GameData: <color=\"orange\">" + data.name + (data.name != "GameData" ? " <color=\"yellow\">(GameType change)</color>" : "") + "</color>\n";
+        tmp_text.text += "Current Level: <color=\"orange\">" + main.saves.GetPref(Prefs.Level) + "</color>\n";
+        tmp_text.text += "Current Points: <color=\"orange\">" + main.saves.GetPref(Prefs.Points) + "</color>\n";
+        tmp_text.text += "Complited Levels: <color=\"orange\">" + main.saves.GetPref(Prefs.CompletedLevels) + "</color>\n";
+        tmp_text.text += "Start By Tap: <color=\"orange\">" + main.startByTap.ToString() + "</color>";
     }
 }

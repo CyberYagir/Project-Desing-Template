@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+
 public class Configurator : EditorWindow
 {
     [MenuItem("Yaroslav/Configurator")]
@@ -32,10 +33,11 @@ public class Configurator : EditorWindow
         }
         if (GUILayout.Button("Configure All"))
         {
+            ConfigurateAllBtn();
         }
     }
 
-    public void ConfigurateAll()
+    public void ConfigurateAllBtn()
     {
         ConfigurateGraphicsBtn();
         ConfigureResourcesBtn();
@@ -89,38 +91,14 @@ public class Configurator : EditorWindow
             {
                 saves.prefsValues.Add(new PrefsValue() { pref = (Prefs)i, savePref = PrefType.Int });
             }
-            Debug.Log("Yaroslav: SavesData created!");
+            Debug.Log($"Yaroslav: SavesData created! [Prefs added {saves.prefsValues.Count}]");
         }
 
         if (Resources.Load<GameDataObject>("GameData") == null)
         {
             var gameData = new GameDataObject();
             AssetDatabase.CreateAsset(gameData, "Assets/Resources/GameData.asset");
-            var prefabs = AssetDatabase.FindAssets("t:prefab");
-            foreach (var prefab in prefabs)
-            {
-                var player = AssetDatabase.LoadAssetAtPath<Player>(AssetDatabase.GUIDToAssetPath(prefab));
-                var canvas = AssetDatabase.LoadAssetAtPath<Canvas>(AssetDatabase.GUIDToAssetPath(prefab));
-                var level = AssetDatabase.LoadAssetAtPath<LevelManager>(AssetDatabase.GUIDToAssetPath(prefab));
-                if (player != null)
-                {
-                    if (gameData.main.playerPrefab == null)
-                    {
-                        gameData.main.playerPrefab = player.gameObject;
-                    }
-                }
-                else if (canvas != null)
-                {
-                    if (gameData.main.canvas == null)
-                    {
-                        gameData.main.canvas = canvas.gameObject;
-                    }
-                }
-                else if (level != null)
-                {
-                    gameData.main.levelList.Add(level);
-                }
-            }
+            gameData.main = GetAllDataFromAssets();
             gameData.main.saves = saves;
             gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
 
@@ -129,9 +107,42 @@ public class Configurator : EditorWindow
         
         if (Resources.Load<GameDataObject>("GameTypes") == null)
         {
-            AssetDatabase.CreateAsset(new GameDatasManagerObject(), "Assets/Resources/GameTypes.asset");
+            AssetDatabase.CreateAsset(new GameDatasManagerObject() /*{ saves = saves}*/, "Assets/Resources/GameTypes.asset");
             Debug.Log("Yaroslav: GameTypes created!");
         }
         AssetDatabase.SaveAssets();
+    }
+
+
+    public static GameDataObject.GDOMain GetAllDataFromAssets()
+    {
+        var final = new GameDataObject.GDOMain();
+        var prefabs = AssetDatabase.FindAssets("t:prefab");
+        foreach (var prefab in prefabs)
+        {
+            var player = AssetDatabase.LoadAssetAtPath<Player>(AssetDatabase.GUIDToAssetPath(prefab));
+            var canvas = AssetDatabase.LoadAssetAtPath<Canvas>(AssetDatabase.GUIDToAssetPath(prefab));
+            var level = AssetDatabase.LoadAssetAtPath<LevelManager>(AssetDatabase.GUIDToAssetPath(prefab));
+            if (player != null)
+            {
+                if (final.playerPrefab == null)
+                {
+                    final.playerPrefab = player.gameObject;
+                }
+            }
+            else if (canvas != null)
+            {
+                if (final.canvas == null)
+                {
+                    final.canvas = canvas.gameObject;
+                }
+            }
+            else if (level != null)
+            {
+                final.levelList.Add(level);
+            }
+        }
+
+        return final;
     }
 }

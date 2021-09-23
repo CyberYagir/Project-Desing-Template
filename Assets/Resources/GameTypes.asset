@@ -13,4 +13,3 @@ MonoBehaviour:
   m_Name: GameTypes
   m_EditorClassIdentifier: 
   gameDatas: []
-  saves: {fileID: 0}

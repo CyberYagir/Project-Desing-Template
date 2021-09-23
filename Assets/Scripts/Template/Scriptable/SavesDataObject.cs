@@ -17,6 +17,7 @@ public class PrefsValue
 }
 public abstract class AbstractSavesDataObject : ScriptableObject
 {
+    [HideInInspector]
     public List<PrefsValue> prefsValues = new List<PrefsValue>();
 
     public virtual void SetLevel(int id)

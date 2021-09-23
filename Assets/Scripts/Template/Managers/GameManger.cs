@@ -41,8 +41,8 @@ public class GameManger : MonoBehaviour
     private void Start()
     {
         instance = this;
-        data = GameDataObject.GetMain();
         gdata = GameDataObject.GetData();
+        data = gdata.main;
         OnLevelStarted(data);
         LoadLevel();
         
@@ -75,11 +75,12 @@ public class GameManger : MonoBehaviour
     }
     public void LoadLevel() //Создание уровня 
     {
-        if (data.saves == null){ Debug.LogError("Yaroslav: Saves Not Found"); return; }
-        if (data.levelList == null || data.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + gdata.name + "\" is empty"); return; }
+        var stdData = GameDataObject.GetMain(true);
+        if (stdData.saves == null){ Debug.LogError("Yaroslav: Saves Not Found"); return; }
+        if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + GameDataObject.GetData(true).name + "\" is empty"); return; }
 
-        data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
-        currentLevel = Instantiate(data.levelList[(int)data.saves.GetPref(Prefs.Level)]);
+        stdData.saves.SetLevel((int)stdData.saves.GetPref(Prefs.Level));
+        currentLevel = Instantiate(stdData.levelList[(int)stdData.saves.GetPref(Prefs.Level)]);
         //Игрок и канвас
         SpawnPlayer();
         SpawnCanvas();
@@ -169,7 +170,7 @@ public class GameManger : MonoBehaviour
     public static void NextLevel()
     {
         OnLevelEnd();
-        var data = GameDataObject.GetMain();
+        var data = GameDataObject.GetMain(true);
         data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
         data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
         data.saves.AddToPref(Prefs.CompletedLevels, 1);
