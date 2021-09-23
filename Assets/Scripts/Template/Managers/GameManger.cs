@@ -27,10 +27,6 @@ public class GameManger : MonoBehaviour
 
     public static event System.Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
     
-    public static event System.Action LevelWin = delegate { }; //Когда победил
-    public static event System.Action LevelLoose = delegate { }; //Когда проиграл
-
-
 
 
     #region Mono
@@ -39,8 +35,6 @@ public class GameManger : MonoBehaviour
         StartGame = delegate { };
         EndGame = delegate { };
         TapToPlayUI = delegate { };
-        LevelWin = delegate { };
-        LevelLoose = delegate { };
 
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
     }
@@ -162,9 +156,9 @@ public class GameManger : MonoBehaviour
     public static void OnLevelEnd(bool win = true)
     {
         instance.StopGamePlay();
-        if (win) LevelWin(); else LevelLoose();
         instance.gameStage = GameStage.EndWait;
         EndGame();
+        //Эвенты метрик
         //Конец уровня
     }
     public static void Restart()

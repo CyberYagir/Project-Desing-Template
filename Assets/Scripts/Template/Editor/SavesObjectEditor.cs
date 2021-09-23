@@ -30,7 +30,7 @@ public class SavesObjectEditor : Editor
             if (!drawedPrefs.Contains(item.pref))
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(item.pref.ToString(), GUILayout.Width(50));
+                GUILayout.Label(item.pref.ToString(), GUILayout.Width(150));
                 switch (item.savePref)
                 {
                     case PrefType.String:

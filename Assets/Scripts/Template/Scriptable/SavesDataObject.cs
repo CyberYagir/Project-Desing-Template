@@ -5,7 +5,7 @@ using UnityEngine;
 public class SavesDataObject : AbstractSavesDataObject { };
 
 #region Abstract_Enums 
-public enum Prefs { Level, Points} //Добавить элемент для нового префса
+public enum Prefs { Level, CompletedLevels, Points} //Добавить элемент для нового префса
 public enum PrefType { String, Int, Float, Bool }
 [System.Serializable]
 public class PrefsValue
@@ -21,6 +21,14 @@ public abstract class AbstractSavesDataObject : ScriptableObject
 
     public virtual void SetLevel(int id)
     {
+        if ((int)GetPref(Prefs.CompletedLevels) == 0)
+        {
+            SetPref(Prefs.CompletedLevels, 1);
+        }
+        else
+        {
+            AddToPref(Prefs.CompletedLevels, 1);
+        }
         if (id >= GameDataObject.GetMain().levelList.Count)
         {
             SetPref(Prefs.Level, 0);

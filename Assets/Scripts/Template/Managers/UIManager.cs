@@ -68,14 +68,20 @@ public class UIManager : MonoBehaviour
     #region Evens_Win_Loose
     public void Win()
     {
-        GameManger.OnLevelEnd();
-        winUI.SetActive(true);
+        if (!winUI.active && !deathUI.active)
+        {
+            GameManger.OnLevelEnd();
+            winUI.SetActive(true);
+        }
     }
 
     public void Loose()
     {
-        GameManger.OnLevelEnd(false);
-        deathUI.SetActive(true);
+        if (!winUI.active && !deathUI.active)
+        {
+            GameManger.OnLevelEnd(false);
+            deathUI.SetActive(true);
+        }
     }
 
     #endregion

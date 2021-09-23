@@ -11,15 +11,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf1c0f99229265d4ab37778d69cbdeb1, type: 3}
   m_Name: GameData
-  m_EditorClassIdentifier: Assembly-CSharp::GameData
+  m_EditorClassIdentifier: 
   main:
-    playerPrefab: {fileID: 737408394058641935, guid: 57656ad4767841545be5677efc0c5139,
-      type: 3}
-    canvas: {fileID: 6140330116539025362, guid: 93c1f840ab8d52144a21145685ef2058,
-      type: 3}
-    saves: {fileID: 11400000, guid: ba95f1827617af943839024b1362b2b5, type: 2}
+    playerPrefab: {fileID: 0}
+    canvas: {fileID: 0}
+    saves: {fileID: 0}
     startByTap: 0
-    levelList:
-    - {fileID: 4743487555137618502, guid: e24ee17d38771ea4eba049738cf52dc8, type: 3}
-    - {fileID: 4743487555137618502, guid: 778bd18b31aaf2342b6c79e8a06ed54e, type: 3}
-    - {fileID: 4743487555137618502, guid: a56b1b407fee1464d8436e2c95e39909, type: 3}
+    levelList: []

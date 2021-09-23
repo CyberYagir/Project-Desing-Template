@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.2392157, g: 0.97647065, b: 1, a: 1}
+  m_FogColor: {r: 0.4, g: 1, b: 1, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.08
   m_LinearFogStart: 7
@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: b1a2b75a5dcd25149a9bca6c743839b1, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.2953562, g: 0.88198674, b: 1.0516195, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -224,7 +224,7 @@ Camera:
   m_GameObject: {fileID: 948913377}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.24056602, g: 0.9774613, b: 1, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -265,13 +265,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 948913377}
-  m_LocalRotation: {x: 0.11398349, y: 0, z: 0, w: 0.9934827}
-  m_LocalPosition: {x: 0, y: 2.23, z: -7.58}
+  m_LocalRotation: {x: 0.113854125, y: -0.047318965, z: 0.005428963, w: 0.99235517}
+  m_LocalPosition: {x: 1.08, y: 2.23, z: -7.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 13.09, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 13.09, y: -5.46, z: 0}
 --- !u!1 &1241118939
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,9 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab317a61c88be84286e7f70db9bf1a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLevel: {fileID: 0}
-  player: {fileID: 0}
-  canvas: {fileID: 0}
+  gameStage: 0
 --- !u!4 &1241118941
 Transform:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ namespace ToonyColorsPro
 	public static class Menu
 	{
 		//Change this path if you want the Toony Colors Pro menu to appear elsewhere in the menu bar
-		public const string MENU_PATH = @"Tools/Toony Colors Pro/";
+		public const string MENU_PATH = @"Window/Other/Toony Colors Pro/";
 
 		//--------------------------------------------------------------------------------------------------
 		// DOCUMENTATION

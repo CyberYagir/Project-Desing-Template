@@ -12,7 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15eaba248ce0fff43ab4c93a37255ff9, type: 3}
   m_Name: GameTypes
   m_EditorClassIdentifier: 
-  gameDatas:
-  - level_id: 1
-    gameData: {fileID: 11400000, guid: 187211f323d2a2f46b6f5830c4dd0518, type: 2}
-  saves: {fileID: 11400000, guid: ba95f1827617af943839024b1362b2b5, type: 2}
+  gameDatas: []
+  saves: {fileID: 0}
