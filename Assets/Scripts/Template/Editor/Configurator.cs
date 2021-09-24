@@ -19,7 +19,7 @@ public class Configurator : EditorWindow
 
     private void OnFocus()
     {
-        EditorWindow.GetWindow(typeof(Configurator)).minSize = new Vector2(500, 300);
+        EditorWindow.GetWindow(typeof(Configurator)).minSize = new Vector2(200, 300);
     }
     void OnGUI()
     {
@@ -71,6 +71,9 @@ public class Configurator : EditorWindow
 
     public void ConfigureResourcesBtn()
     {
+ 	AssetDatabase.CreateFolder("Assets", "Resources");
+	AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
         string[] unusedFolder = { "Assets/Resources" };
         foreach (var asset in AssetDatabase.FindAssets("", unusedFolder))
         {
