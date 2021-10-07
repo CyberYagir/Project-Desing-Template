@@ -12,4 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dd8f8dd7c81762428c08189eb3068a3, type: 3}
   m_Name: SavesData
   m_EditorClassIdentifier: 
-  prefsValues: []
+  prefsValues:
+  - name: Level
+    pref: 0
+    savePref: 1
+  - name: CompletedLevels
+    pref: 1
+    savePref: 1
+  - name: Points
+    pref: 2
+    savePref: 1

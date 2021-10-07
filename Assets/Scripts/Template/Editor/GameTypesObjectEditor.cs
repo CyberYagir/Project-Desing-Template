@@ -45,17 +45,11 @@ public class GameTypesObjectEditor : EditorTweaks
             {
                 if (types.gameDatas[i].gameData == null)
                 {
-                    types.gameDatas[i].gameData = gameDatas[0];
-                    //Save(types);
+                    types.gameDatas[i].gameData = gameDatas.ToList().Find(x=>x.name != "GameData");
                 }
-                var oldSel = gameDatas.ToList().FindIndex(x => x.name == types.gameDatas[i].gameData.name);
+                var oldSel = names.FindIndex(x => x == types.gameDatas[i].gameData.name);
                 var selected = EditorGUILayout.Popup("", oldSel, names.ToArray(), GUILayout.MinWidth(80));
-                types.gameDatas[i].gameData = gameDatas[selected];
-
-                if (oldSel != selected)
-                {
-                    //Save(types);
-                }
+                types.gameDatas[i].gameData = gameDatas.ToList().Find(x => x.name == names[selected]);
             }
             else
             {

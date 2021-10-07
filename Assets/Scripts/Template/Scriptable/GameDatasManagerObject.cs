@@ -19,7 +19,6 @@ public class GameDatasManagerObject : ScriptableObject
     public static bool isNull = false;
     public static string GetGameDataByLevel()
     {
-
         if (instance == null && isNull == false)
         {
             savesData = GameDataObject.GetData(true).main.saves;
@@ -30,11 +29,16 @@ public class GameDatasManagerObject : ScriptableObject
             }
         }
         if (instance == null)
+        {
             return "GameData";
+        }
+        
         var data = instance.gameDatas.Find(x => x.level_id == (int)savesData.GetPref(Prefs.Level));
         if (data != null)
+        {
+            Debug.Log(data.gameData.name);
             return data.gameData.name;
-
+        }
         return "GameData";
     }
 }
