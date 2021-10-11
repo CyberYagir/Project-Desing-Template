@@ -130,7 +130,10 @@ public class Configurator : EditorWindow
         CreateFolder("Images/Sprites");
         CreateFolder("Images/Textures");
 
+
         CreateFolder("Resources");
+
+        CreateFolder("Models");
 
         CreateFolder("Materials");
 
@@ -151,7 +154,17 @@ public class Configurator : EditorWindow
     public static void CreateFolder(string path)
     {
         if (!AssetDatabase.IsValidFolder("Assets/" + path))
-            AssetDatabase.CreateFolder("Assets/" + Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+        {
+            var assetsPath = "Assets/";
+            if(Path.GetDirectoryName(path) == "")
+            {
+                assetsPath = "Assets";
+            }
+
+            AssetDatabase.CreateFolder(assetsPath + Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
     }
     [MenuItem("Yaroslav/Select GameData", false, priority = 10)]
     public static void SelectGameData()
