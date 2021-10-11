@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
-
 
 [CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
 public class GameDataObject : ScriptableObject
@@ -28,6 +24,11 @@ public class GameDataObject : ScriptableObject
         main = new GDOMain();
     }
 
+    /// <summary>
+    /// Получить <b>GameData</b> из папки <b>Resources</b> в Assets
+    /// </summary>
+    /// <param name="getStandardData">Игнорировать ли GameTypes?</param>
+    /// <returns></returns>
     public static GameDataObject GetData(bool getStandardData = false)
     {
         var data = Resources.Load<GameDataObject>(getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData");
@@ -42,6 +43,12 @@ public class GameDataObject : ScriptableObject
 
         return data;
     }
+
+    /// <summary>
+    /// Получить <b>GDOMain</b> из <b>GameData</b> из папки <b>Resources</b> в Assets
+    /// </summary>
+    /// <param name="getStandardData">Игнорировать ли GameTypes?</param>
+    /// <returns></returns>
     public static GDOMain GetMain(bool getStandardData = false)
     {
         return GetData(getStandardData).main;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,7 +10,7 @@ public class CanvasTemplateText : MonoBehaviour
     string text;
     private void Start()
     {
-        
+
         data = GameDataObject.GetData();
         main = GameDataObject.GetMain();
         tmp_text = GetComponent<TMP_Text>();

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +16,11 @@ public class GameDatasManagerObject : ScriptableObject
     public static GameDatasManagerObject instance;
     public static AbstractSavesDataObject savesData;
     public static bool isNull = false;
+
+    /// <summary>
+    /// Получение текущей GameData в зависимости от типа игры. 
+    /// </summary>
+    /// <returns>Строка с названием GameDataObject в ресурсах</returns>
     public static string GetGameDataByLevel()
     {
         if (instance == null && isNull == false)
@@ -32,11 +36,10 @@ public class GameDatasManagerObject : ScriptableObject
         {
             return "GameData";
         }
-        
+
         var data = instance.gameDatas.Find(x => x.level_id == (int)savesData.GetPref(Prefs.Level));
         if (data != null)
         {
-            Debug.Log(data.gameData.name);
             return data.gameData.name;
         }
         return "GameData";

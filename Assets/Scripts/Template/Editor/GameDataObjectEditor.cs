@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,7 +23,7 @@ public class GameDataObjectEditor : EditorTweaks
     }
     public override void OnInspectorGUI()
     {
-        
+
         base.OnInspectorGUI();
         DrawSeparator();
         if (GameDataObject.GetData(true) == gameData)
@@ -89,7 +87,7 @@ public class GameDataObjectEditor : EditorTweaks
 
             DrawSeparator();
         }
-        
+
 
         if (GUILayout.Button("Find all objects"))
         {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Tweaks : MonoBehaviour
@@ -22,7 +20,7 @@ public class Tweaks : MonoBehaviour
         var animator = obj.GetComponent<Animator>();
         if (animation)
         {
-                animation.Play(animName);
+            animation.Play(animName);
         }
         else if (animator)
         {

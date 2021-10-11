@@ -5,8 +5,20 @@ using UnityEngine;
 public class SavesDataObject : AbstractSavesDataObject { };
 
 #region Abstract_Enums 
-public enum Prefs { Level, CompletedLevels, Points} //Добавить элемент для нового префса
+
+/// <summary>
+/// Список всех префов. 
+/// </summary>
+public enum Prefs { Level, CompletedLevels, Points } //Добавить элемент для нового префса
+
+/// <summary>
+/// Возможные типо префов.
+/// </summary>
 public enum PrefType { String, Int, Float, Bool }
+
+/// <summary>
+/// Класс префа.
+/// </summary>
 [System.Serializable]
 public class PrefsValue
 {
@@ -15,11 +27,19 @@ public class PrefsValue
     public Prefs pref;
     public PrefType savePref;
 }
+
 public abstract class AbstractSavesDataObject : ScriptableObject
 {
+    /// <summary>
+    /// Активные префы.
+    /// </summary>
     [HideInInspector]
     public List<PrefsValue> prefsValues = new List<PrefsValue>();
 
+    /// <summary>
+    /// Задать левел с учётом повторения. Если идекс будет слишком большой то вернёт 0 левел.
+    /// </summary>
+    /// <param name="id">Номер левела</param>
     public virtual void SetLevel(int id)
     {
         if ((int)GetPref(Prefs.CompletedLevels) == 0)
@@ -36,6 +56,11 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         }
     }
 
+    /// <summary>
+    /// Получить преф из PlayerPrefs.
+    /// </summary>
+    /// <param name="prefs">Имя префа</param>
+    /// <returns>Данные префа</returns>
     public virtual object GetPref(Prefs prefs)
     {
         var find = FindPrefValue(prefs);
@@ -74,6 +99,11 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         return 0;
     }
 
+    /// <summary>
+    /// Задать преф из PlayerPrefs.
+    /// </summary>
+    /// <param name="prefs">Имя префа</param>
+    /// <param name="value">Данные префа (String, Int, Float, Bool)</param>
     public virtual void SetPref(Prefs prefs, object value)
     {
         var find = FindPrefValue(prefs);
@@ -102,15 +132,11 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         else PrefNotFoundError(prefs);
     }
 
-    public PrefsValue FindPrefValue(Prefs prefs)
-    {
-        return prefsValues.Find(x => x.pref == prefs);
-    }
-    public void PrefNotFoundError(Prefs prefs)
-    {
-        Debug.LogError("Yaroslav: Pref \"" + prefs.ToString() + "\" not found in SavesData list");
-    }
-
+    /// <summary>
+    ///  Добавить данные в выбраный преф.
+    /// </summary>
+    /// <param name="prefs">Имя префа</param>
+    /// <param name="value">Обьект который надо прибавить</param>
     public virtual void AddToPref(Prefs prefs, object value)
     {
         var find = FindPrefValue(prefs);
@@ -139,6 +165,11 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         else PrefNotFoundError(prefs);
     }
 
+    /// <summary>
+    /// Отнимает данные от выбранного префа.
+    /// </summary>
+    /// <param name="prefs">Имя префа</param>
+    /// <param name="value">Обьект который надо отнять</param>
     public virtual void SubToPref(Prefs prefs, object value)
     {
         var prefType = prefsValues.Find(x => x.pref == prefs).savePref;
@@ -162,6 +193,23 @@ public abstract class AbstractSavesDataObject : ScriptableObject
         }
     }
 
+
+    /// <summary>
+    /// Найти преф в списке активных префов.
+    /// </summary>
+    /// <param name="prefs"Имя префа</param>
+    /// <returns>Преф или null если префа нет</returns>
+    public PrefsValue FindPrefValue(Prefs prefs)
+    {
+        return prefsValues.Find(x => x.pref == prefs);
+    }
+
+
+
+    public void PrefNotFoundError(Prefs prefs)
+    {
+        Debug.LogError("Yaroslav: Pref \"" + prefs.ToString() + "\" not found in SavesData list");
+    }
     public void SetNames()
     {
         foreach (var item in prefsValues)

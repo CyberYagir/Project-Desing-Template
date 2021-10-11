@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -45,7 +43,7 @@ public class GameTypesObjectEditor : EditorTweaks
             {
                 if (types.gameDatas[i].gameData == null)
                 {
-                    types.gameDatas[i].gameData = gameDatas.ToList().Find(x=>x.name != "GameData");
+                    types.gameDatas[i].gameData = gameDatas.ToList().Find(x => x.name != "GameData");
                 }
                 var oldSel = names.FindIndex(x => x == types.gameDatas[i].gameData.name);
                 var selected = EditorGUILayout.Popup("", oldSel, names.ToArray(), GUILayout.MinWidth(80));
@@ -71,7 +69,7 @@ public class GameTypesObjectEditor : EditorTweaks
                 }
             }
             var oldID = types.gameDatas[i].level_id;
-            types.gameDatas[i].level_id =  EditorGUILayout.Popup("", types.gameDatas[i].level_id, levelList.ToArray(), GUILayout.MinWidth(50));
+            types.gameDatas[i].level_id = EditorGUILayout.Popup("", types.gameDatas[i].level_id, levelList.ToArray(), GUILayout.MinWidth(50));
             if (oldID != types.gameDatas[i].level_id)
             {
                 //Save(types);

@@ -10,7 +10,7 @@ public class SavesObjectEditor : EditorTweaks
 {
     SavesDataObject save;
 
-    public enum BoolEnum {True = 1, False = 0};
+    public enum BoolEnum { True = 1, False = 0 };
 
     public void OnEnable()
     {

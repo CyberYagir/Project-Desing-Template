@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum PlayType { Forward, Rewind };
@@ -12,7 +10,7 @@ public class UIAnimate : MonoBehaviour
     public float speed = 6;
     new RectTransform transform;
     bool plaing;
-    public bool playOnStart ;
+    public bool playOnStart;
     public float startWaitTime = 0.5f;
     float time;
 
@@ -24,11 +22,19 @@ public class UIAnimate : MonoBehaviour
             Play();
         }
     }
+
+    /// <summary>
+    /// Стартовать анимацию.
+    /// </summary>
     public void Play()
     {
         transform.anchoredPosition = playType == PlayType.Forward ? startPoint : endPoint;
         plaing = true;
     }
+
+    /// <summary>
+    /// Остановить проигрываение.
+    /// </summary>
     public void Stop()
     {
         plaing = false;
@@ -47,7 +53,7 @@ public class UIAnimate : MonoBehaviour
             {
                 Move(startPoint);
             }
-        }        
+        }
     }
 
     public void Move(Vector3 point)
@@ -61,7 +67,6 @@ public class UIAnimate : MonoBehaviour
             transform.anchoredPosition = Vector3.Lerp(transform.anchoredPosition, point, speed * Time.deltaTime);
         }
     }
-
     public void Init()
     {
         transform = GetComponent<RectTransform>();

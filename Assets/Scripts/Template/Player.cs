@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Пример
+/// Стандартный скрипт игрока
 /// </summary>
 public class Player : MonoBehaviour
 {
@@ -15,6 +13,6 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
-        rb.isKinematic = !(GameManger.instance.gameStage == GameStage.Game);
+        rb.isKinematic = !(GameManager.gameStage == GameStage.Game);
     }
 }

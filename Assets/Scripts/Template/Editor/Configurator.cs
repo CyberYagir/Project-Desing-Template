@@ -1,26 +1,66 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
-
 public class Configurator : EditorWindow
 {
     [MenuItem("Yaroslav/Configurator")]
     public static void ShowWindow()
     {
-
         EditorWindow.GetWindow(typeof(Configurator));
         EditorWindow.GetWindow(typeof(Configurator)).titleContent = new GUIContent("Project Configurator");
     }
-
+    public void DrawLine(int h = 1)
+    {
+        Rect rect = EditorGUILayout.GetControlRect(false, h);
+        rect.height = h;
+        EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
+    }
+    public void DrawSeparator()
+    {
+        GUILayout.Space(10);
+        DrawLine();
+        GUILayout.Space(10);
+    }
     private void OnFocus()
     {
         EditorWindow.GetWindow(typeof(Configurator)).minSize = new Vector2(200, 300);
     }
+    [MenuItem("Yaroslav/Move Scripts", false, priority = 11)]
+    public static void MoveScriptsFromAssets()
+    {
+        var scripts = AssetDatabase.FindAssets("t:Script", new string[] { "Assets" });
+        CreateFolder("Scripts");
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        foreach (var item in scripts)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(item);
+            if (Path.GetDirectoryName(path) == "Assets")
+            {
+                if (!Path.GetFileName(path).Contains("Manager"))
+                {
+                    AssetDatabase.MoveAsset(path, "Assets/Scripts/" + Path.GetFileName(path));
+                }
+                else
+                {
+                    if (AssetDatabase.IsValidFolder("Assets/Scripts/Template/Managers"))
+                    {
+                        AssetDatabase.MoveAsset(path, "Assets/Scripts/Template/Managers/" + Path.GetFileName(path));
+                    }
+                    else
+                    {
+                        CreateFolder("Scripts/Managers");
+                        AssetDatabase.MoveAsset(path, "Assets/Scripts/Managers/" + Path.GetFileName(path));
+                    }
+                }
+            }
+        }
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
     void OnGUI()
     {
         if (GUILayout.Button("Configure Resources"))
@@ -31,9 +71,18 @@ public class Configurator : EditorWindow
         {
             ConfigurateGraphicsBtn();
         }
+        if (GUILayout.Button("Configure Folders"))
+        {
+            FoldersConfiguration();
+        }
         if (GUILayout.Button("Configure All"))
         {
             ConfigurateAllBtn();
+        }
+        DrawSeparator();
+        if (GUILayout.Button("Separate Scripts to folders"))
+        {
+            MoveScriptsFromAssets();
         }
     }
 
@@ -43,12 +92,16 @@ public class Configurator : EditorWindow
         ConfigureResourcesBtn();
     }
 
+    public void ConfigurateFoldersBtn()
+    {
+        FoldersConfiguration();
+    }
     public void ConfigurateGraphicsBtn()
     {
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
         QualitySettings.pixelLightCount = 0;
         QualitySettings.masterTextureLimit = 0;
-        QualitySettings.anisotropicFiltering =  AnisotropicFiltering.ForceEnable;
+        QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
         QualitySettings.antiAliasing = 0;
         QualitySettings.softParticles = false;
         QualitySettings.realtimeReflectionProbes = false;
@@ -68,12 +121,49 @@ public class Configurator : EditorWindow
         QualitySettings.vSyncCount = 0;
 
     }
+    public void FoldersConfiguration()
+    {
+        CreateFolder("Animations");
 
+        CreateFolder("Images");
+        CreateFolder("Images/Icons");
+        CreateFolder("Images/Sprites");
+        CreateFolder("Images/Textures");
+
+        CreateFolder("Resources");
+
+        CreateFolder("Materials");
+
+        CreateFolder("Packs");
+
+        CreateFolder("Prefabs");
+        CreateFolder("Prefabs/Levels");
+
+        CreateFolder("Resources");
+
+        CreateFolder("Scenes");
+
+        CreateFolder("Scripts");
+
+        AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
+    }
+    public static void CreateFolder(string path)
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/" + path))
+            AssetDatabase.CreateFolder("Assets/" + Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+    }
+    [MenuItem("Yaroslav/Select GameData", false, priority = 10)]
+    public static void SelectGameData()
+    {
+        EditorGUIUtility.PingObject(GameDataObject.GetData());
+    }
     public void ConfigureResourcesBtn()
     {
- 	AssetDatabase.CreateFolder("Assets", "Resources");
-	AssetDatabase.Refresh();
+        CreateFolder("Resources");
+        AssetDatabase.Refresh();
         AssetDatabase.SaveAssets();
+
         string[] unusedFolder = { "Assets/Resources" };
         foreach (var asset in AssetDatabase.FindAssets("", unusedFolder))
         {
@@ -83,7 +173,7 @@ public class Configurator : EditorWindow
         AssetDatabase.Refresh();
         AssetDatabase.SaveAssets();
         SavesDataObject saves = null;
-        if (Resources.Load<GameDataObject>("SavesData") == null)
+        if (Resources.Load<AbstractSavesDataObject>("SavesData") == null)
         {
             saves = new SavesDataObject();
             AssetDatabase.CreateAsset(saves, "Assets/Resources/SavesData.asset");
@@ -94,6 +184,8 @@ public class Configurator : EditorWindow
             {
                 saves.prefsValues.Add(new PrefsValue() { pref = (Prefs)i, savePref = PrefType.Int });
             }
+            EditorUtility.SetDirty(saves);
+            AssetDatabase.SaveAssets();
             Debug.Log($"Yaroslav: SavesData created! [Prefs added {saves.prefsValues.Count}]");
         }
 
@@ -105,12 +197,15 @@ public class Configurator : EditorWindow
             gameData.main.saves = saves;
             gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
 
+            EditorUtility.SetDirty(gameData);
+            AssetDatabase.SaveAssets();
             Debug.Log("Yaroslav: GameData created!");
         }
-        
+
         if (Resources.Load<GameDataObject>("GameTypes") == null)
         {
             AssetDatabase.CreateAsset(new GameDatasManagerObject() /*{ saves = saves}*/, "Assets/Resources/GameTypes.asset");
+            AssetDatabase.SaveAssets();
             Debug.Log("Yaroslav: GameTypes created!");
         }
         AssetDatabase.SaveAssets();
