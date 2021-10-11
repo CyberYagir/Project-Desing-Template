@@ -33,7 +33,7 @@ public class UIAnimate : MonoBehaviour
     }
 
     /// <summary>
-    /// Остановить проигрываение.
+    /// Остановить проигрывание.
     /// </summary>
     public void Stop()
     {
