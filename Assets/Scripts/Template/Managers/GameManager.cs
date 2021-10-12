@@ -215,6 +215,16 @@ public class GameManager : MonoBehaviour
         instance.StopGamePlay();
         gameStage = GameStage.EndWait;
         EndGame();
+        
+        if (win)
+        {
+            Debug.Log("Win Event exec");
+        }
+        else
+        {
+            Debug.Log("Loose Event exec"); 
+        }
+
         //Эвенты метрик
         //Конец уровня
     }
@@ -224,7 +234,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static void Restart()
     {
-        OnLevelEnd();
         SceneManager.LoadScene(0);
     }
 

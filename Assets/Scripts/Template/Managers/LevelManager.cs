@@ -6,5 +6,5 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     public SpawnPoint playerSpawn { get; private set; }
-    private void Awake(){ playerSpawn = GetComponentInChildren<SpawnPoint>(); }
+    private void Awake(){ playerSpawn = GetComponentInChildren<SpawnPoint>();}
 }
