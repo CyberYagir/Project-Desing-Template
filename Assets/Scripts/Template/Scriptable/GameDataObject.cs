@@ -18,12 +18,10 @@ public class GameDataObject : ScriptableObject
     public GDOMain main;
 
     //Другие переменные
-
     public GameDataObject()
     {
         main = new GDOMain();
     }
-
     /// <summary>
     /// Получить <b>GameData</b> из папки <b>Resources</b> в Assets
     /// </summary>
@@ -54,3 +52,4 @@ public class GameDataObject : ScriptableObject
         return GetData(getStandardData).main;
     }
 }
+
