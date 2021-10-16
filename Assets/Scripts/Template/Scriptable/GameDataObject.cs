@@ -18,10 +18,34 @@ public class GameDataObject : ScriptableObject
     public GDOMain main;
 
     //Другие переменные
+    
+    
+    
     public GameDataObject()
     {
         main = new GDOMain();
     }
+
+    public static Dictionary<string, GameDataObject> cachedGameDatas;
+
+    public void Awake()
+    {
+        CacheGameDatas();
+    }
+
+    /// <summary>
+    /// Кеширование GameDat для того чтобы их не грузить из ресурсов.
+    /// </summary>
+    public static void CacheGameDatas()
+    {
+        cachedGameDatas = new Dictionary<string, GameDataObject>();
+        var alldatas = Resources.LoadAll<GameDataObject>("");
+        foreach (var data in alldatas)
+        {
+            cachedGameDatas.Add(data.name, data);
+        }
+    }
+
     /// <summary>
     /// Получить <b>GameData</b> из папки <b>Resources</b> в Assets
     /// </summary>
@@ -29,7 +53,16 @@ public class GameDataObject : ScriptableObject
     /// <returns></returns>
     public static GameDataObject GetData(bool getStandardData = false)
     {
-        var data = Resources.Load<GameDataObject>(getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData");
+        GameDataObject data = null;
+        if (cachedGameDatas == null)
+        {
+            data = Resources.Load<GameDataObject>(getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"); 
+            CacheGameDatas();
+        }
+        else
+        {
+            data = cachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+        }
         if (data == null) { Debug.LogError("Yaroslav: GameData missing. Go to Menu>Tools>Yaroslav..."); return new GameDataObject(); };
         if (getStandardData == false)
         {

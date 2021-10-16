@@ -8,6 +8,6 @@ using System.Collections.Generic;
 [System.Serializable]
 public class DrawedDictionaryPreview : MonoBehaviour
 {
-    public DrawedDictionary.Dictionary<DrawedDictionaryPreview, string> dictionary = new DrawedDictionary.Dictionary<DrawedDictionaryPreview, string>();
+    public DrawedDictionary.Dictionary<int, string> dictionary = new DrawedDictionary.Dictionary<int, string>();
 
 }

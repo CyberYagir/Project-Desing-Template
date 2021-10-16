@@ -42,127 +42,134 @@ public class DictionaryDrawer : PropertyDrawer
         CallMethod(instance, "UpdateTypes"); //Запрос на вызов метода UpdateTypes в Dictionary из instance
 
         EditorGUI.BeginProperty(position, label, property);
-        int indent = EditorGUI.indentLevel;
-        EditorGUI.indentLevel = 0;
-        DefineSizes(position); //Вычисление размеров полей относительно position
-
-        drawAll = DrawFoldoutLabel(position, drawAll, label.text); //Открыт ли лейбл
-        if (drawAll)
         {
+            int indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+            DefineSizes(position); //Вычисление размеров полей относительно position
 
-            position = AddOffcet(position); //Добавления смещения
-
-            DefineSizes(position);
-
-            ////Проверка но кастомный класс
-            customClass = false;
-            if (!IsTypeSerilizable("KType") || !IsTypeSerilizable("VType"))
+            drawAll = DrawFoldoutLabel(position, drawAll, label.text); //Открыт ли лейбл
+            if (drawAll)
             {
-                if (!IsTypeSerilizable("KType"))
+
+                position = AddOffcet(position); //Добавления смещения
+
+                DefineSizes(position);
+
+                ////Проверка но кастомный класс
+                customClass = false;
+                if (!IsTypeSerilizable("KType") || !IsTypeSerilizable("VType"))
                 {
-                    NotSerializbleError(position, "KType");
-                }
-                if (!IsTypeSerilizable("VType"))
-                {
-                    NotSerializbleError(position, "VType");
-                }
-                AddHeight();
-                EditorGUI.indentLevel = indent;
-                EditorGUI.EndProperty();
-                AddHeight();
-                return;
-            }
-            ///
-
-
-            //Отрисовка полей для ввода и добавления
-            if (DrawField(valueRect, (string)GetVarValue(instance, "VType")) == -1) // -1 если нельзя отобразить поле. Иначе отображается поле.
-            {
-                DrawCustomClassMessage(valueRect, (string)GetVarValue(instance, "VType"));  //Если класс в VType кастомный то метод
-            }
-            DrawSeparator(position);
-            if (DrawField(keyRect, (string)GetVarValue(instance, "KType"), true) == -1)
-            {
-                DrawCustomClassMessage(keyRect, (string)GetVarValue(instance, "KType")); //Если класс в VType кастомный то метод
-            }
-            if (GUI.Button(btnRect, "+")) //Кнопка добавления в список
-            {
-                if (!customClass)
-                {
-                    if (newK != null && newV != null)
+                    if (!IsTypeSerilizable("KType"))
                     {
-                        CallMethod(instance, "Add", newK, newV); //Добавление жлемента
+                        NotSerializbleError(position, "KType");
                     }
-                    else
+                    if (!IsTypeSerilizable("VType"))
                     {
-                        Debug.LogError("Dictionary key null error");
+                        NotSerializbleError(position, "VType");
+                    }
+                    AddHeight();
+                    EditorGUI.indentLevel = indent;
+                    EditorGUI.EndProperty();
+                    AddHeight();
+                    return;
+                }
+                ///
+
+
+                //Отрисовка полей для ввода и добавления
+                #region AddFields
+                if (DrawField(valueRect, (string)GetVarValue(instance, "VType")) == -1) // -1 если нельзя отобразить поле. Иначе отображается поле.
+                    {
+                        DrawCustomClassMessage(valueRect, (string)GetVarValue(instance, "VType"));  //Если класс в VType кастомный то метод
+                    }
+                    DrawSeparator(position);
+                    if (DrawField(keyRect, (string)GetVarValue(instance, "KType"), true) == -1)
+                    {
+                        DrawCustomClassMessage(keyRect, (string)GetVarValue(instance, "KType")); //Если класс в VType кастомный то метод
+                    }
+                    if (GUI.Button(btnRect, "+")) //Кнопка добавления в список
+                    {
+                        if (!customClass)
+                        {
+                            if (newK != null && newV != null)
+                            {
+                                CallMethod(instance, "Add", newK, newV); //Добавление жлемента
+                            }
+                            else
+                            {
+                                Debug.LogError("Dictionary key null error");
+                            }
+                        }
+                        else
+                        {
+                            CallMethod(instance, "AddNull", GetInstanceFromTypeName(keyRect, "KType", newK), GetInstanceFromTypeName(valueRect, "VType", newV)); //Добавление пустого элемента. 
+                        }
+                    }
+
+                    AddHeight();
+                    AddHeight(5);
+                #endregion
+
+                //Поиск ключей и значений в SerializedProperty из OnGUI 
+                #region FindValues
+                SerializedProperty keys = null;
+                SerializedProperty value = null;
+                while (property.Next(true))
+                {
+                    if (property.isArray)
+                    {
+                        if (property.name == "_keys")
+                        {
+                            keys = property.Copy();
+                        }
+                        if (property.name == "_values")
+                        {
+                            value = property.Copy();
+                        }
                     }
                 }
-                else
+
+                #endregion
+
+
+                //Отрисовка значений
+                #region DrawValues
+                drawList = DrawFoldoutLabel(position, drawList, "List"); //Открытие списка значений
+                if (drawList)
                 {
-                    CallMethod(instance, "AddNull", GetInstanceFromTypeName(keyRect, "KType", newK), GetInstanceFromTypeName(valueRect, "VType", newV)); //Добавление пустого элемента. 
+                    position = AddOffcet(position); //Смещение
+                    DefineSizes(position);
+
+                    for (int i = 0; i < keys.arraySize; i++) //Иду по каждому элементу
+                    {
+                        if (GUI.Button(btnRect, "-"))
+                        {
+                            CallMethod(instance, "RemoveID", i); //Удаление
+                        }
+
+                        var currentV = new Rect(valueRect);
+                        var currentK = new Rect(keyRect);
+
+                        float offcetK = 0;
+                        float offcetV = 0;
+                        offcetV = DrawField(currentV, value.GetArrayElementAtIndex(i)); //Отрисовка поля и получение его высоты
+                        offcetK = DrawField(currentK, keys.GetArrayElementAtIndex(i), true);
+                        DrawSeparator(position, Mathf.Max(offcetK, offcetV));
+                        AddHeightC(Mathf.Max(offcetK, offcetV) + 5); //Вычисляю самоу большую высоту. Так как у ключа и у значения высота поля может быть разная я ищу максимальную.
+                    }
+                    if (keys.arraySize == 0) //Если обьектов нет.
+                    {
+                        AddHeight();
+                        EditorGUI.LabelField(new Rect(new Vector2(position.x, y), new Vector2(position.width, startY)), "List is empty..."); //Пишу лейбл что список пуст.
+                    }
                 }
+
+                #endregion
             }
 
             AddHeight();
-            AddHeight(5);
-
-            //Поиск ключей и значений в SerializedProperty из OnGUI 
-            #region FindValues
-            SerializedProperty keys = null;
-            SerializedProperty value = null;
-            while (property.Next(true))
-            {
-                if (property.isArray)
-                {
-                    if (property.name == "_keys")
-                    {
-                        keys = property.Copy();
-                    }
-                    if (property.name == "_values")
-                    {
-                        value = property.Copy();
-                    }
-                }
-            }
-
-            #endregion
-
-
-
-            drawList = DrawFoldoutLabel(position, drawList, "List"); //Открытие списка значений
-            if (drawList)
-            {
-                position = AddOffcet(position); //Смещение
-                DefineSizes(position);
-
-                for (int i = 0; i < keys.arraySize; i++) //Иду по каждому элементу
-                {
-                    if (GUI.Button(btnRect, "-"))
-                    {
-                        CallMethod(instance, "RemoveID", i); //Удаление
-                    }
-
-                    var currentV = new Rect(valueRect);
-                    var currentK = new Rect(keyRect);
-
-                    float offcetK = 0;
-                    float offcetV = 0;
-                    offcetV = DrawField(currentV, value.GetArrayElementAtIndex(i)); //Отрисовка поля и получение его высоты
-                    offcetK = DrawField(currentK, keys.GetArrayElementAtIndex(i), true);
-                    DrawSeparator(position, Mathf.Max(offcetK, offcetV));
-                    AddHeightC(Mathf.Max(offcetK, offcetV) + 5); //Вычисляю самоу большую высоту. Так как у ключа и у значения высота поля может быть разная я ищу максимальную.
-                }
-                if (keys.arraySize == 0) //Если обьектов нет.
-                {
-                    AddHeight();
-                    EditorGUI.LabelField(new Rect(new Vector2(position.x, y), new Vector2(position.width, startY)), "List is empty..."); //Пишу лейбл что список пуст.
-                }
-            }
+            EditorGUI.indentLevel = indent;
         }
-
-        AddHeight();
-        EditorGUI.indentLevel = indent;
         EditorGUI.EndProperty();
     }
 

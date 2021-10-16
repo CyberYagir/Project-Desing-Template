@@ -91,7 +91,7 @@ public class GameDataObjectEditor : EditorTweaks
 
         if (GUILayout.Button("Find all objects"))
         {
-            gameData.main = Configurator.GetAllDataFromAssets();
+            gameData.main = ConfiguratorWindow.GetAllDataFromAssets();
             gameData.main.saves = Resources.LoadAll<AbstractSavesDataObject>("")[0];
             Sort();
         }

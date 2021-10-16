@@ -3,13 +3,13 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-public class Configurator : EditorWindow
+public class ConfiguratorWindow : EditorWindow
 {
     [MenuItem("Yaroslav/Configurator")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(Configurator));
-        EditorWindow.GetWindow(typeof(Configurator)).titleContent = new GUIContent("Project Configurator");
+        EditorWindow.GetWindow(typeof(ConfiguratorWindow));
+        EditorWindow.GetWindow(typeof(ConfiguratorWindow)).titleContent = new GUIContent("Project Configurator");
     }
     public void DrawLine(int h = 1)
     {
@@ -25,7 +25,7 @@ public class Configurator : EditorWindow
     }
     private void OnFocus()
     {
-        EditorWindow.GetWindow(typeof(Configurator)).minSize = new Vector2(200, 300);
+        EditorWindow.GetWindow(typeof(ConfiguratorWindow)).minSize = new Vector2(200, 300);
     }
     [MenuItem("Yaroslav/Move Scripts", false, priority = 11)]
     public static void MoveScriptsFromAssets()

@@ -65,11 +65,12 @@ public class GameManager : MonoBehaviour
 
         gdata = GameDataObject.GetData();
         data = gdata.main;
+        OnLevelStarted(data);
+        LoadLevel();
     }
     private void Start()
     {
-        OnLevelStarted(data);
-        LoadLevel();
+        
 
     }
     private void Update()
