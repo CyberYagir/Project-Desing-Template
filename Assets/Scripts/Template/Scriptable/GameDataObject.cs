@@ -61,7 +61,16 @@ public class GameDataObject : ScriptableObject
         }
         else
         {
-            data = cachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+            try
+            {
+                data = cachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+            }
+            catch (System.Exception)
+            {
+                CacheGameDatas();
+                data = cachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+                throw;
+            }
         }
         if (data == null) { Debug.LogError("Yaroslav: GameData missing. Go to Menu>Tools>Yaroslav..."); return new GameDataObject(); };
         if (getStandardData == false)
