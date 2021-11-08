@@ -61,6 +61,8 @@ public class GameManager : MonoBehaviour
         EndGame = delegate { };
         TapToPlayUI = delegate { };
 
+        gameStage = GameStage.StartWait;
+
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
 
         gdata = GameDataObject.GetData();

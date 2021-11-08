@@ -90,6 +90,8 @@ public class ConfiguratorWindow : EditorWindow
     {
         ConfigurateGraphicsBtn();
         ConfigureResourcesBtn();
+        FoldersConfiguration();
+        MoveScriptsFromAssets();
     }
 
     public void ConfigurateFoldersBtn()
