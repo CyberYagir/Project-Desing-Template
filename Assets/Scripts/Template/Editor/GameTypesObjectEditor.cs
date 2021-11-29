@@ -1,89 +1,93 @@
 using System.Collections.Generic;
 using System.Linq;
+using Template.Scriptable;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(GameDatasManagerObject))]
-public class GameTypesObjectEditor : EditorTweaks
+namespace Template.Editor
 {
-    GameDatasManagerObject types;
-
-    public void OnEnable()
+    [CustomEditor(typeof(GameDatasManagerObject))]
+    public class GameTypesObjectEditor : EditorTweaks
     {
-        types = (GameDatasManagerObject)target;
-    }
+        GameDatasManagerObject types;
 
-    public void OnDisable()
-    {
-        Save(types);
-    }
-
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        DrawSeparator();
-        if (GUILayout.Button("Add Mode"))
+        public void OnEnable()
         {
-            types.gameDatas.Add(new LevelAndGameData());
-            //Save(types);
+            types = (GameDatasManagerObject)target;
         }
-        DrawSeparator();
-        for (int i = 0; i < types.gameDatas.Count; i++)
+
+        public void OnDisable()
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label($"Game Mode [{i}]: ", GUILayout.Width(100));
+            Save(types);
+        }
 
-            var gameDatas = Resources.LoadAll<GameDataObject>("");
-            var names = new List<string>();
-            foreach (var item in gameDatas) names.Add(item.name.ToString());
-
-            names.RemoveAll(x => x == "GameData");
-
-            if (names.Count != 0)
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            DrawSeparator();
+            if (GUILayout.Button("Add Mode"))
             {
-                if (types.gameDatas[i].gameData == null)
-                {
-                    types.gameDatas[i].gameData = gameDatas.ToList().Find(x => x.name != "GameData");
-                }
-                var oldSel = names.FindIndex(x => x == types.gameDatas[i].gameData.name);
-                var selected = EditorGUILayout.Popup("", oldSel, names.ToArray(), GUILayout.MinWidth(80));
-                types.gameDatas[i].gameData = gameDatas.ToList().Find(x => x.name == names[selected]);
-            }
-            else
-            {
-                EditorGUILayout.Popup("", 0, new string[] { "Empty" }, GUILayout.MinWidth(80));
-            }
-
-            if (types.gameDatas[i].gameData == null || names.Count == 0)
-            {
-                GUI.enabled = false;
-            }
-
-            var levelList = new List<string>();
-            if (GameDataObject.GetMain(true) != null)
-            {
-                var mn = GameDataObject.GetMain(true);
-                for (int j = 0; j < mn.levelList.Count; j++)
-                {
-                    levelList.Add(mn.levelList[j].name);
-                }
-            }
-            var oldID = types.gameDatas[i].level_id;
-            types.gameDatas[i].level_id = EditorGUILayout.Popup("", types.gameDatas[i].level_id, levelList.ToArray(), GUILayout.MinWidth(50));
-            if (oldID != types.gameDatas[i].level_id)
-            {
+                types.gameDatas.Add(new LevelAndGameData());
                 //Save(types);
             }
-
-            GUI.enabled = true;
-
-            if (GUILayout.Button("-", GUILayout.Width(20)))
+            DrawSeparator();
+            for (int i = 0; i < types.gameDatas.Count; i++)
             {
-                types.gameDatas.RemoveAt(i);
-                //Save(types);
-                return;
+                GUILayout.BeginHorizontal();
+                GUILayout.Label($"Game Mode [{i}]: ", GUILayout.Width(100));
+
+                var gameDatas = Resources.LoadAll<GameDataObject>("");
+                var names = new List<string>();
+                foreach (var item in gameDatas) names.Add(item.name.ToString());
+
+                names.RemoveAll(x => x == "GameData");
+
+                if (names.Count != 0)
+                {
+                    if (types.gameDatas[i].gameData == null)
+                    {
+                        types.gameDatas[i].gameData = gameDatas.ToList().Find(x => x.name != "GameData");
+                    }
+                    var oldSel = names.FindIndex(x => x == types.gameDatas[i].gameData.name);
+                    var selected = EditorGUILayout.Popup("", oldSel, names.ToArray(), GUILayout.MinWidth(80));
+                    types.gameDatas[i].gameData = gameDatas.ToList().Find(x => x.name == names[selected]);
+                }
+                else
+                {
+                    EditorGUILayout.Popup("", 0, new string[] { "Empty" }, GUILayout.MinWidth(80));
+                }
+
+                if (types.gameDatas[i].gameData == null || names.Count == 0)
+                {
+                    GUI.enabled = false;
+                }
+
+                var levelList = new List<string>();
+                if (GameDataObject.GetMain(true) != null)
+                {
+                    var mn = GameDataObject.GetMain(true);
+                    for (int j = 0; j < mn.levelList.Count; j++)
+                    {
+                        levelList.Add(mn.levelList[j].name);
+                    }
+                }
+                var oldID = types.gameDatas[i].levelID;
+                types.gameDatas[i].levelID = EditorGUILayout.Popup("", types.gameDatas[i].levelID, levelList.ToArray(), GUILayout.MinWidth(50));
+                if (oldID != types.gameDatas[i].levelID)
+                {
+                    //Save(types);
+                }
+
+                GUI.enabled = true;
+
+                if (GUILayout.Button("-", GUILayout.Width(20)))
+                {
+                    types.gameDatas.RemoveAt(i);
+                    //Save(types);
+                    return;
+                }
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
         }
     }
 }

@@ -1,256 +1,265 @@
+using Template.Scriptable;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum GameStage { StartWait, Game, EndWait };
-/// <summary>
-/// Игровой менеджер.
-/// </summary>
-public class GameManager : MonoBehaviour
+namespace Template.Managers
 {
+    public enum GameStage { StartWait, Game, EndWait };
     /// <summary>
-    /// <b>Синглетон</b> менеджера для обращения к <b>НЕ</b> статическим методам и переменным. 
+    /// РРіСЂРѕРІРѕР№ РјРµРЅРµРґР¶РµСЂ.
     /// </summary>
-    public static GameManager instance { get; private set; }
-
-    //Юзабельное
-    /// <summary>
-    /// <i>Свойство:</i> <b>LevelManager</b> текущего уровная на сцене.
-    /// </summary>
-    public static LevelManager currentLevel { get; private set; }
-    /// <summary>
-    /// <i>Свойство:</i> Текущий игрок на сцене.
-    /// </summary>
-    public static GameObject player { get; private set; }
-    /// <summary>
-    /// <i>Свойство:</i> <b>Canvas</b> текущего уровная на сцене.
-    /// </summary>
-    public static Canvas canvas { get; private set; }
-    /// <summary>
-    /// <i>Свойство:</i> Стадия игры на которой сейчас находится игрок. 
-    /// </summary>
-    public static GameStage gameStage;
-
-    //Данные
-    GameDataObject.GDOMain data;
-    GameDataObject gdata;
-
-
-
-    // Эвенты 
-    /// <summary>
-    /// <i>Эвент</i> Вызывается при <b>GameStage</b> равному <b>Game</b>
-    /// </summary>
-    public static event System.Action StartGame = delegate { }; //Когда gameStage становится Game
-    /// <summary>
-    /// <i>Эвент</i> Вызывается при <b>GameStage</b> равному <b>EndWait</b>
-    /// </summary>
-    public static event System.Action EndGame = delegate { }; //Когда gameStage становится EndWait
-    /// <summary>
-    /// <i>Эвент</i> Вызывается при первом нажатии на экран, если при этом свойство <b>startByTab</b> в <b>GameData</b> равно <b>True</b>
-    /// </summary>
-    public static event System.Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
-
-
-
-    #region Mono
-    public void Awake()
+    public class GameManager : MonoBehaviour
     {
-        instance = this;
+        /// <summary>
+        /// <b>РЎРёРЅРіР»РµС‚РѕРЅ</b> РјРµРЅРµРґР¶РµСЂР° РґР»СЏ РѕР±СЂР°С‰РµРЅРёСЏ Рє <b>РќР•</b> СЃС‚Р°С‚РёС‡РµСЃРєРёРј РјРµС‚РѕРґР°Рј Рё РїРµСЂРµРјРµРЅРЅС‹Рј. 
+        /// </summary>
+        public static GameManager Instance { get; private set; }
 
-        StartGame = delegate { };
-        EndGame = delegate { };
-        TapToPlayUI = delegate { };
+        //Р®Р·Р°Р±РµР»СЊРЅРѕРµ
+        /// <summary>
+        /// <i>РЎРІРѕР№СЃС‚РІРѕ:</i> <b>LevelManager</b> С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅР°СЏ РЅР° СЃС†РµРЅРµ.
+        /// </summary>
+        public static LevelManager CurrentLevel { get; private set; }
+        /// <summary>
+        /// <i>РЎРІРѕР№СЃС‚РІРѕ:</i> РўРµРєСѓС‰РёР№ РёРіСЂРѕРє РЅР° СЃС†РµРЅРµ.
+        /// </summary>
+        public static GameObject Player { get; private set; }
+        /// <summary>
+        /// <i>РЎРІРѕР№СЃС‚РІРѕ:</i> <b>Canvas</b> С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅР°СЏ РЅР° СЃС†РµРЅРµ.
+        /// </summary>
+        public static Canvas Canvas { get; private set; }
+        /// <summary>
+        /// <i>РЎРІРѕР№СЃС‚РІРѕ:</i> РЎС‚Р°РґРёСЏ РёРіСЂС‹ РЅР° РєРѕС‚РѕСЂРѕР№ СЃРµР№С‡Р°СЃ РЅР°С…РѕРґРёС‚СЃСЏ РёРіСЂРѕРє. 
+        /// </summary>
+        public static GameStage GameStage;
 
-        gameStage = GameStage.StartWait;
+        //Р”Р°РЅРЅС‹Рµ
+        GameDataObject.GDOMain data;
+        public static GameDataObject GameData;
+    
+        // Р­РІРµРЅС‚С‹ 
+        /// <summary>
+        /// <i>Р­РІРµРЅС‚</i> Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё <b>GameStage</b> СЂР°РІРЅРѕРјСѓ <b>Game</b>
+        /// </summary>
+        public static event System.Action StartGame = delegate { }; //РљРѕРіРґР° gameStage СЃС‚Р°РЅРѕРІРёС‚СЃСЏ Game
+        /// <summary>
+        /// <i>Р­РІРµРЅС‚</i> Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё <b>GameStage</b> СЂР°РІРЅРѕРјСѓ <b>EndWait</b>
+        /// </summary>
+        public static event System.Action EndGame = delegate { }; //РљРѕРіРґР° gameStage СЃС‚Р°РЅРѕРІРёС‚СЃСЏ EndWait
+        /// <summary>
+        /// <i>Р­РІРµРЅС‚</i> Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РїРµСЂРІРѕРј РЅР°Р¶Р°С‚РёРё РЅР° СЌРєСЂР°РЅ, РµСЃР»Рё РїСЂРё СЌС‚РѕРј СЃРІРѕР№СЃС‚РІРѕ <b>startByTab</b> РІ <b>GameData</b> СЂР°РІРЅРѕ <b>True</b>
+        /// </summary>
+        public static event System.Action TapToPlayUI = delegate { }; //РљРѕРіРґР° РёРіСЂРѕРє С‚Р°РїР°РµС‚ РІ РїРµСЂРІС‹Р№ СЂР°Р· РїСЂРё data.startByTap
 
-        QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
 
-        gdata = GameDataObject.GetData();
-        data = gdata.main;
-        OnLevelStarted(data);
-        LoadLevel();
-    }
-    private void Start()
-    {
-        
 
-    }
-    private void Update()
-    {
-        if (instance == null) instance = this;
-        EditorControls();
-        TapToStartCheck();
-    }
-
-    #endregion
-
-    #region Gameplay
-
-    /// <summary>
-    /// Если свойство <b>startByTab</b> в <b>GameData</b> равно <b>True</b> то вызывается этот метод. Он проверяет первый тап. После стартует TapToPlayUI().
-    /// </summary>
-    public void TapToStartCheck() //Проверка на вервый тап 
-    {
-        if (data.startByTap)
+        #region Mono
+        public void Awake()
         {
-            if (Input.GetKey(KeyCode.Mouse0))
+            Instance = this;
+
+            StartGame = delegate { };
+            EndGame = delegate { };
+            TapToPlayUI = delegate { };
+
+            GameStage = GameStage.StartWait;
+
+            QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
+
+            if (GameData != GameDataObject.GetData())
             {
-                if (gameStage == GameStage.StartWait)
+                GameData = GameDataObject.GetData();
+            }
+            data = GameData.main;
+            OnLevelStarted(data);
+            LoadLevel();
+        }
+        private void Update()
+        {
+            if (Instance == null) Instance = this;
+            EditorControls();
+            TapToStartCheck();
+        }
+
+        #endregion
+
+        #region Gameplay
+
+        /// <summary>
+        /// Р•СЃР»Рё СЃРІРѕР№СЃС‚РІРѕ <b>startByTab</b> РІ <b>GameData</b> СЂР°РІРЅРѕ <b>True</b> С‚Рѕ РІС‹Р·С‹РІР°РµС‚СЃСЏ СЌС‚РѕС‚ РјРµС‚РѕРґ. РћРЅ РїСЂРѕРІРµСЂСЏРµС‚ РїРµСЂРІС‹Р№ С‚Р°Рї. РџРѕСЃР»Рµ СЃС‚Р°СЂС‚СѓРµС‚ TapToPlayUI().
+        /// </summary>
+        public void TapToStartCheck() //РџСЂРѕРІРµСЂРєР° РЅР° РІРµСЂРІС‹Р№ С‚Р°Рї 
+        {
+            if (data.startByTap)
+            {
+                if (Input.GetKey(KeyCode.Mouse0))
                 {
-                    StartGameByTap();
-                    gameStage = GameStage.Game;
-                    TapToPlayUI();
-                    StartGame();
+                    if (GameStage == GameStage.StartWait)
+                    {
+                        StartGameByTap();
+                        GameStage = GameStage.Game;
+                        TapToPlayUI();
+                        StartGame();
+                    }
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Этот метод спавнит текущий уровень, игрока и канвас.
-    /// </summary>
-    public void LoadLevel() //Создание уровня 
-    {
-        var stdData = GameDataObject.GetMain(true);
-        if (stdData.saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
-        if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + GameDataObject.GetData(true).name + "\" is empty"); return; }
-
-        stdData.saves.SetLevel((int)stdData.saves.GetPref(Prefs.Level));
-        currentLevel = Instantiate(stdData.levelList[(int)stdData.saves.GetPref(Prefs.Level)]);
-        //Игрок и канвас
-        SpawnPlayer();
-        SpawnCanvas();
-    }
-
-    /// <summary>
-    /// Этот метод спавнит игрока.
-    /// </summary>
-    public void SpawnPlayer()
-    {
-        if (data.playerPrefab)
+        /// <summary>
+        /// Р­С‚РѕС‚ РјРµС‚РѕРґ СЃРїР°РІРЅРёС‚ С‚РµРєСѓС‰РёР№ СѓСЂРѕРІРµРЅСЊ, РёРіСЂРѕРєР° Рё РєР°РЅРІР°СЃ.
+        /// </summary>
+        public void LoadLevel() //РЎРѕР·РґР°РЅРёРµ СѓСЂРѕРІРЅСЏ 
         {
-            Vector3 spawnPoint = Vector3.zero;
-            if (currentLevel.playerSpawn != null)
+            var stdData = GameDataObject.GetMain(true);
+            if (stdData.saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
+            if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + GameDataObject.GetData(true).name + "\" is empty"); return; }
+
+            stdData.saves.SetLevel((int)stdData.saves.GetPref(Prefs.Level));
+            CurrentLevel = Instantiate(stdData.levelList[(int)stdData.saves.GetPref(Prefs.Level)]);
+            //РРіСЂРѕРє Рё РєР°РЅРІР°СЃ
+            SpawnPlayer();
+            SpawnCanvas();
+        }
+
+        /// <summary>
+        /// Р­С‚РѕС‚ РјРµС‚РѕРґ СЃРїР°РІРЅРёС‚ РёРіСЂРѕРєР°.
+        /// </summary>
+        public void SpawnPlayer()
+        {
+            if (data.playerPrefab)
             {
-                spawnPoint = currentLevel.playerSpawn.transform.position;
-                //Настройка игрока
+                Vector3 spawnPoint = Vector3.zero;
+                if (CurrentLevel.PlayerSpawn != null)
+                {
+                    spawnPoint = CurrentLevel.PlayerSpawn.transform.position;
+                    //РќР°СЃС‚СЂРѕР№РєР° РёРіСЂРѕРєР°
+                }
+                else
+                {
+                    Debug.LogError("Yaroslav: Spawn Not Found");
+                }
+                Player = Instantiate(data.playerPrefab, spawnPoint, Quaternion.identity);
+            }
+        }
+
+        /// <summary>
+        /// Р­С‚РѕС‚ РјРµС‚РѕРґ СЃРїР°РІРЅРёС‚ РєР°РЅРІР°СЃ.
+        /// </summary>
+        public void SpawnCanvas()
+        {
+            if (data.canvas)
+                Canvas = Instantiate(data.canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
+        }
+
+        /// <summary>
+        /// РњРµС‚РѕРґ РґР»СЏ РґРµР№СЃС‚РІРёР№ РІРѕ РІСЂРµРјСЏ РѕСЃС‚Р°РЅРѕРІРєРё РёРіСЂС‹.
+        /// </summary>
+        public void StopGamePlay() //РћСЃС‚Р°РЅРѕРІРєР° РёРіСЂС‹ (РРіСЂРѕРєР° Рё С‚Рґ.) 
+        {
+            //Р’С‹РєР»СЋС‡РµРЅРёРµ РёРіСЂРѕРєР° Рё РґСЂ.
+        }
+
+        /// <summary>
+        /// РњРµС‚РѕРґ РґР»СЏ РґРµР№СЃС‚РІРёР№ РІРѕ РІСЂРµРјСЏ С‚Р°РїР°.
+        /// </summary>
+        public void StartGameByTap() //Р’РєР»СЋС‡РµРЅРёРµ РїСЂРё С‚Р°РїРµ (РРіСЂРѕРєР° Рё С‚Рґ.)
+        {
+            //Р’РєР»СЋС‡РµРЅРёРµ СѓРїСЂР°РІР»РµРЅРёСЏ Рё РґСЂ.
+        }
+
+        #endregion
+
+        #region Editor
+        /// <summary>
+        /// РњРµС‚РѕРґ РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ С…РѕС‚РєРµРё РІРѕ РІСЂРµРјСЏ РёРіСЂС‹ РІ СЌРґРёС‚РѕСЂРµ.
+        /// </summary>
+        public void EditorControls()
+        {
+#if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                NextLevel();
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                data.saves.AddToPref(Prefs.Points, 10);
+            }
+
+#endif
+        }
+        #endregion
+
+        #region Static
+        /// <summary>
+        /// Р—Р°РґР°С‘С‚ <b>GameStage</b> Рё РІС‹Р·С‹РІР°РµС‚ РјРµС‚РѕРґС‹ РЅР°С‡Р°Р»Р° Рё СЃС‚РѕРїР° РёРіСЂС‹ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ <b>GameStage</b> (Р’С‹Р·С‹РІР°РµС‚ СЌРІРµРЅС‚С‹).
+        /// </summary>
+        /// <param name="data">GameData С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ</param>
+        public static void OnLevelStarted(GameDataObject.GDOMain data)
+        {
+            if (data.startByTap)
+            {
+                GameStage = GameStage.StartWait;
+                Instance.StopGamePlay();
             }
             else
             {
-                Debug.LogError("Yaroslav: Spawn Not Found");
+                GameStage = GameStage.Game;
+                StartGame();
             }
-            player = Instantiate(data.playerPrefab, spawnPoint, Quaternion.identity);
         }
-    }
 
-    /// <summary>
-    /// Этот метод спавнит канвас.
-    /// </summary>
-    public void SpawnCanvas()
-    {
-        if (data.canvas)
-            canvas = Instantiate(data.canvas.gameObject, Vector3.zero, Quaternion.identity).GetComponent<Canvas>();
-    }
-
-    /// <summary>
-    /// Метод для действий во время остановки игры.
-    /// </summary>
-    public void StopGamePlay() //Остановка игры (Игрока и тд.) 
-    {
-        //Выключение игрока и др.
-    }
-
-    /// <summary>
-    /// Метод для действий во время тапа.
-    /// </summary>
-    public void StartGameByTap() //Включение при тапе (Игрока и тд.)
-    {
-        //Включение управления и др.
-    }
-
-    #endregion
-
-    #region Editor
-    /// <summary>
-    /// Метод обрабатывает хоткеи во время игры в эдиторе.
-    /// </summary>
-    public void EditorControls()
-    {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.Space))
+        /// <summary>
+        /// Р—Р°РєР°РЅС‡РёРІР°РµС‚ СѓСЂРѕРІРЅРё РІ РІС‹Р·С‹РІР°РµС‚ СЌРІРµРЅС‚С‹. (РќСѓР¶РµРЅ РґР»СЏ РјРµС‚СЂРёРє)
+        /// </summary>
+        /// <param name="win">Р‘СѓР»РµРІР°СЏ РїРµСЂРјРµРЅРЅР°СЏ РїРѕР±РµРґС‹</param>
+        public static void OnLevelEnd(bool win = true)
         {
-            NextLevel();
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            data.saves.AddToPref(Prefs.Points, 10);
-        }
-
-#endif
-    }
-    #endregion
-
-    #region Static
-    /// <summary>
-    /// Задаёт <b>GameStage</b> и вызывает методы начала и стопа игры в зависимости от <b>GameStage</b> (Вызывает эвенты).
-    /// </summary>
-    /// <param name="data">GameData текущего уровня</param>
-    public static void OnLevelStarted(GameDataObject.GDOMain data)
-    {
-        if (data.startByTap)
-        {
-            gameStage = GameStage.StartWait;
-            instance.StopGamePlay();
-        }
-        else
-        {
-            gameStage = GameStage.Game;
-            StartGame();
-        }
-    }
-
-    /// <summary>
-    /// Заканчивает уровни в вызывает эвенты. (Нужен для метрик)
-    /// </summary>
-    /// <param name="win">Булевая перменная победы</param>
-    public static void OnLevelEnd(bool win = true)
-    {
-        instance.StopGamePlay();
-        gameStage = GameStage.EndWait;
-        EndGame();
+            Instance.StopGamePlay();
+            GameStage = GameStage.EndWait;
+            EndGame();
         
-        if (win)
-        {
-            Debug.Log("Win Event exec");
+            if (win)
+            {
+                Debug.Log("Win Event exec");
+            }
+            else
+            {
+                Debug.Log("Loose Event exec"); 
+            }
+
+            //Р­РІРµРЅС‚С‹ РјРµС‚СЂРёРє
+            //РљРѕРЅРµС† СѓСЂРѕРІРЅСЏ
         }
-        else
+
+        /// <summary>
+        /// РџРµСЂРµР·Р°РїСѓСЃРєР°РµС‚ С‚РµРєСѓС‰РёР№ Р»РµРІРµР». 
+        /// </summary>
+        public static void Restart()
         {
-            Debug.Log("Loose Event exec"); 
+            SceneManager.LoadScene(0);
         }
 
-        //Эвенты метрик
-        //Конец уровня
-    }
+        /// <summary>
+        /// Р—Р°РіСЂСѓР¶Р°РµС‚ СЃР»РµРґСѓСЋС‰РёР№ Р»РµРІРµР» (РЈСЂРѕРІРЅРё Р·Р°Р»СѓРїР»РµРЅС‹).
+        /// </summary>
+        public static void NextLevel()
+        {
+            var data = GameDataObject.GetMain(true);
 
-    /// <summary>
-    /// Перезапускает текущий левел. 
-    /// </summary>
-    public static void Restart()
-    {
-        SceneManager.LoadScene(0);
-    }
+            data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
 
-    /// <summary>
-    /// Загружает следующий левел (Уровни залуплены).
-    /// </summary>
-    public static void NextLevel()
-    {
-        var data = GameDataObject.GetMain(true);
-        data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
-        data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
-        data.saves.AddToPref(Prefs.CompletedLevels, 1);
-        SceneManager.LoadScene(0);
-    }
+#if UNITY_EDITOR
+            if (GameDataObject.DebugLevel.IsDebugLevel)
+            {
+                data.saves.SetPref(Prefs.Level, GameDataObject.DebugLevel.LevelID);
+            }
+#endif
+            
+            data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
+            data.saves.AddToPref(Prefs.CompletedLevels, 1);
+            SceneManager.LoadScene(0);
+        }
 
-    #endregion
+        #endregion
+    }
 }

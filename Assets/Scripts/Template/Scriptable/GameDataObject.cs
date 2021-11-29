@@ -1,97 +1,107 @@
 using System.Collections.Generic;
+using Template.Managers;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
-public class GameDataObject : ScriptableObject
+namespace Template.Scriptable
 {
-    [System.Serializable]
-    public class GDOMain //Базовый класс
+
+    public struct DebugLevel
     {
-        public GameObject playerPrefab, canvas;
-        [HideInInspector]
-        public AbstractSavesDataObject saves;
-        public bool startByTap;
-        [HideInInspector]
-        public List<LevelManager> levelList = new List<LevelManager>();
+        public int LevelID;
+        public bool IsDebugLevel;
     }
-
-    public GDOMain main;
-
-    //Другие переменные
-    
-    
-    
-    public GameDataObject()
+    [CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
+    public class GameDataObject : ScriptableObject
     {
-        main = new GDOMain();
-    }
-
-    public static Dictionary<string, GameDataObject> cachedGameDatas;
-
-    public void Awake()
-    {
-        CacheGameDatas();
-    }
-
-    /// <summary>
-    /// Кеширование GameDat для того чтобы их не грузить из ресурсов.
-    /// </summary>
-    public static void CacheGameDatas()
-    {
-        cachedGameDatas = new Dictionary<string, GameDataObject>();
-        var alldatas = Resources.LoadAll<GameDataObject>("");
-        foreach (var data in alldatas)
+        [System.Serializable]
+        public class GDOMain //Р“Р»Р°РІРЅС‹Рµ РґР°РЅРЅС‹Рµ
         {
-            cachedGameDatas.Add(data.name, data);
+            public GameObject playerPrefab, canvas;
+            [HideInInspector]
+            public AbstractSavesDataObject saves;
+            public bool startByTap;
+            [HideInInspector]
+            public List<LevelManager> levelList = new List<LevelManager>();
         }
-    }
 
-    /// <summary>
-    /// Получить <b>GameData</b> из папки <b>Resources</b> в Assets
-    /// </summary>
-    /// <param name="getStandardData">Игнорировать ли GameTypes?</param>
-    /// <returns></returns>
-    public static GameDataObject GetData(bool getStandardData = false)
-    {
-        GameDataObject data = null;
-        if (cachedGameDatas == null)
+        public static DebugLevel DebugLevel;
+        
+        public GDOMain main;
+
+        //РћСЃС‚Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
+    
+    
+    
+        public GameDataObject()
         {
-            data = Resources.Load<GameDataObject>(getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"); 
+            main = new GDOMain();
+        }
+
+        public static Dictionary<string, GameDataObject> CachedGameDatas;
+
+        public void Awake()
+        {
             CacheGameDatas();
         }
-        else
+
+        /// <summary>
+        /// РљРµС€РёСЂРѕРІР°РЅРЅС‹Рµ РіРµР№РјРґР°С‚С‹
+        /// </summary>
+        public static void CacheGameDatas()
         {
-            try
+            CachedGameDatas = new Dictionary<string, GameDataObject>();
+            var alldatas = Resources.LoadAll<GameDataObject>("");
+            foreach (var data in alldatas)
             {
-                data = cachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+                CachedGameDatas.Add(data.name, data);
             }
-            catch (System.Exception)
+        }
+
+        /// <summary>
+        /// РџРѕР»СѓС‡РµРЅРёРµ <b>GameData</b> РёР· <b>Resources</b> РІ Assets
+        /// </summary>
+        /// <param name="getStandardData">пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ GameTypes?</param>
+        /// <returns></returns>
+        public static GameDataObject GetData(bool getStandardData = false)
+        {
+            GameDataObject data = null;
+            if (CachedGameDatas == null)
             {
+                data = Resources.Load<GameDataObject>(getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"); 
                 CacheGameDatas();
-                data = cachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
-                throw;
             }
-        }
-        if (data == null) { Debug.LogError("Yaroslav: GameData missing. Go to Menu>Tools>Yaroslav..."); return new GameDataObject(); };
-        if (getStandardData == false)
-        {
-            if (data.main.saves == null)
+            else
             {
-                data.main.saves = GetData(true).main.saves;
+                try
+                {
+                    data = CachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+                }
+                catch (System.Exception)
+                {
+                    CacheGameDatas();
+                    data = CachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
+                    throw;
+                }
             }
+            if (data == null) { Debug.LogError("Yaroslav: GameData missing. Go to Menu>Tools>Yaroslav..."); return new GameDataObject(); };
+            if (getStandardData == false)
+            {
+                if (data.main.saves == null)
+                {
+                    data.main.saves = GetData(true).main.saves;
+                }
+            }
+            return data;
         }
 
-        return data;
-    }
-
-    /// <summary>
-    /// Получить <b>GDOMain</b> из <b>GameData</b> из папки <b>Resources</b> в Assets
-    /// </summary>
-    /// <param name="getStandardData">Игнорировать ли GameTypes?</param>
-    /// <returns></returns>
-    public static GDOMain GetMain(bool getStandardData = false)
-    {
-        return GetData(getStandardData).main;
+        /// <summary>
+        /// пїЅРџРѕР»СѓС‡РµРЅРёРµ <b>GDOMain</b> РёР· <b>GameData</b> РёР· <b>Resources</b> РІ Assets
+        /// </summary>
+        /// <returns></returns>
+        public static GDOMain GetMain(bool getStandardData = false)
+        {
+            return GetData(getStandardData).main;
+        }
     }
 }
 

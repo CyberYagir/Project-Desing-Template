@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DrawedDictionary
 {
     /// <summary>
-    /// Класс родитель Dictionary. Нужен для того чтобы PropertyDrawer мог отобразить Generic Dictionary
+    /// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Dictionary. пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ PropertyDrawer пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Generic Dictionary
     /// </summary>
     public class PDictionary { };
 
@@ -15,13 +15,13 @@ namespace DrawedDictionary
     [System.Serializable]
     public class Dictionary<K, V> : PDictionary
     {
-        public string KType, VType;
+        public string _KType, _VType;
         public List<K> _keys = new List<K>();
         public List<V> _values = new List<V>();
-        System.Collections.Generic.Dictionary<K, V> dictionary = new System.Collections.Generic.Dictionary<K, V>();
+        System.Collections.Generic.Dictionary<K, V> _dictionary = new System.Collections.Generic.Dictionary<K, V>();
 
         /// <summary>
-        /// <i>Конструктор:</i> Получает типы K V и записывает их в строки. Берёт данные из _keys, _values (Их Unity сохраняет) и записывает в System.Collections.Generic.Dictionary
+        /// <i>пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:</i> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ K V пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ _keys, _values (пїЅпїЅ Unity пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ System.Collections.Generic.Dictionary
         /// </summary>
         public Dictionary()
         {
@@ -29,26 +29,26 @@ namespace DrawedDictionary
             UpdateDictionary();
         }
         /// <summary>
-        /// Получает типы K V и записывает их в строки.
+        /// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ K V пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
         /// </summary>
         public void UpdateTypes()
         {
-            KType = typeof(K).FullName.ToString();
-            VType = typeof(V).FullName.ToString();
+            _KType = typeof(K).FullName.ToString();
+            _VType = typeof(V).FullName.ToString();
         }
         /// <summary>
-        /// Загружает данные из _keys и _values в System.Collections.Generic.Dictionary. Проверяет на Null и повторение данных. 
+        /// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ _keys пїЅ _values пїЅ System.Collections.Generic.Dictionary. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Null пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. 
         /// </summary>
         public void UpdateDictionary()
         {
-            dictionary.Clear();
+            _dictionary.Clear();
             for (int i = 0; i < _keys.Count; i++)
             {
                 if (_keys[i] != null)
                 {
-                    if (!dictionary.ContainsKey(_keys[i]))
+                    if (!_dictionary.ContainsKey(_keys[i]))
                     {
-                        dictionary.Add(_keys[i], _values[i]);
+                        _dictionary.Add(_keys[i], _values[i]);
                     }
                     else
                     {
@@ -69,7 +69,7 @@ namespace DrawedDictionary
         }
 
         /// <summary>
-        /// Метод нужен для добаления пустых элементов в листы. (Нужно для добалвения новых данных типа Object так как они могут быть null) 
+        /// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ. (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ Object пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ null) 
         /// </summary>
         public void AddNull(K key, V value)
         {
@@ -77,7 +77,7 @@ namespace DrawedDictionary
             _values.Add(value);
         }
         /// <summary>
-        /// Удаления элемента из _keys и _value с номером id.
+        /// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ _keys пїЅ _value пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ id.
         /// </summary>
         public void RemoveID(int id)
         {
@@ -89,43 +89,43 @@ namespace DrawedDictionary
         }
 
         /// <summary>
-        /// Удаление элемента по ключу.
+        /// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.
         /// </summary>
         /// <param name="key"></param>
         public void Remove(K key)
         {
             UpdateTypes();
-            if (dictionary.ContainsKey(key))
+            if (_dictionary.ContainsKey(key))
             {
-                dictionary.Remove(key);
+                _dictionary.Remove(key);
             }
             UpdateTV();
         }
 
         /// <summary>
-        /// Добавление элемента.
+        /// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
         /// </summary>
         public void Add(K key, V value)
         {
             UpdateTypes();
-            if (_keys.Count != 0 && dictionary.Count == 0)
+            if (_keys.Count != 0 && _dictionary.Count == 0)
             {
                 UpdateDictionary();
             }
             if (!_keys.Contains(key))
             {
-                dictionary.Add(key, value);
+                _dictionary.Add(key, value);
             }
             UpdateTV();
         }
         /// <summary>
-        /// Обновляет данные в List`s и записывает в них данные из System.Collections.Generic.Dictionary 
+        /// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ List`s пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ System.Collections.Generic.Dictionary 
         /// </summary>
         public void UpdateTV()
         {
             _keys.Clear();
             _values.Clear();
-            foreach (var item in dictionary)
+            foreach (var item in _dictionary)
             {
                 _keys.Add(item.Key);
                 _values.Add(item.Value);
@@ -136,13 +136,13 @@ namespace DrawedDictionary
         {
             get
             {
-                if (dictionary.Count == 0)
+                if (_dictionary.Count == 0)
                 {
                     UpdateDictionary();
                 }
-                if (dictionary.ContainsKey(index))
+                if (_dictionary.ContainsKey(index))
                 {
-                    return dictionary[index];
+                    return _dictionary[index];
                 }
                 else
                 {
@@ -153,11 +153,11 @@ namespace DrawedDictionary
 
             set
             {
-                if (dictionary.Count == 0)
+                if (_dictionary.Count == 0)
                 {
                     UpdateDictionary();
                 }
-                dictionary[index] = value;
+                _dictionary[index] = value;
             }
         }
     }

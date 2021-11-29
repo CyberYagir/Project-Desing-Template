@@ -1,34 +1,38 @@
+using Template.Managers;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(GameManager))]
-public class GameManagerEditor : EditorTweaks
+namespace Template.Editor
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(GameManager))]
+    public class GameManagerEditor : EditorTweaks
     {
-        if (Application.isPlaying)
+        public override void OnInspectorGUI()
         {
-            GUI.enabled = false;
-            EditorGUILayout.ObjectField("UI: ", GameManager.canvas, typeof(GameObject), true);
-            EditorGUILayout.ObjectField("Player: ", GameManager.player, typeof(GameObject), true);
-            EditorGUILayout.ObjectField("Level: ", GameManager.currentLevel, typeof(LevelManager), true);
-            GUI.enabled = true;
-        }
-        else
-        {
-            EditorGUILayout.LabelField("You must be entered into Playmode");
-            EditorGUILayout.LabelField("to view static variables. ");
-        }
-        DrawSeparator();
+            if (Application.isPlaying)
+            {
+                GUI.enabled = false;
+                EditorGUILayout.ObjectField("UI: ", GameManager.Canvas, typeof(GameObject), true);
+                EditorGUILayout.ObjectField("Player: ", GameManager.Player, typeof(GameObject), true);
+                EditorGUILayout.ObjectField("Level: ", GameManager.CurrentLevel, typeof(LevelManager), true);
+                GUI.enabled = true;
+            }
+            else
+            {
+                EditorGUILayout.LabelField("You must be entered into Playmode");
+                EditorGUILayout.LabelField("to view static variables. ");
+            }
+            DrawSeparator();
 
-        GameManager.gameStage = (GameStage)EditorGUILayout.EnumPopup("Game Stage: ", GameManager.gameStage);
-    }
+            GameManager.GameStage = (GameStage)EditorGUILayout.EnumPopup("Game Stage: ", GameManager.GameStage);
+        }
 
-    public void SetNull(Object @object)
-    {
-        if (@object == null)
+        public void SetNull(Object _object)
         {
-            @object = null;
+            if (_object == null)
+            {
+                _object = null;
+            }
         }
     }
 }

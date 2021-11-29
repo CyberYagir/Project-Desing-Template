@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Template.Scriptable;
 using UnityEngine;
 
 [System.Serializable]
 public class LevelAndGameData
 {
-    public int level_id;
+    public int levelID;
     public GameDataObject gameData;
 }
 [CreateAssetMenu(fileName = "GameTypes", menuName = "Yaroslav/GameTypes", order = 5)]
@@ -13,31 +14,31 @@ public class GameDatasManagerObject : ScriptableObject
     [HideInInspector]
     public List<LevelAndGameData> gameDatas = new List<LevelAndGameData>();
     //public AbstractSavesDataObject saves;
-    public static GameDatasManagerObject instance;
-    public static AbstractSavesDataObject savesData;
-    public static bool isNull = false;
+    public static GameDatasManagerObject Instance;
+    public static AbstractSavesDataObject SavesData;
+    public static bool IsNull = false;
 
     /// <summary>
-    /// Получение текущей GameData в зависимости от типа игры. 
+    /// РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РµР№ GameData РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° РёРіСЂС‹. 
     /// </summary>
-    /// <returns>Строка с названием GameDataObject в ресурсах</returns>
+    /// <returns>РЎС‚СЂРѕРєР° СЃ РЅР°Р·РІР°РЅРёРµРј GameDataObject РІ СЂРµСЃСѓСЂСЃР°С…</returns>
     public static string GetGameDataByLevel()
     {
-        if (instance == null && isNull == false)
+        if (Instance == null && IsNull == false)
         {
-            savesData = GameDataObject.GetData(true).main.saves;
-            instance = Resources.Load<GameDatasManagerObject>("GameTypes");
-            if (instance == null)
+            SavesData = GameDataObject.GetData(true).main.saves;
+            Instance = Resources.Load<GameDatasManagerObject>("GameTypes");
+            if (Instance == null)
             {
-                isNull = true;
+                IsNull = true;
             }
         }
-        if (instance == null)
+        if (Instance == null)
         {
             return "GameData";
         }
 
-        var data = instance.gameDatas.Find(x => x.level_id == (int)savesData.GetPref(Prefs.Level));
+        var data = Instance.gameDatas.Find(x => x.levelID == (int)SavesData.GetPref(Prefs.Level));
         if (data != null)
         {
             return data.gameData.name;

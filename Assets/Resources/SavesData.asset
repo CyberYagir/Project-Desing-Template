@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: SavesData
   m_EditorClassIdentifier: 
   prefsValues:
-  - name: 
+  - name: Level
     pref: 0
     savePref: 1
-  - name: 
+  - name: CompletedLevels
     pref: 1
     savePref: 1
-  - name: 
+  - name: Points
     pref: 2
     savePref: 1

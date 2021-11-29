@@ -1,112 +1,116 @@
+using Template.Tweaks;
 using UnityEngine;
 
-/// <summary>
-/// Скрипт который находится на канвасе и управляет логикой UI
-/// </summary>
-public class UIManager : MonoBehaviour
+namespace Template.Managers
 {
     /// <summary>
-    /// <b>Синглетон</b> менеджера для обращения к <b>НЕ</b> статическим методам и переменным. 
+    /// РЎРєСЂРёРїС‚ РєРѕС‚РѕСЂС‹Р№ РЅР°С…РѕРґРёС‚СЃСЏ РЅР° РєР°РЅРІР°СЃРµ Рё СѓРїСЂР°РІР»СЏРµС‚ Р»РѕРіРёРєРѕР№ UI
     /// </summary>
-    public static UIManager instance;
-
-    [SerializeField] GameObject deathUI, winUI;
-    [SerializeField] GameObject tapToPlay;
-
-    #region Mono
-    private void Start()
+    public class UIManager : MonoBehaviour
     {
-        instance = this;
-        InitTapToPlay();
-    }
+        /// <summary>
+        /// <b>РЎРёРЅРіР»РµС‚РѕРЅ</b> РјРµРЅРµРґР¶РµСЂР° РґР»СЏ РѕР±СЂР°С‰РµРЅРёСЏ Рє <b>РќР•</b> СЃС‚Р°С‚РёС‡РµСЃРєРёРј РјРµС‚РѕРґР°Рј Рё РїРµСЂРµРјРµРЅРЅС‹Рј. 
+        /// </summary>
+        public static UIManager Instance;
 
-    /// <summary>
-    /// Скрытие текста TapToPlay при первом нажатии путём привязывания к эвенту. 
-    /// </summary>
-    public void InitTapToPlay()
-    {
-        if (tapToPlay != null)
+        [SerializeField] GameObject deathUI, winUI;
+        [SerializeField] UIAnimate tapToPlay;
+
+        #region Mono
+        private void Start()
         {
-            if (GameManager.gameStage == GameStage.StartWait)
+            Instance = this;
+            InitTapToPlay();
+        }
+
+        /// <summary>
+        /// РЎРєСЂС‹С‚РёРµ С‚РµРєСЃС‚Р° TapToPlay РїСЂРё РїРµСЂРІРѕРј РЅР°Р¶Р°С‚РёРё РїСѓС‚С‘Рј РїСЂРёРІСЏР·С‹РІР°РЅРёСЏ Рє СЌРІРµРЅС‚Сѓ. 
+        /// </summary>
+        public void InitTapToPlay()
+        {
+            if (tapToPlay != null)
             {
-                tapToPlay.SetActive(true);
-                GameManager.TapToPlayUI += () => { Tweaks.AnimationPlayType(tapToPlay, PlayType.Rewind); }; //Анимации к эвенту тапа
-            }
-            else
-            {
-                tapToPlay.SetActive(false);
+                if (GameManager.GameStage == GameStage.StartWait)
+                {
+                    tapToPlay.gameObject.SetActive(true);
+                    GameManager.TapToPlayUI += () => { tapToPlay.PlayForward(); }; //РђРЅРёРјР°С†РёРё Рє СЌРІРµРЅС‚Сѓ С‚Р°РїР°
+                }
+                else
+                {
+                    tapToPlay.gameObject.SetActive(false);
+                }
             }
         }
-    }
 
-    private void Update()
-    {
-        EditorControls();
-    }
+        private void Update()
+        {
+            EditorControls();
+        }
 
-    #endregion
+        #endregion
 
-    #region Buttons
+        #region Buttons
 
-    /// <summary>
-    /// Метод обрабатывает хоткеи во время игры в эдиторе.
-    /// </summary>
-    public void EditorControls()
-    {
+        /// <summary>
+        /// РњРµС‚РѕРґ РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚ С…РѕС‚РєРµРё РІРѕ РІСЂРµРјСЏ РёРіСЂС‹ РІ СЌРґРёС‚РѕСЂРµ.
+        /// </summary>
+        public void EditorControls()
+        {
 #if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Win();
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Loose();
-        }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                Win();
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                Loose();
+            }
 #endif
-    }
-
-    /// <summary>
-    /// Вызов <b>NextLevel</b> у GameManager
-    /// </summary>
-    public void NextLevel()
-    {
-        GameManager.NextLevel();
-    }
-
-    /// <summary>
-    /// Вызов <b>Restart</b> у GameManager
-    /// </summary>
-    public void Restart()
-    {
-        GameManager.Restart();
-    }
-
-    #endregion
-
-    #region Evens_Win_Loose
-    /// <summary>
-    /// Метод победы. Вызырает действия связанные с обработкой победы и UI.
-    /// </summary>
-    public void Win()
-    {
-        if (!winUI.active && !deathUI.active)
-        {
-            GameManager.OnLevelEnd();
-            winUI.SetActive(true);
         }
-    }
 
-    /// <summary>
-    /// Метод проигрыша. Вызырает действия связанные с обработкой победы и UI.
-    /// </summary>
-    public void Loose()
-    {
-        if (!winUI.active && !deathUI.active)
+        /// <summary>
+        /// Р’С‹Р·РѕРІ <b>NextLevel</b> Сѓ GameManager
+        /// </summary>
+        public void NextLevel()
         {
-            GameManager.OnLevelEnd(false);
-            deathUI.SetActive(true);
+            GameManager.NextLevel();
         }
-    }
 
-    #endregion
+        /// <summary>
+        /// Р’С‹Р·РѕРІ <b>Restart</b> Сѓ GameManager
+        /// </summary>
+        public void Restart()
+        {
+            GameManager.Restart();
+        }
+
+        #endregion
+
+        #region Evens_Win_Loose
+        /// <summary>
+        /// РњРµС‚РѕРґ РїРѕР±РµРґС‹. Р’С‹Р·С‹СЂР°РµС‚ РґРµР№СЃС‚РІРёСЏ СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РѕР±СЂР°Р±РѕС‚РєРѕР№ РїРѕР±РµРґС‹ Рё UI.
+        /// </summary>
+        public void Win()
+        {
+            if (!winUI.active && !deathUI.active)
+            {
+                GameManager.OnLevelEnd();
+                winUI.SetActive(true);
+            }
+        }
+
+        /// <summary>
+        /// РњРµС‚РѕРґ РїСЂРѕРёРіСЂС‹С€Р°. Р’С‹Р·С‹СЂР°РµС‚ РґРµР№СЃС‚РІРёСЏ СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РѕР±СЂР°Р±РѕС‚РєРѕР№ РїРѕР±РµРґС‹ Рё UI.
+        /// </summary>
+        public void Loose()
+        {
+            if (!winUI.active && !deathUI.active)
+            {
+                GameManager.OnLevelEnd(false);
+                deathUI.SetActive(true);
+            }
+        }
+
+        #endregion
+    }
 }

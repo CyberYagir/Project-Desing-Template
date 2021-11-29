@@ -1,34 +1,78 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Template.Managers;
+using Template.Scriptable;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(GameDataObject))]
-public class GameDataObjectEditor : EditorTweaks
+namespace Template.Editor
 {
-    GameDataObject gameData;
-    public void OnEnable()
+    [CustomEditor(typeof(GameDataObject))]
+    public class GameDataObjectEditor : EditorTweaks
     {
-        gameData = (GameDataObject)target;
-    }
-    public void OnDisable()
-    {
-        gameData.main.levelList.RemoveAll(x => x == null);
-        Save(gameData);
-    }
-    public void Sort()
-    {
-        gameData.main.levelList.RemoveAll(x => x == null);
-        gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
-    }
-    public override void OnInspectorGUI()
-    {
-
-        base.OnInspectorGUI();
-        DrawSeparator();
-        if (GameDataObject.GetData(true) == gameData)
+        GameDataObject gameData;
+        public void OnEnable()
         {
-            gameData.main.saves = (AbstractSavesDataObject)EditorGUILayout.ObjectField("Saves: ", gameData.main.saves, typeof(AbstractSavesDataObject), false, GUILayout.MinWidth(50));
+            gameData = (GameDataObject)target;
+        }
+        public void OnDisable()
+        {
+            gameData.main.levelList.RemoveAll(x => x == null);
+            Save(gameData);
+        }
+        public void Sort()
+        {
+            gameData.main.levelList.RemoveAll(x => x == null);
+            gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
+        }
+        public override void OnInspectorGUI()
+        {
+
+            base.OnInspectorGUI();
+            DrawSeparator();
+            if (GameDataObject.GetData(true) == gameData)
+            {
+                DrawMainGameData();
+                DrawSeparator();
+
+                if (GUILayout.Button(GameDataObject.DebugLevel.IsDebugLevel ? "Disable Debug" : "Enable Debug"))
+                {
+                    GameDataObject.DebugLevel.IsDebugLevel = !GameDataObject.DebugLevel.IsDebugLevel;
+                }
+                GUILayout.BeginHorizontal();
+                if (GameDataObject.DebugLevel.IsDebugLevel)
+                {
+                    GUILayout.Label("Debug Level: ", GUILayout.MaxWidth(85));
+                    List<string> levels = new List<string>();
+                    foreach (var it in gameData.main.levelList)
+                    {
+                        levels.Add(it.name);
+                    }
+
+                    GameDataObject.DebugLevel.LevelID = EditorGUILayout.Popup("", GameDataObject.DebugLevel.LevelID,
+                        levels.ToArray(), GUILayout.MinWidth(80));
+
+                }
+                GUILayout.EndHorizontal();
+
+                DrawSeparator();
+            }
+
+
+            if (GUILayout.Button("Find all objects"))
+            {
+                gameData.main = ConfiguratorWindow.GetAllDataFromAssets();
+                gameData.main.saves = Resources.LoadAll<AbstractSavesDataObject>("")[0];
+                Sort();
+            }
+        }
+
+
+
+        public void DrawMainGameData()
+        {
+            gameData.main.saves = (AbstractSavesDataObject) EditorGUILayout.ObjectField("Saves: ",
+                gameData.main.saves, typeof(AbstractSavesDataObject), false, GUILayout.MinWidth(50));
 
             GUILayout.Label("Levels List: ");
 
@@ -37,11 +81,13 @@ public class GameDataObjectEditor : EditorTweaks
             {
                 gameData.main.levelList.Add(null);
             }
+
             if (GUILayout.Button("Autofind Levels"))
             {
                 gameData.main.levelList = FindLevels();
                 Sort();
             }
+
             if (GUILayout.Button("Sort"))
             {
                 Sort();
@@ -53,7 +99,13 @@ public class GameDataObjectEditor : EditorTweaks
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(i + ": ", GUILayout.MaxWidth(15));
-                gameData.main.levelList[i] = (LevelManager)EditorGUILayout.ObjectField("", gameData.main.levelList[i], typeof(LevelManager), false, GUILayout.MinWidth(50));
+                var old = gameData.main.levelList[i];
+                gameData.main.levelList[i] = (LevelManager) EditorGUILayout.ObjectField("",
+                    gameData.main.levelList[i], typeof(LevelManager), false, GUILayout.MinWidth(50));
+                if (old != gameData.main.levelList[i])
+                {
+                    Save(gameData);
+                }
 
                 if (GUILayout.Button("↑", GUILayout.Width(20)))
                 {
@@ -63,6 +115,8 @@ public class GameDataObjectEditor : EditorTweaks
                         gameData.main.levelList[i - 1] = gameData.main.levelList[i];
                         gameData.main.levelList[i] = th;
                     }
+                    Save(gameData);
+
                     return;
                 }
 
@@ -74,42 +128,34 @@ public class GameDataObjectEditor : EditorTweaks
                         gameData.main.levelList[i + 1] = gameData.main.levelList[i];
                         gameData.main.levelList[i] = th;
                     }
+                    Save(gameData);
                     return;
                 }
 
                 if (GUILayout.Button("-", GUILayout.Width(20)))
                 {
                     gameData.main.levelList.RemoveAt(i);
+                    Save(gameData);
                     return;
                 }
+
                 GUILayout.EndHorizontal();
             }
-
-            DrawSeparator();
         }
 
-
-        if (GUILayout.Button("Find all objects"))
+        public List<LevelManager> FindLevels()
         {
-            gameData.main = ConfiguratorWindow.GetAllDataFromAssets();
-            gameData.main.saves = Resources.LoadAll<AbstractSavesDataObject>("")[0];
-            Sort();
-        }
-    }
-
-
-    public List<LevelManager> FindLevels()
-    {
-        var prefabs = AssetDatabase.FindAssets("t:prefab");
-        var n = new List<LevelManager>();
-        foreach (var prefab in prefabs)
-        {
-            var level = AssetDatabase.LoadAssetAtPath<LevelManager>(AssetDatabase.GUIDToAssetPath(prefab));
-            if (level != null)
+            var prefabs = AssetDatabase.FindAssets("t:prefab");
+            var n = new List<LevelManager>();
+            foreach (var prefab in prefabs)
             {
-                n.Add(level);
+                var level = AssetDatabase.LoadAssetAtPath<LevelManager>(AssetDatabase.GUIDToAssetPath(prefab));
+                if (level != null)
+                {
+                    n.Add(level);
+                }
             }
+            return n;
         }
-        return n;
     }
 }
