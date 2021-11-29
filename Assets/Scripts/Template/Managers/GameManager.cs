@@ -1,3 +1,4 @@
+using System;
 using Template.Scriptable;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -79,6 +80,11 @@ namespace Template.Managers
             if (Instance == null) Instance = this;
             EditorControls();
             TapToStartCheck();
+        }
+
+        private void Start()
+        {
+            StartGame += () => { print("Level start event Exec"); };
         }
 
         #endregion
