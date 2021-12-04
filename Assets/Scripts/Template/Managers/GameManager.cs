@@ -53,6 +53,7 @@ namespace Template.Managers
         public static event System.Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
 
 
+        public float playedTime = 0;
 
         #region Mono
         public void Awake()
@@ -84,7 +85,10 @@ namespace Template.Managers
 
         private void Start()
         {
-            StartGame += () => { print("Level start event Exec"); };
+            StartGame += () => { 
+                playedTime = Time.time;
+                print("Level start event Ex ec");
+            };
         }
 
         #endregion
