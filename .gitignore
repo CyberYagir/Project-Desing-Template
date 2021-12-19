@@ -76,6 +76,7 @@ ExportedObj/
 *.opendb
 *.VC.db
 *.iml
+*.log
 workspace.xml
 
 # Unity3D generated meta files
@@ -87,6 +88,5 @@ sysinfo.txt
 
 # Builds
 *.apk
-*.log
 *.log
 *.txt
