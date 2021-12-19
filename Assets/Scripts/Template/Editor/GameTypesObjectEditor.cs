@@ -28,7 +28,7 @@ namespace Template.Editor
             if (GUILayout.Button("Add Mode"))
             {
                 types.gameDatas.Add(new LevelAndGameData());
-                //Save(types);
+                Save(types);
             }
             DrawSeparator();
             for (int i = 0; i < types.gameDatas.Count; i++)
@@ -75,7 +75,7 @@ namespace Template.Editor
                 types.gameDatas[i].levelID = EditorGUILayout.Popup("", types.gameDatas[i].levelID, levelList.ToArray(), GUILayout.MinWidth(50));
                 if (oldID != types.gameDatas[i].levelID)
                 {
-                    //Save(types);
+                    Save(types);
                 }
 
                 GUI.enabled = true;
@@ -83,7 +83,7 @@ namespace Template.Editor
                 if (GUILayout.Button("-", GUILayout.Width(20)))
                 {
                     types.gameDatas.RemoveAt(i);
-                    //Save(types);
+                    Save(types);
                     return;
                 }
                 GUILayout.EndHorizontal();

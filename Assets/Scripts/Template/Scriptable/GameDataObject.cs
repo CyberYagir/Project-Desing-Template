@@ -4,14 +4,8 @@ using UnityEngine;
 
 namespace Template.Scriptable
 {
-
-    public struct DebugLevel
-    {
-        public int LevelID;
-        public bool IsDebugLevel;
-    }
     [CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
-    public class GameDataObject : ScriptableObject
+    public class GameDataObject : CustomScriptableObject
     {
         [System.Serializable]
         public class GDOMain //Главные данные

@@ -9,7 +9,7 @@ public class LevelAndGameData
     public GameDataObject gameData;
 }
 [CreateAssetMenu(fileName = "GameTypes", menuName = "Yaroslav/GameTypes", order = 5)]
-public class GameDatasManagerObject : ScriptableObject
+public class GameDatasManagerObject : CustomScriptableObject
 {
     [HideInInspector]
     public List<LevelAndGameData> gameDatas = new List<LevelAndGameData>();

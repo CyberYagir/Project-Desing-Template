@@ -24,10 +24,10 @@ namespace Template.Editor
         {
             gameData.main.levelList.RemoveAll(x => x == null);
             gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
+            Save(gameData);
         }
         public override void OnInspectorGUI()
         {
-
             base.OnInspectorGUI();
             DrawSeparator();
             if (GameDataObject.GetData(true) == gameData)

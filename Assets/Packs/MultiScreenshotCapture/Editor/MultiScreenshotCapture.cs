@@ -190,7 +190,7 @@ namespace MultiScreenshotCaptureNamespace
 
 		private ScreenshoterInput _screenshoterInput;
 		
-		[MenuItem( "Yaroslav/Multi Screenshot Capture" )]
+		[MenuItem( "Template/Multi Screenshot Capture" )]
 		private static void Init()
 		{
 			MultiScreenshotCapture window = GetWindow<MultiScreenshotCapture>();

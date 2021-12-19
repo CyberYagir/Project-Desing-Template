@@ -30,7 +30,7 @@ namespace Template.Scriptable
         public PrefType savePref;
     }
 
-    public abstract class AbstractSavesDataObject : ScriptableObject
+    public abstract class AbstractSavesDataObject : CustomScriptableObject
     {
         /// <summary>
         /// Активные префы.

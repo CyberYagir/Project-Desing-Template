@@ -10,7 +10,7 @@ namespace Template.Editor
 {
     public class ConfiguratorWindow : EditorWindow
     {
-        [MenuItem("Yaroslav/Configurator")]
+        [MenuItem("Template/Configurator")]
         public static void ShowWindow()
         {
             EditorWindow.GetWindow(typeof(ConfiguratorWindow));
@@ -32,7 +32,7 @@ namespace Template.Editor
         {
             EditorWindow.GetWindow(typeof(ConfiguratorWindow)).minSize = new Vector2(200, 300);
         }
-        [MenuItem("Yaroslav/Move Scripts", false, priority = 11)]
+        [MenuItem("Template/Move Scripts", false, priority = 11)]
         public static void MoveScriptsFromAssets()
         {
             var _scripts = AssetDatabase.FindAssets("t:Script", new string[] { "Assets" });
@@ -66,6 +66,17 @@ namespace Template.Editor
             AssetDatabase.Refresh();
         }
 
+        [MenuItem("Template/Save Resources", false, priority = 0)]
+        public static void SaveAllScriptable()
+        {
+            var scriptables = Resources.LoadAll<CustomScriptableObject>("");
+            for (int i = 0; i < scriptables.Length; i++)
+            {
+                EditorTweaks.SaveObject(scriptables[i]);
+            }
+            
+        }
+        
         void OnGUI()
         {
             if (GUILayout.Button("Configure Resources"))
@@ -173,7 +184,7 @@ namespace Template.Editor
                 AssetDatabase.Refresh();
             }
         }
-        [MenuItem("Yaroslav/Select GameData", false, priority = 10)]
+        [MenuItem("Template/Select GameData", false, priority = 10)]
         public static void SelectGameData()
         {
             EditorGUIUtility.PingObject(GameDataObject.GetData());

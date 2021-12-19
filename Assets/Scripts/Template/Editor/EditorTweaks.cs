@@ -7,9 +7,7 @@ namespace Template.Editor
     {
         public void Save(Object obj)
         {
-            print(obj.name + " Saved!");
-            EditorUtility.SetDirty(obj);
-            AssetDatabase.SaveAssets();
+            SaveObject(obj);
         }
         public void DrawSeparator()
         {
@@ -23,10 +21,13 @@ namespace Template.Editor
             rect.height = h;
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
         }
-
-        public void print(object o)
+        
+        public static void SaveObject(Object obj)
         {
-            Debug.Log(o.ToString());
+            Debug.Log(obj.name + " Saved!");
+            EditorUtility.SetDirty(obj);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 }
