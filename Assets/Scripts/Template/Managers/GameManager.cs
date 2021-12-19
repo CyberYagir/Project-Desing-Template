@@ -29,6 +29,8 @@ namespace Template.Managers
         /// <i>Свойство:</i> <b>Canvas</b> текущего уровная на сцене.
         /// </summary>
         public static Canvas Canvas { get; private set; }
+        
+        public static Camera Camera { get; private set; }
         /// <summary>
         /// <i>Свойство:</i> Стадия игры на которой сейчас находится игрок. 
         /// </summary>
@@ -129,6 +131,7 @@ namespace Template.Managers
             //Игрок и канвас
             SpawnPlayer();
             SpawnCanvas();
+            FindCamera();
         }
 
         /// <summary>
@@ -151,7 +154,14 @@ namespace Template.Managers
                 Player = Instantiate(data.playerPrefab, spawnPoint, Quaternion.identity);
             }
         }
-
+        /// <summary>
+        /// Этот метод нахождения камеры.
+        /// </summary>
+        public void FindCamera()
+        {
+            Camera = Camera.main;
+        }
+        
         /// <summary>
         /// Этот метод спавнит канвас.
         /// </summary>

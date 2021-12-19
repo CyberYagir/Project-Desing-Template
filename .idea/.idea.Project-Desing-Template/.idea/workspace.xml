@@ -18,6 +18,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Template/CameraFollow.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="ProjectId" id="21aPdibLT5pa7aWHJWXyGYRw5zU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -64,7 +67,7 @@
       <workItem from="1638183419859" duration="5033000" />
       <workItem from="1638190042973" duration="692000" />
       <workItem from="1638209464550" duration="1409000" />
-      <workItem from="1639944932127" duration="1677000" />
+      <workItem from="1639944932127" duration="2044000" />
     </task>
     <servers />
   </component>

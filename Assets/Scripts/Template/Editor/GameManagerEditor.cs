@@ -15,6 +15,7 @@ namespace Template.Editor
                 EditorGUILayout.ObjectField("UI: ", GameManager.Canvas, typeof(GameObject), true);
                 EditorGUILayout.ObjectField("Player: ", GameManager.Player, typeof(GameObject), true);
                 EditorGUILayout.ObjectField("Level: ", GameManager.CurrentLevel, typeof(LevelManager), true);
+                EditorGUILayout.ObjectField("Camera: ", GameManager.Camera, typeof(Camera), true);
                 GUI.enabled = true;
             }
             else
@@ -25,14 +26,6 @@ namespace Template.Editor
             DrawSeparator();
 
             GameManager.GameStage = (GameStage)EditorGUILayout.EnumPopup("Game Stage: ", GameManager.GameStage);
-        }
-
-        public void SetNull(Object _object)
-        {
-            if (_object == null)
-            {
-                _object = null;
-            }
         }
     }
 }
