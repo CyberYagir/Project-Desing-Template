@@ -48,7 +48,7 @@ namespace Template.Scriptable
             {
                 SetPref(Prefs.CompletedLevels, 1);
             }
-            if (id >= GameDataObject.GetMain().levelList.Count)
+            if (id >= GameDataObject.GetMain(true).levelList.Count)
             {
                 SetPref(Prefs.Level, 0);
             }
