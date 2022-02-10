@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DG.DemiEditor;
 using Template.Scriptable;
 using UnityEditor;
 using UnityEngine;
@@ -65,61 +66,131 @@ namespace Template.Editor
 
             DrawSeparator();
             GUILayout.Label("Active Prefs:");
+            
+            
+            Rect scale = GUILayoutUtility.GetLastRect();
+
+            EditorGUIUtility.LookLikeInspector();
+
+
+            var leftSide = new GUILayoutOption[] {GUILayout.MinHeight(EditorGUIUtility.singleLineHeight)};
+            var middleSide = new GUILayoutOption[] {GUILayout.MinWidth((int) (scale.width * 0.3f))};
+            var rightSide = new GUILayoutOption[]  { };
+            var buttonSide = new GUILayoutOption[] { };
+            
+            GUILayout.BeginHorizontal();
+            {
+                GUI.enabled = true;
+                GUILayout.BeginVertical();
+                {
+                    SpawnLabels(leftSide);
+                }
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical(middleSide);
+                {
+                    SpawnFields(middleSide);
+                }
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical();
+                {
+                    SpawnPrefTypes(rightSide);
+                }
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical();
+                {
+                    SpawnButtons(buttonSide);
+                }
+                GUILayout.EndVertical();
+                
+                GUI.enabled = true;
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        public void SpawnLabels(GUILayoutOption[] leftSide)
+        {
             foreach (var item in save.prefsValues)
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label(AddSpacesToSentence(item.pref.ToString()) + ": ", GUILayout.MinWidth(110));
+                GUILayout.Label(AddSpacesToSentence(item.pref.ToString()) + ": ", leftSide);
+            }
 
-
+        }
+        
+        
+        public void SpawnFields(GUILayoutOption[] middleSide)
+        {
+            foreach (var item in save.prefsValues)
+            {
+                if (item.pref == Prefs.CompletedLevels || item.pref == Prefs.Level || item.pref == Prefs.StartsCount)
+                {
+                    GUI.enabled = false;
+                }
 
                 switch (item.savePref)
                 {
                     case PrefType.String:
-                        save.SetPref(item.pref, GUILayout.TextField(save.GetPref(item.pref).ToString()));
+                        save.SetPref(item.pref, GUILayout.TextField(save.GetPref(item.pref).ToString(), middleSide));
                         break;
                     case PrefType.Int:
-                        save.SetPref(item.pref, EditorGUILayout.IntField((int)save.GetPref(item.pref)));
+                        save.SetPref(item.pref, EditorGUILayout.IntField((int) save.GetPref(item.pref), middleSide));
                         break;
                     case PrefType.Float:
-                        save.SetPref(item.pref, EditorGUILayout.FloatField((float)save.GetPref(item.pref)));
+                        save.SetPref(item.pref, EditorGUILayout.FloatField((float) save.GetPref(item.pref), middleSide));
                         break;
                     case PrefType.Bool:
-                        var _bool = (bool)save.GetPref(item.pref) == true ? 1 : 0;
-                        BoolEnum boolenum = (BoolEnum)_bool;
-                        boolenum = (BoolEnum)EditorGUILayout.EnumPopup(boolenum);
+                        var _bool = (bool) save.GetPref(item.pref) == true ? 1 : 0;
+                        BoolEnum boolenum = (BoolEnum) _bool;
+                        boolenum = (BoolEnum) EditorGUILayout.EnumPopup(boolenum);
                         save.SetPref(item.pref, boolenum == BoolEnum.True ? true : false);
                         break;
                 }
+
                 if (item.pref == Prefs.CompletedLevels || item.pref == Prefs.Level)
                 {
                     if (item.savePref != PrefType.Int)
                     {
                         item.savePref = PrefType.Int;
                     }
-                    GUI.enabled = false;
                 }
-                var old = item.savePref;
-                item.savePref = (PrefType)EditorGUILayout.EnumPopup(item.savePref, GUILayout.MinWidth(50));
+
                 GUI.enabled = true;
+            }
+
+        }
+        
+        public void SpawnPrefTypes(GUILayoutOption[] rightSide)
+        {
+            foreach (var item in save.prefsValues)
+            {
+                var old = item.savePref;
+                item.savePref = (PrefType)EditorGUILayout.EnumPopup(item.savePref, rightSide);
                 if (old != item.savePref)
                 {
                     //Save(save);
                 }
+            }
 
+        }
+        
+        public void SpawnButtons(GUILayoutOption[] buttonSide)
+        {
+            foreach (var item in save.prefsValues)
+            {
+                GUI.enabled = true;
                 if (item.pref == Prefs.CompletedLevels || item.pref == Prefs.Level)
                 {
                     GUI.enabled = false;
                 }
-                if (GUILayout.Button("-", GUILayout.Width(20)))
+                if (GUILayout.Button("-", buttonSide))
                 {
                     save.prefsValues.Remove(item);
                     //Save(save);
                     return;
                 }
-                GUI.enabled = true;
-                GUILayout.EndHorizontal();
             }
         }
+        
+        
         string AddSpacesToSentence(string text)
         {
             if (string.IsNullOrWhiteSpace(text))

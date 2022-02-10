@@ -19,6 +19,9 @@ MonoBehaviour:
   - name: CompletedLevels
     pref: 1
     savePref: 1
+  - name: StartsCount
+    pref: 3
+    savePref: 1
   - name: Points
     pref: 2
-    savePref: 1
+    savePref: 0

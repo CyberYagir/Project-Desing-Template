@@ -11,7 +11,7 @@ namespace Template.Scriptable
     /// <summary>
     /// Список всех префов. 
     /// </summary>
-    public enum Prefs { Level, CompletedLevels, Points } //Добавить элемент для нового префса
+    public enum Prefs { Level, CompletedLevels, Points, StartsCount} //Добавить элемент для нового префса
 
     /// <summary>
     /// Возможные типо префов.

@@ -87,14 +87,26 @@ namespace Template.Managers
 
         private void Start()
         {
-            StartGame += () => { 
-                playedTime = Time.time;
-                print("Level start event Ex ec");
-            };
+            if (GameData.main.startByTap)
+            {
+                StartGame += StartCache;
+            }
+            else
+            {
+                StartCache();
+            }
         }
 
         #endregion
 
+        public void StartCache()
+        {
+            Debug.Log("Start event Exec");
+            GameData.main.saves.AddToPref(Prefs.StartsCount, 1);
+            playedTime = Time.time;
+        }
+        
+        
         #region Gameplay
 
         /// <summary>
