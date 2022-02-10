@@ -641,13 +641,20 @@ namespace MultiScreenshotCaptureNamespace
 
 		private string GetUniqueFilePath( int width, int height )
 		{
+			
+			
 			string filename = string.Concat( width, "x", height, " {0}", saveAsPNG ? ".png" : ".jpeg" );
 			int fileIndex = 0;
 			string path;
 			do
 			{
 				string pickDirectory = string.IsNullOrEmpty(saveDirectory) ?  "Screenshots" : saveDirectory;
-				path = Path.Combine( Directory.GetCurrentDirectory() + "/" + pickDirectory + "/", string.Format( filename, ++fileIndex ) );
+				string finalDir = pickDirectory + $"/{width}_{height}";
+				if (!Directory.Exists(finalDir))
+				{
+					Directory.CreateDirectory(finalDir);
+				}
+				path = Path.Combine( Directory.GetCurrentDirectory() + "/" + finalDir + "/", string.Format( filename, ++fileIndex ) );
 			} while( File.Exists( path ) );
 
 			return path;
