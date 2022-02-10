@@ -17,8 +17,8 @@ namespace Template.Scriptable
             [HideInInspector]
             public List<LevelManager> levelList = new List<LevelManager>();
         }
-
-        public static DebugLevel DebugLevel;
+        [HideInInspector]
+        public DebugLevel DebugLevel = new DebugLevel();
         
         public GDOMain main;
 

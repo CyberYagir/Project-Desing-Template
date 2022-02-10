@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1c0f99229265d4ab37778d69cbdeb1, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: 
+  DebugLevel:
+    levelID: 0
+    isDebugLevel: 1
   main:
     playerPrefab: {fileID: 737408394058641935, guid: a446188be2d78ac499f745a73b20a814,
       type: 3}

@@ -1,8 +1,9 @@
 namespace Template.Scriptable
 {
-    public struct DebugLevel
+    [System.Serializable]
+    public class DebugLevel
     {
-        public int LevelID;
-        public bool IsDebugLevel;
+        public int levelID;
+        public bool isDebugLevel;
     }
 }

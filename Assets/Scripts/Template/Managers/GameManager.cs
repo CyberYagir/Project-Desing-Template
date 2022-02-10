@@ -134,7 +134,14 @@ namespace Template.Managers
         /// </summary>
         public void LoadLevel() //Создание уровня 
         {
-            var stdData = GameDataObject.GetMain(true);
+            var stdGameData = GameDataObject.GetData(true);
+            var stdData = stdGameData.main;
+#if UNITY_EDITOR
+            if (stdGameData.DebugLevel.isDebugLevel)
+            {
+                data.saves.SetPref(Prefs.Level, stdGameData.DebugLevel.levelID);
+            }
+#endif
             if (stdData.saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
             if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + GameDataObject.GetData(true).name + "\" is empty"); return; }
 
@@ -280,13 +287,6 @@ namespace Template.Managers
 
             data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
 
-#if UNITY_EDITOR
-            if (GameDataObject.DebugLevel.IsDebugLevel)
-            {
-                data.saves.SetPref(Prefs.Level, GameDataObject.DebugLevel.LevelID);
-            }
-#endif
-            
             data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
             data.saves.AddToPref(Prefs.CompletedLevels, 1);
             SceneManager.LoadScene(0);

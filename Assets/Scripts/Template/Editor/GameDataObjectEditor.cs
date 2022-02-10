@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Template.Managers;
 using Template.Scriptable;
 using UnityEditor;
@@ -23,7 +24,7 @@ namespace Template.Editor
         public void Sort()
         {
             gameData.main.levelList.RemoveAll(x => x == null);
-            gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
+            gameData.main.levelList = gameData.main.levelList.OrderBy(x => int.Parse(Regex.Match(x.name, @"\d+").Value)).ToList();
             Save(gameData);
         }
         public override void OnInspectorGUI()
@@ -35,12 +36,13 @@ namespace Template.Editor
                 DrawMainGameData();
                 DrawSeparator();
 
-                if (GUILayout.Button(GameDataObject.DebugLevel.IsDebugLevel ? "Disable Debug" : "Enable Debug"))
+                if (GUILayout.Button(gameData.DebugLevel.isDebugLevel ? "Disable Debug" : "Enable Debug"))
                 {
-                    GameDataObject.DebugLevel.IsDebugLevel = !GameDataObject.DebugLevel.IsDebugLevel;
+                    gameData.DebugLevel.isDebugLevel = !gameData.DebugLevel.isDebugLevel;
+                    Save(this);
                 }
                 GUILayout.BeginHorizontal();
-                if (GameDataObject.DebugLevel.IsDebugLevel)
+                if (gameData.DebugLevel.isDebugLevel)
                 {
                     GUILayout.Label("Debug Level: ", GUILayout.MaxWidth(85));
                     List<string> levels = new List<string>();
@@ -49,7 +51,7 @@ namespace Template.Editor
                         levels.Add(it.name);
                     }
 
-                    GameDataObject.DebugLevel.LevelID = EditorGUILayout.Popup("", GameDataObject.DebugLevel.LevelID,
+                    gameData.DebugLevel.levelID = EditorGUILayout.Popup("", gameData.DebugLevel.levelID,
                         levels.ToArray(), GUILayout.MinWidth(80));
 
                 }
@@ -94,7 +96,35 @@ namespace Template.Editor
             }
 
             GUILayout.EndHorizontal();
+            
+            GUILayout.BeginHorizontal();
+            {
+                gameData.main.levelList.RemoveAll(x => x == null);
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("main").FindPropertyRelative("levelList"), true);
+                if (serializedObject.FindProperty("main").FindPropertyRelative("levelList").isExpanded)
+                {
+                    GUILayout.BeginVertical(GUILayout.MaxWidth(20));
+                    {
+                        GUILayout.Space(EditorGUIUtility.singleLineHeight + EditorGUIUtility.singleLineHeight / 2f);
+                        for (int i = 0; i < gameData.main.levelList.Count; i++)
+                        {
+                            if (GUILayout.Button("-", GUILayout.Width(20)))
+                            {
+                                gameData.main.levelList.RemoveAt(i);
+                                Save(gameData);
+                                return;
+                            }
+                        }
+                    }
+                    GUILayout.EndVertical();
+                }
+            }
+            GUILayout.EndHorizontal();
+            
+        }
 
+        public void DrawCustomLevelList()
+        {
             for (int i = 0; i < gameData.main.levelList.Count; i++)
             {
                 GUILayout.BeginHorizontal();
@@ -115,6 +145,7 @@ namespace Template.Editor
                         gameData.main.levelList[i - 1] = gameData.main.levelList[i];
                         gameData.main.levelList[i] = th;
                     }
+
                     Save(gameData);
 
                     return;
@@ -128,6 +159,7 @@ namespace Template.Editor
                         gameData.main.levelList[i + 1] = gameData.main.levelList[i];
                         gameData.main.levelList[i] = th;
                     }
+
                     Save(gameData);
                     return;
                 }
