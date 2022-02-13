@@ -1,5 +1,5 @@
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 #define WRITE_UNCOMPRESSED_SERIALIZED_DATA
 
@@ -85,6 +85,10 @@ namespace ToonyColorsPro
 			[Serialization.SerializeAs("flags_extra")] internal Dictionary<string, List<string>> FlagsExtra = new Dictionary<string, List<string>>();
 			[Serialization.SerializeAs("keywords")] internal Dictionary<string, string> Keywords = new Dictionary<string, string>();
 			internal bool isModifiedExternally = false;
+			internal bool isTerrainShader
+			{
+				get { return this.Features.Contains("TERRAIN_SHADER"); }
+			}
 
 			// UI list of Shader Properties
 			struct ShaderPropertyGroup
@@ -103,6 +107,62 @@ namespace ToonyColorsPro
 			[Serialization.SerializeAs("customTextures")] List<ShaderProperty.CustomMaterialProperty> customMaterialPropertiesList = new List<ShaderProperty.CustomMaterialProperty>();
 			ReorderableLayoutList customTexturesLayoutList = new ReorderableLayoutList();
 
+			/// Iterate through all Shader Properties associated with this config, including Material Layers and Code Injection
+			IEnumerable<ShaderProperty> IterateAllShaderProperties()
+			{
+				var processed = new HashSet<ShaderProperty>();
+				foreach (var shaderProperty in cachedShaderProperties)
+				{
+					if (processed.Contains(shaderProperty)) continue;
+					
+					processed.Add(shaderProperty);
+					yield return shaderProperty;
+				}
+				foreach (var shaderProperty in visibleShaderProperties)
+				{
+					if (processed.Contains(shaderProperty)) continue;
+					
+					processed.Add(shaderProperty);
+					yield return shaderProperty;
+				}
+				foreach (var materialLayer in materialLayers)
+				{
+					if (materialLayer.sourceShaderProperty != null)
+					{
+						if (processed.Contains(materialLayer.sourceShaderProperty)) continue;
+						processed.Add(materialLayer.sourceShaderProperty);
+						yield return materialLayer.sourceShaderProperty;
+					}
+					if (materialLayer.noiseProperty != null)
+					{
+						if (processed.Contains(materialLayer.noiseProperty)) continue;
+						processed.Add(materialLayer.noiseProperty);
+						yield return materialLayer.noiseProperty;
+					}
+					if (materialLayer.contrastProperty != null)
+					{
+						if (processed.Contains(materialLayer.contrastProperty)) continue;
+						processed.Add(materialLayer.contrastProperty);
+						yield return materialLayer.contrastProperty;
+					}
+				}
+				foreach (var injectedFile in codeInjection.injectedFiles)
+				{
+					foreach (var point in injectedFile.injectedPoints)
+					{
+						foreach (var shaderProperty in point.shaderProperties)
+						{
+							if (shaderProperty != null)
+							{
+								if (processed.Contains(shaderProperty)) continue;
+								processed.Add(shaderProperty);
+								yield return shaderProperty;
+							}
+						}
+					}
+				}
+			}
+
 			public ShaderProperty customMaterialPropertyShaderProperty = new ShaderProperty("_CustomMaterialPropertyDummy", ShaderProperty.VariableType.color_rgba);
 
 			internal ShaderProperty.CustomMaterialProperty[] CustomMaterialProperties { get { return customMaterialPropertiesList.ToArray(); } }
@@ -112,7 +172,31 @@ namespace ToonyColorsPro
 
 			// Code Injection properties
 			[Serialization.SerializeAs("codeInjection")] internal CodeInjectionManager codeInjection = new CodeInjectionManager();
+			
+			// Material Layers
+			[Serialization.SerializeAs("matLayers")] internal List<MaterialLayer> materialLayers = new List<MaterialLayer>();
 
+			KeyValuePair<string, string>[] _materialLayersNames;
+			internal KeyValuePair<string, string>[] materialLayersNames
+			{
+				get
+				{
+					if (_materialLayersNames == null || _materialLayersNames.Length != materialLayers.Count)
+					{
+						var list = materialLayers.ConvertAll(element => new KeyValuePair<string, string>(element.name, element.uid));
+						list.Insert(0, new KeyValuePair<string, string>("Base", null));
+						_materialLayersNames = list.ToArray();
+					}
+					return _materialLayersNames;
+				}
+			}
+
+			ReorderableLayoutList matLayersLayoutList = new ReorderableLayoutList();
+
+			internal MaterialLayer GetMaterialLayerByUID(string uid)
+			{
+				return materialLayers.Find(ml => ml.uid == uid);
+			}
 
 			internal string[] GetShaderPropertiesNeededFeaturesForPass(int passIndex)
 			{
@@ -125,9 +209,66 @@ namespace ToonyColorsPro
 				if (shaderPropertiesPerPass[passIndex] == null || shaderPropertiesPerPass[passIndex].Count == 0)
 					return new string[0];
 
+				List<string> usedMaterialLayersVertex = new List<string>();
+				List<string> usedMaterialLayersFragment = new List<string>();
 				var features = new List<string>();
 				foreach (var sp in shaderPropertiesPerPass[passIndex])
+				{
 					features.AddRange(sp.NeededFeatures());
+					
+					// figure out used MaterialLayers and their programs
+					foreach (string uid in sp.linkedMaterialLayers)
+					{
+						if (sp.Program == ShaderProperty.ProgramType.Vertex)
+						{
+							if (!usedMaterialLayersVertex.Contains(uid))
+							{
+								usedMaterialLayersVertex.Add(uid);
+							}
+						}
+						else if (sp.Program == ShaderProperty.ProgramType.Fragment)
+						{
+							if (!usedMaterialLayersFragment.Contains(uid))
+							{
+								usedMaterialLayersFragment.Add(uid);
+							}
+						}
+					}
+				}
+				
+				// needed features for Material Layer sources
+				// HACK: We override the program type so that the relevant needed features get added.
+				//       This is cleaner than refactoring all the methods called.
+
+				Action<ShaderProperty, ShaderProperty.ProgramType> GetNeededFeaturesForProperty = (shaderProperty, programType) =>
+				{
+					if (shaderProperty == null)
+					{
+						return;
+					}
+					
+					var program = shaderProperty.Program;
+					shaderProperty.Program = programType;
+					{
+						features.AddRange(shaderProperty.NeededFeatures());
+					}
+					shaderProperty.Program = program;
+				};
+				
+				foreach (string uid in usedMaterialLayersVertex)
+				{
+					var ml = this.GetMaterialLayerByUID(uid);
+					GetNeededFeaturesForProperty(ml.sourceShaderProperty, ShaderProperty.ProgramType.Vertex);
+					GetNeededFeaturesForProperty(ml.contrastProperty, ShaderProperty.ProgramType.Vertex);
+					GetNeededFeaturesForProperty(ml.noiseProperty, ShaderProperty.ProgramType.Vertex);
+				}
+				foreach (string uid in usedMaterialLayersFragment)
+				{
+					var ml = this.GetMaterialLayerByUID(uid);
+					GetNeededFeaturesForProperty(ml.sourceShaderProperty, ShaderProperty.ProgramType.Fragment);
+					GetNeededFeaturesForProperty(ml.contrastProperty, ShaderProperty.ProgramType.Fragment);
+					GetNeededFeaturesForProperty(ml.noiseProperty, ShaderProperty.ProgramType.Fragment);
+				}
 
 				return features.Distinct().ToArray();
 			}
@@ -135,19 +276,51 @@ namespace ToonyColorsPro
 			internal string[] GetShaderPropertiesNeededFeaturesAll()
 			{
 				if (shaderPropertiesPerPass == null || shaderPropertiesPerPass.Count == 0)
+				{
+					return new string[0];
+				}
+				
+				List<string> features = new List<string>();
+				for (int i = 0; i < shaderPropertiesPerPass.Count; i++)
+				{
+					features.AddRange(GetShaderPropertiesNeededFeaturesForPass(i));
+				}
+				return features.Distinct().ToArray();
+				
+				/*
+				
+				if (shaderPropertiesPerPass == null || shaderPropertiesPerPass.Count == 0)
 					return new string[0];
 
 				// iterate through used Shader Properties for all passes and toggle needed features
+				List<string> usedMaterialLayers = new List<string>();
 				var features = new List<string>();
 				foreach (var list in shaderPropertiesPerPass)
 				{
 					foreach (var sp in list)
 					{
 						features.AddRange(sp.NeededFeatures());
+
+						foreach (string uid in sp.linkedMaterialLayers)
+						{
+							if (!usedMaterialLayers.Contains(uid))
+							{
+								usedMaterialLayers.Add(uid);
+							}
+						}
 					}
 				}
 
+				// needed features for Material Layer sources
+				foreach (string uid in usedMaterialLayers)
+				{
+					var ml = this.GetMaterialLayerByUID(uid);
+					features.AddRange(ml.sourceShaderProperty.NeededFeatures());
+				}
+
 				return features.Distinct().ToArray();
+				
+				*/
 			}
 
 			internal string[] GetHooksNeededFeatures()
@@ -167,7 +340,7 @@ namespace ToonyColorsPro
 				return features.ToArray();
 			}
 
-			internal string[] GetCodeInjectionNeeededFeatures()
+			internal string[] GetCodeInjectionNeededFeatures()
 			{
 				return codeInjection.GetNeededFeatures();
 			}
@@ -287,6 +460,8 @@ namespace ToonyColorsPro
 					config.Keywords.Add(kvp.Key, kvp.Value);
 
 				config.templateFile = templateFile;
+
+				config.codeInjection = codeInjection;
 
 				return config;
 			}
@@ -644,7 +819,7 @@ namespace ToonyColorsPro
 					return null;
 				};
 
-				try
+				// try
 				{
 					var shaderPropertyHandling = new Dictionary<Type, Func<object, string, object>> { { typeof(List<ShaderProperty>), onDeserializeShaderPropertyList } };
 
@@ -657,10 +832,10 @@ namespace ToonyColorsPro
 
 					return true;
 				}
-				catch (Exception e)
+				// catch (Exception e)
 				{
-					Debug.LogError(ShaderGenerator2.ErrorMsg(string.Format("Deserialization error:\n'{0}'\n{1}", e.Message, e.StackTrace.Replace(Application.dataPath, ""))));
-					return false;
+					// Debug.LogError(ShaderGenerator2.ErrorMsg(string.Format("Deserialization error:\n'{0}'\n{1}", e.Message, e.StackTrace.Replace(Application.dataPath, ""))));
+					// return false;
 				}
 			}
 
@@ -896,7 +1071,7 @@ namespace ToonyColorsPro
 			public string getShaderPropertiesExpanded()
 			{
 				string spExpanded = "";
-				foreach (var sp in cachedShaderProperties)
+				foreach (var sp in IterateAllShaderProperties())
 				{
 					if (sp.expanded)
 					{
@@ -909,7 +1084,7 @@ namespace ToonyColorsPro
 			public void setShaderPropertiesExpanded(string spExpanded)
 			{
 				var array = spExpanded.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-				foreach (var sp in cachedShaderProperties)
+				foreach (var sp in IterateAllShaderProperties())
 				{
 					sp.expanded = Array.Exists(array, str => str == sp.Name);
 				}
@@ -1016,51 +1191,203 @@ namespace ToonyColorsPro
 				// Custom Material Properties
 				if (visibleShaderProperties.Count > 0)
 				{
-					GUILayout.Space(4);
-					TCP2_GUI.SeparatorSimple();
-					GUILayout.Label("Custom Material Properties", EditorStyles.boldLabel);
-					GUILayout.Space(2);
-					if (ShaderGenerator2.ContextualHelpBox(
-						"You can define your own material properties here, that can then be shared between multiple Shader Properties. For example, this can allow you to pack textures however you want, having a mask for each R,G,B,A channel.",
-						"custommaterialproperties"))
-					{
-						GUILayout.Space(4);
-					}
+					CustomMaterialPropertiesGUI();
+				}
+			}
 
-					if (customMaterialPropertiesList == null || customMaterialPropertiesList.Count == 0)
+			// Material Layers UI
+			float tabOffsets;
+			float tabOffsetsTarget;
+			int selected;
+			internal void MaterialLayersGUI(out bool shaderPropertiesChange)
+			{
+				bool spChange = false;
+				
+				//button callbacks
+				ShaderProperty.CustomMaterialProperty.ButtonClick onAdd = index =>
+				{
+					materialLayers.Add(new MaterialLayer());
+					_materialLayersNames = null;
+					spChange = true;
+				};
+				ShaderProperty.CustomMaterialProperty.ButtonClick onRemove = index =>
+				{
+					foreach (var shaderProperty in cachedShaderProperties)
 					{
-						EditorGUILayout.HelpBox("No custom material properties defined.", MessageType.Info);
-						var rect = GUILayoutUtility.GetLastRect();
-
-						const float buttonWidth = 48;
-						rect.width -= buttonWidth;
-						rect.x += rect.width;
-						rect.width = buttonWidth - 4;
-						rect.yMin += 4;
-						rect.yMax -= 4;
-						if (GUI.Button(rect, "Add"))
+						if (shaderProperty.linkedMaterialLayers.Contains(materialLayers[index].uid))
 						{
-							ShowCustomMaterialPropertyMenu(0);
+							shaderProperty.RemoveMaterialLayer(materialLayers[index].uid);
 						}
 					}
-					else
+					materialLayers[index].sourceShaderProperty.WillBeRemoved();
+					
+					materialLayers.RemoveAt(index);
+					_materialLayersNames = null;
+					spChange = true;
+				};
+				
+				//draw element callback
+				Action<int, float> DrawMaterialLayer = (index, margin) =>
+				{
+					var matLayer = materialLayers[index];
+					EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 					{
-						//button callbacks
-						ShaderProperty.CustomMaterialProperty.ButtonClick onAdd = index => ShowCustomMaterialPropertyMenu(index);
-						ShaderProperty.CustomMaterialProperty.ButtonClick onRemove = index =>
+						using (new SGUILayout.IndentedLine(margin))
 						{
-							customMaterialPropertiesList[index].WillBeRemoved();
-							customMaterialPropertiesList.RemoveAt(index);
-						};
+							// Header
+							const float buttonWidth = 20;
+							var rect = EditorGUILayout.GetControlRect(GUILayout.Height(EditorGUIUtility.singleLineHeight));
+							rect.width -= buttonWidth * 2;
 
-						//draw element callback
-						Action<int, float> DrawCustomTextureItem = (index, margin) =>
+							TCP2_GUI.DrawHoverRect(rect);
+							
+							EditorGUI.BeginChangeCheck();
+							matLayer.expanded = GUI.Toggle(rect, matLayer.expanded, TCP2_GUI.TempContent("Layer: " + matLayer.name), TCP2_GUI.HeaderDropDown);
+							if (EditorGUI.EndChangeCheck())
+							{
+								if (Event.current.alt || Event.current.control)
+								{
+									var state = matLayer.expanded;
+									foreach (var ml in materialLayers)
+									{
+										ml.expanded = state;
+									}
+								}
+							}
+
+							// Add/Remove buttons
+							rect.x += rect.width;
+							rect.width = buttonWidth;
+							rect.height = EditorGUIUtility.singleLineHeight;
+							if (GUI.Button(rect, "+", EditorStyles.miniButtonLeft))
+							{
+								onAdd(index);
+							}
+
+							rect.x += rect.width;
+							if (GUI.Button(rect, "-", EditorStyles.miniButtonRight))
+							{
+								onRemove(index);
+							}
+						}
+
+						// Parameters:
+						if (matLayer.expanded)
 						{
-							customMaterialPropertiesList[index].ShowGUILayout(index, onAdd, onRemove);
-						};
 
-						customTexturesLayoutList.DoLayoutList(DrawCustomTextureItem, customMaterialPropertiesList, new RectOffset(2, 0, 0, 2));
+							using (new SGUILayout.IndentedLine(margin))
+							{
+								matLayer.name = EditorGUILayout.DelayedTextField(TCP2_GUI.TempContent("Name"), matLayer.name);
+							}
+
+							using (new SGUILayout.IndentedLine(margin))
+							{
+								GUILayout.Label(TCP2_GUI.TempContent("ID"), GUILayout.Width(EditorGUIUtility.labelWidth - 4));
+								using (new EditorGUI.DisabledScope(true))
+								{
+									EditorGUILayout.TextField(GUIContent.none, matLayer.uid);
+								}
+							}
+
+							using (new SGUILayout.IndentedLine(margin))
+							{
+								using (new EditorGUI.DisabledScope(true))
+								{
+									GUILayout.Label("The ID will be replaced with the actual Material Layer name for variables and labels in the final shader.", SGUILayout.Styles.GrayMiniLabelWrap);
+								}
+							}
+
+							using (new SGUILayout.IndentedLine(margin))
+							{
+								EditorGUI.BeginChangeCheck();
+								matLayer.UseContrastProperty = EditorGUILayout.Toggle(TCP2_GUI.TempContent("Add Contrast Property", "Automatically add a range property to adjust the layer contrast in the material inspector"), matLayer.UseContrastProperty);
+							}
+
+							using (new SGUILayout.IndentedLine(margin))
+							{
+								matLayer.UseNoiseProperty = EditorGUILayout.Toggle(TCP2_GUI.TempContent("Add Noise Property", "Automatically add a properties to adjust the layer based on a noise texture"), matLayer.UseNoiseProperty);
+								if (EditorGUI.EndChangeCheck())
+								{
+									spChange = true;
+								}
+
+								if (GUILayout.Button(TCP2_GUI.TempContent("Load Source Preset "), EditorStyles.miniPullDown, GUILayout.ExpandWidth(false)))
+								{
+									matLayer.ShowPresetsMenu();
+								}
+							}
+
+							matLayer.sourceShaderProperty.ShowGUILayout(margin);
+							if (matLayer.UseContrastProperty)
+							{
+								matLayer.contrastProperty.ShowGUILayout(margin);
+							}
+
+							if (matLayer.UseNoiseProperty)
+							{
+								matLayer.noiseProperty.ShowGUILayout(margin);
+							}
+						}
 					}
+					EditorGUILayout.EndVertical();
+				};
+
+				if (materialLayers.Count == 0)
+				{
+					if (TCP2_GUI.HelpBoxWithButton("No Material Layers defined.", "Add", 48))
+					{
+						materialLayers.Add(new MaterialLayer());
+						_materialLayersNames = null;
+						spChange = true;
+					}	
+				}
+				else
+				{
+					matLayersLayoutList.DoLayoutList(DrawMaterialLayer, materialLayers, new RectOffset(2, 0, 0, 2));
+					
+					CustomMaterialPropertiesGUI();
+				}
+
+				shaderPropertiesChange = spChange;
+			}
+			
+			void CustomMaterialPropertiesGUI()
+			{
+				GUILayout.Space(4);
+				TCP2_GUI.SeparatorSimple();
+				GUILayout.Label("Custom Material Properties", EditorStyles.boldLabel);
+				GUILayout.Space(2);
+				if (ShaderGenerator2.ContextualHelpBox(
+					"You can define your own material properties here, that can then be shared between multiple Shader Properties. For example, this can allow you to pack textures however you want, having a mask for each R,G,B,A channel.",
+					"custommaterialproperties"))
+				{
+					GUILayout.Space(4);
+				}
+
+				if (customMaterialPropertiesList == null || customMaterialPropertiesList.Count == 0)
+				{
+					if (TCP2_GUI.HelpBoxWithButton("No custom material properties defined.", "Add", 48))
+					{
+						ShowCustomMaterialPropertyMenu(0);
+					}
+				}
+				else
+				{
+					//button callbacks
+					ShaderProperty.CustomMaterialProperty.ButtonClick onAdd = index => ShowCustomMaterialPropertyMenu(index);
+					ShaderProperty.CustomMaterialProperty.ButtonClick onRemove = index =>
+					{
+						customMaterialPropertiesList[index].WillBeRemoved();
+						customMaterialPropertiesList.RemoveAt(index);
+					};
+
+					//draw element callback
+					Action<int, float> DrawCustomTextureItem = (index, margin) =>
+					{
+						customMaterialPropertiesList[index].ShowGUILayout(index, onAdd, onRemove);
+					};
+
+					customTexturesLayoutList.DoLayoutList(DrawCustomTextureItem, customMaterialPropertiesList, new RectOffset(2, 0, 0, 2));
 				}
 			}
 
@@ -1116,15 +1443,21 @@ namespace ToonyColorsPro
 					foreach (var imp in sp.implementations)
 					{
 						var mp = imp as ShaderProperty.Imp_MaterialProperty;
-						if (mp != null && mp is IMaterialPropertyName && mp != propertyName && mp.PropertyName == name)
+						if (mp != null && mp is IMaterialPropertyName && mp != propertyName && !mp.ignoreUniquePropertyName && mp.PropertyName == name)
+						{
 							return false;
+						}
 					}
 				}
 
 				//check Custom Material Properties
 				foreach (var ct in customMaterialPropertiesList)
+				{
 					if (ct != propertyName && ct.PropertyName == name)
+					{
 						return false;
+					}
+				}
 
 				return true;
 			}
@@ -1174,6 +1507,15 @@ namespace ToonyColorsPro
 #if UNITY_2019_3_OR_NEWER
 				Utils.AddIfMissing(this.Features, "UNITY_2019_3");
 #endif
+#if UNITY_2019_4_OR_NEWER
+				Utils.AddIfMissing(this.Features, "UNITY_2019_4");
+#endif
+#if UNITY_2020_1_OR_NEWER
+				Utils.AddIfMissing(this.Features, "UNITY_2020_1");
+#endif
+#if UNITY_2021_1_OR_NEWER
+				Utils.AddIfMissing(this.Features, "UNITY_2021_1");
+#endif
 				var parsedLines = template.GetParsedLinesFromConditions(this, null, null);
 
 				//Clear arrays: will be refilled with the template's shader properties
@@ -1193,6 +1535,20 @@ namespace ToonyColorsPro
 
 					sp.onImplementationsChanged -= onShaderPropertyImplementationsChanged; // lazy way to make sure we don't subscribe more than once
 					sp.onImplementationsChanged += onShaderPropertyImplementationsChanged;
+				}
+				
+				// Material Layers
+				foreach (var ml in materialLayers)
+				{
+					visibleShaderProperties.Add(ml.sourceShaderProperty);
+					if (ml.contrastProperty != null)
+					{
+						visibleShaderProperties.Add(ml.contrastProperty);
+					}
+					if (ml.noiseProperty != null)
+					{
+						visibleShaderProperties.Add(ml.noiseProperty);
+					}
 				}
 
 				//Find used shader properties per pass, to extract used features for each
@@ -1238,9 +1594,16 @@ namespace ToonyColorsPro
 						};
 					}
 
-					currentGroup.shaderProperties.Add(visibleShaderProperties[i]);
-					currentGroup.hasModifiedShaderProperties |= visibleShaderProperties[i].manuallyModified;
-					currentGroup.hasErrors |= visibleShaderProperties[i].error;
+					var shaderProperty = visibleShaderProperties[i];
+					if (shaderProperty.isMaterialLayerProperty)
+					{
+						// Don't show Material Layer source in regular Shader Properties
+						continue;
+					}
+					
+					currentGroup.shaderProperties.Add(shaderProperty);
+					currentGroup.hasModifiedShaderProperties |= shaderProperty.manuallyModified;
+					currentGroup.hasErrors |= shaderProperty.error;
 				}
 				addCurrentGroup();
 			}
@@ -1273,103 +1636,105 @@ namespace ToonyColorsPro
 				//Inside valid block
 				var parts = line.Split(new[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
 
-				// Dynamic
-				if (parts[0].StartsWith("flag_on:"))
+				// Fixed expressions first:
+				switch (parts[0])
 				{
-					if (tempExtraFlags == null)
+					case "set": //legacy
+					case "set_keyword":
 					{
-						return false;
+						var keywordValue = parts.Length > 2 ? parts[2] : "";
+						if (Keywords.ContainsKey(parts[1]))
+							Keywords[parts[1]] = keywordValue;
+						else
+							Keywords.Add(parts[1], keywordValue);
+						break;
 					}
 
-					string block = parts[0].Substring("flag_on:".Length);
-					if (!tempExtraFlags.ContainsKey(block)) tempExtraFlags.Add(block, new List<string>());
-
-					if (Utils.AddIfMissing(tempExtraFlags[block], parts[1]))
+					case "enable_kw": //legacy
+					case "feature_on":
 					{
-						return true;
-					}
-				}
-				else if (parts[0].StartsWith("flag_off:"))
-				{
-					if (tempExtraFlags == null)
-					{
-						return false;
-					}
-
-					string block = parts[0].Substring("flag_on:".Length);
-					if (!tempExtraFlags.ContainsKey(block))
-					{
-						return false;
-					}
-
-					if (Utils.RemoveIfExists(tempExtraFlags[block], parts[1]))
-					{
-						if (tempExtraFlags[block].Count == 0)
+						if (Utils.AddIfMissing(tempFeatures, parts[1]))
 						{
-							tempExtraFlags.Remove(block);
+							return true;
 						}
 
-						return true;
+						break;
 					}
-				}
-				else
-				{
-					// Fixed
-					switch (parts[0])
+					case "disable_kw": //legacy
+					case "feature_off":
 					{
-						case "set": //legacy
-						case "set_keyword":
+						if (Utils.RemoveIfExists(tempFeatures, parts[1]))
 						{
-							var keywordValue = parts.Length > 2 ? parts[2] : "";
-							if (Keywords.ContainsKey(parts[1]))
-								Keywords[parts[1]] = keywordValue;
-							else
-								Keywords.Add(parts[1], keywordValue);
-							break;
+							return true;
 						}
 
-						case "enable_kw": //legacy
-						case "feature_on":
+						break;
+					}
+
+					case "enable_flag": //legacy
+					case "flag_on":
+						if (tempFlags != null)
 						{
-							if (Utils.AddIfMissing(tempFeatures, parts[1]))
+							if (Utils.AddIfMissing(tempFlags, parts[1]))
 							{
 								return true;
 							}
-
-							break;
 						}
-						case "disable_kw": //legacy
-						case "feature_off":
+						break;
+					case "disable_flag": //legacy
+					case "flag_off":
+						if (tempFlags != null)
 						{
-							if (Utils.RemoveIfExists(tempFeatures, parts[1]))
+							if (Utils.RemoveIfExists(tempFlags, parts[1]))
 							{
 								return true;
 							}
-
-							break;
 						}
+						break;
 
-						case "enable_flag": //legacy
-						case "flag_on":
-							if (tempFlags != null)
+					default:
+					{
+						// Dynamic afterwards:
+						if (parts[0].StartsWith("flag_on:"))
+						{
+							if (tempExtraFlags == null)
 							{
-								if (Utils.AddIfMissing(tempFlags, parts[1]))
-								{
-									return true;
-								}
+								return false;
 							}
-							break;
-						case "disable_flag": //legacy
-						case "flag_off":
-							if (tempFlags != null)
+
+							string block = parts[0].Substring("flag_on:".Length);
+							if (!tempExtraFlags.ContainsKey(block)) tempExtraFlags.Add(block, new List<string>());
+
+							if (Utils.AddIfMissing(tempExtraFlags[block], parts[1]))
 							{
-								if (Utils.RemoveIfExists(tempFlags, parts[1]))
-								{
-									return true;
-								}
+								return true;
 							}
-							break;
+						}
+						else if (parts[0].StartsWith("flag_off:"))
+						{
+							if (tempExtraFlags == null)
+							{
+								return false;
+							}
+
+							string block = parts[0].Substring("flag_on:".Length);
+							if (!tempExtraFlags.ContainsKey(block))
+							{
+								return false;
+							}
+
+							if (Utils.RemoveIfExists(tempExtraFlags[block], parts[1]))
+							{
+								if (tempExtraFlags[block].Count == 0)
+								{
+									tempExtraFlags.Remove(block);
+								}
+
+								return true;
+							}
+						}
 					}
+					break;
 				}
 
 				return false;

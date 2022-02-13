@@ -22,11 +22,10 @@ namespace ToonyColorsPro
 				[Serialization.SerializeAs("injectedPoint")]
 				internal class InjectedPoint
 				{
-					// Needed for serialization
-					public InjectedPoint() { }
-
 					[Serialization.SerializeAs("name")] internal string name;
-					[Serialization.SerializeAs("displayName")] internal string displayName;
+					[Serialization.SerializeAs("enabled")] internal bool enabled = true;
+					[Serialization.SerializeAs("replace")] internal bool isReplace;
+					[Serialization.SerializeAs("displayName")] internal string info;
 					[Serialization.SerializeAs("blockName")] internal string blockName;
 					[Serialization.SerializeAs("program")] internal ShaderProperty.ProgramType program;
 					[Serialization.SerializeAs("shaderProperties")] internal List<ShaderProperty> shaderProperties = new List<ShaderProperty>();
@@ -50,7 +49,7 @@ namespace ToonyColorsPro
 
 							// - make a new list, and pull matching sp from it
 							// - reset the implementations of the remaining sp for the undo/redo system
-							var shaderPropertiesTempList = new List<ShaderProperty>(ip.shaderProperties);
+							// var shaderPropertiesTempList = new List<ShaderProperty>(ip.shaderProperties);
 
 							var split = Serialization.SplitExcludingBlocks(data.Substring(5, data.Length - 6), ',', true, true, "()", "[]");
 							foreach (var spData in split)
@@ -83,10 +82,12 @@ namespace ToonyColorsPro
 						return (InjectedPoint)Serialization.DeserializeTo(ip, strData, typeof(InjectedPoint), args, shaderPropertyHandling);
 					}
 
-					public InjectedPoint(string name, string displayName, ShaderProperty.ProgramType program, InjectableBlock block)
+					// Needed for serialization
+					public InjectedPoint() { }
+					
+					public InjectedPoint(string name, ShaderProperty.ProgramType program, InjectableBlock block)
 					{
 						this.name = name;
-						this.displayName = displayName;
 						this.program = program;
 						this.block = block;
 						this.blockName = block.name;
@@ -103,12 +104,12 @@ namespace ToonyColorsPro
 					{
 						foreach (var spi in block.shaderPropertiesInfos)
 						{
-							if (!shaderProperties.Exists(sp => sp.Name == spi.name))
+							string spName = string.Format("{0}{1}", spi.name, GetShaderPropertyNameSuffix());
+							if (!shaderProperties.Exists(sp => sp.Name == spName))
 							{
-								string spName = string.Format("{0}{1}", spi.name, GetShaderPropertyNameSuffix());
 								var sp = new ShaderProperty(spName, spi.variableType);
-								sp.Program = this.program;
 								sp.DisplayName = spi.name;
+								sp.Program = this.isReplace ? spi.programType : this.program;
 								sp.deferredSampling = true;
 
 								var imp_constant = (sp.implementations[0] as ShaderProperty.Imp_ConstantValue);
@@ -131,8 +132,8 @@ namespace ToonyColorsPro
 										{
 											Vector2 value = Vector2.zero;
 											var array = ExtractDefaultValue(spi.defaultValue);
-											if (array.Length > 1) value.x = array[0];
-											if (array.Length > 2) value.y = array[1];
+											if (array.Length >= 1) value.x = array[0];
+											if (array.Length >= 2) value.y = array[1];
 											imp_constant.Float2Value = value;
 										}
 										break;
@@ -141,9 +142,9 @@ namespace ToonyColorsPro
 										{
 											Vector3 value = Vector3.zero;
 											var array = ExtractDefaultValue(spi.defaultValue);
-											if (array.Length > 1) value.x = array[0];
-											if (array.Length > 2) value.y = array[1];
-											if (array.Length > 3) value.z = array[2];
+											if (array.Length >= 1) value.x = array[0];
+											if (array.Length >= 2) value.y = array[1];
+											if (array.Length >= 3) value.z = array[2];
 											imp_constant.Float3Value = value;
 										}
 										break;
@@ -152,10 +153,10 @@ namespace ToonyColorsPro
 										{
 											Vector4 value = Vector4.zero;
 											var array = ExtractDefaultValue(spi.defaultValue);
-											if (array.Length > 1) value.x = array[0];
-											if (array.Length > 2) value.y = array[1];
-											if (array.Length > 3) value.z = array[2];
-											if (array.Length > 4) value.z = array[3];
+											if (array.Length >= 1) value.x = array[0];
+											if (array.Length >= 2) value.y = array[1];
+											if (array.Length >= 3) value.z = array[2];
+											if (array.Length >= 4) value.w = array[3];
 											imp_constant.Float4Value = value;
 										}
 										break;
@@ -165,10 +166,10 @@ namespace ToonyColorsPro
 										{
 											Color value = new Color();
 											var array = ExtractDefaultValue(spi.defaultValue);
-											if (array.Length > 1) value.r = array[0];
-											if (array.Length > 2) value.g = array[1];
-											if (array.Length > 3) value.b = array[2];
-											if (array.Length > 4) value.a = array[3]; else value.a = 1.0f;
+											if (array.Length >= 1) value.r = array[0];
+											if (array.Length >= 2) value.g = array[1];
+											if (array.Length >= 3) value.b = array[2];
+											if (array.Length >= 4) value.a = array[3]; else value.a = 1.0f;
 											imp_constant.ColorValue = value;
 										}
 										break;
@@ -191,7 +192,6 @@ namespace ToonyColorsPro
 							{
 								if (tempSerializedShaderProperties.ContainsKey(sp.Name))
 								{
-									// TODO Implementations handling:
 									Func<object, string, object> onDeserializeImplementation = (impObj, impData) =>
 									{
 										return ShaderGenerator2.CurrentConfig.DeserializeImplementationHandler(impObj, impData, sp);
@@ -213,6 +213,16 @@ namespace ToonyColorsPro
 
 					internal void InjectCode(StringBuilder stringBuilder, string indent)
 					{
+						var newLines = GetCodeLinesWithReplacedVariables(indent);
+						foreach (string line in newLines)
+						{
+							stringBuilder.AppendLine(line);
+						}
+					}
+
+					internal List<string> GetCodeLinesWithReplacedVariables(string indent)
+					{
+						var newLinesList = new List<string>();
 						foreach (var line in block.codeLines)
 						{
 							string newLine = null;
@@ -237,15 +247,17 @@ namespace ToonyColorsPro
 									}
 
 									// append variable declaration
-									stringBuilder.AppendLine(indent + lineIndent + sp.PrintVariableSampleDeferred(ShaderGenerator2.CurrentInput, ShaderGenerator2.CurrentOutput, ShaderGenerator2.CurrentProgram, null, true));
+									newLinesList.Add(indent + lineIndent + sp.PrintVariableSampleDeferred(ShaderGenerator2.CurrentInput, ShaderGenerator2.CurrentOutput, ShaderGenerator2.CurrentProgram, null, true));
 
 									// replace variable name with declared variable name from shader property
 									newLine = Regex.Replace(line, pattern, sp.GetVariableName());
 								}
 							}
-
-							stringBuilder.AppendLine(indent + (newLine != null ? newLine : line));
+							
+							newLinesList.Add(indent + (newLine ?? line));
 						}
+						
+						return newLinesList;
 					}
 				}
 
@@ -258,6 +270,34 @@ namespace ToonyColorsPro
 					internal bool isReplaceBlock;
 					internal string searchString;
 					internal string info;
+					internal string autoInjection;
+
+					internal bool IsSameAs(InjectableBlock otherBlock)
+					{
+						if (!this.isReplaceBlock)
+						{
+							bool same = !otherBlock.isReplaceBlock && this.name == otherBlock.name && this.autoInjection == otherBlock.autoInjection && this.shaderPropertiesInfos.Count == otherBlock.shaderPropertiesInfos.Count;
+							if (!same)
+							{
+								return false;
+							}
+							
+							// verify shader properties, in case they have changed
+							for (int i = 0; i < shaderPropertiesInfos.Count; i++)
+							{
+								if (!shaderPropertiesInfos[i].IsSameAs(otherBlock.shaderPropertiesInfos[i]))
+								{
+									return false;
+								}
+							}
+
+							return true;
+						}
+						else
+						{
+							return otherBlock.isReplaceBlock && this.name == otherBlock.name && otherBlock.searchString == this.searchString && otherBlock.info == this.info;
+						}
+					}
 				}
 
 				internal class ShaderPropertyInfo
@@ -267,9 +307,18 @@ namespace ToonyColorsPro
 
 					internal ShaderProperty.ProgramType programType = ShaderProperty.ProgramType.Undefined; // ==> should be determined by where the injection point is hooked
 					internal ShaderProperty.VariableType variableType = ShaderProperty.VariableType.@float;
-					internal ShaderProperty.ColorPrecision colorPrecision = ShaderProperty.ColorPrecision.LDR;
-					internal ShaderProperty.FloatPrecision floatPrecision = ShaderProperty.FloatPrecision.@float;
+					ShaderProperty.ColorPrecision colorPrecision = ShaderProperty.ColorPrecision.LDR;
+					ShaderProperty.FloatPrecision floatPrecision = ShaderProperty.FloatPrecision.@float;
 
+					internal bool IsSameAs(ShaderPropertyInfo other)
+					{
+						return this.programType == other.programType
+						       && this.variableType == other.variableType
+						       && this.colorPrecision == other.colorPrecision
+						       && this.floatPrecision == other.floatPrecision
+						       && this.name == other.name
+						       && this.defaultValue == other.defaultValue;
+					}
 				}
 
 				// Select a file to inject blocks from, to one or more injection points
@@ -279,17 +328,31 @@ namespace ToonyColorsPro
 					internal TextAsset includeFile;
 					[Serialization.SerializeAs("guid")] string guid;
 					[Serialization.SerializeAs("filename")] string filename;
+					int contentHash;
 
 					[Serialization.SerializeAs("injectedPoints")] internal List<InjectedPoint> injectedPoints = new List<InjectedPoint>();
 					internal List<InjectableBlock> injectableBlocks = new List<InjectableBlock>();
 					int replaceBlockCount;
 
 					// UI
-					Dictionary<string, bool> headersExpanded = new Dictionary<string, bool>();
-					Vector2 mouseScreenPosition;
+					Dictionary<InjectedPoint, bool> headersExpanded = new Dictionary<InjectedPoint, bool>();
 					GenericMenu pendingBlockMenu;
 					ReorderableLayoutList injectedPointsList = new ReorderableLayoutList();
 
+					public InjectedFile()
+					{
+						ShaderGenerator2.onProjectChange += onProjectChanged;
+					}
+
+					internal void WillBeRemoved()
+					{
+						ShaderGenerator2.onProjectChange -= onProjectChanged;
+					}
+
+					void onProjectChanged()
+					{
+						VerifyCodeInjectionFile();
+					}
 
 					[Serialization.OnDeserializeCallback]
 					void OnDeserialize()
@@ -300,7 +363,7 @@ namespace ToonyColorsPro
 							string path = AssetDatabase.GUIDToAssetPath(guid);
 							if (string.IsNullOrEmpty(path))
 							{
-								Debug.LogError("Can't find path for Code Injection file GUID: " + guid + " (filename: \"" + filename + "\")");
+								Debug.LogError("[SG2 Code Injection] Can't find path for Code Injection file GUID: " + guid + " (filename: \"" + filename + "\")");
 								return;
 							}
 
@@ -315,22 +378,97 @@ namespace ToonyColorsPro
 
 							if (string.IsNullOrEmpty(ip.blockName))
 							{
-								Debug.LogError("Block name was not properly serialized.");
+								Debug.LogWarning("[SG2 Code Injection] Block name was not properly serialized.");
 								injectedPoints.RemoveAt(i);
-								return;
+								continue;
 							}
 
 							var matchingBlock = this.injectableBlocks.Find(block => block.name == ip.blockName);
 							if (matchingBlock == null)
 							{
-								Debug.LogError(string.Format("Block wasn't found in source file. Block name: \"{0}\", Source file: \"{1}\"", ip.blockName, this.filename));
+								Debug.LogWarning(string.Format("[SG2 Code Injection] Block wasn't found in source file. Block name: \"{0}\", Source file: \"{1}\"", ip.blockName, this.filename));
 								injectedPoints.RemoveAt(i);
-								return;
+								continue;
 							}
 
 							ip.block = matchingBlock;
 							ip.UpdateShaderProperties();
-							headersExpanded.Add(ip.displayName, false);
+							headersExpanded[ip] = false;
+						}
+						
+						VerifyCodeInjectionFile();
+					}
+
+					void VerifyCodeInjectionFile()
+					{
+						if (!string.IsNullOrEmpty(guid))
+						{
+							string path = AssetDatabase.GUIDToAssetPath(guid);
+							string fileContent = File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.Length - "Assets".Length) + path);
+							int fileHash = fileContent.GetHashCode();
+							
+							if (fileHash == contentHash)
+							{
+								// same hash, no need to verify
+								return;
+							}
+							contentHash = fileHash;
+							
+							var blockList = TryParseFileForInjectableBlocks(fileContent);
+
+							// Iterate existing blocks and see if they still exist in the file:
+							for (int i = injectableBlocks.Count - 1; i >= 0; i--)
+							{
+								var existingBlock = injectableBlocks[i];
+								
+								if (!blockList.Exists(b => b.IsSameAs(existingBlock)))
+								{
+									// Block doesn't exist anymore in the source file: remove it
+									if (existingBlock.isReplaceBlock)
+									{
+										replaceBlockCount--;
+										RemoveReplaceBlock(existingBlock);
+									}
+									injectableBlocks.RemoveAt(i);
+
+									for (int j = injectedPoints.Count - 1; j >= 0; j--)
+									{
+										if (injectedPoints[j].blockName == existingBlock.name)
+										{
+											RemoveInjectedPoint(j);
+										}
+									}
+								}
+							}
+							
+							foreach (var fileBlock in blockList)
+							{
+								// Block from file is new: add it
+								if (!injectableBlocks.Exists(b => b.IsSameAs(fileBlock)))
+								{
+									injectableBlocks.Add(fileBlock);
+									if (fileBlock.isReplaceBlock)
+									{
+										replaceBlockCount++;
+										AddReplaceBlock(fileBlock);
+									}
+								}
+								
+								// Auto-injected block that isn't injected yet
+								if (fileBlock.autoInjection != null && !injectedPoints.Exists(item => item.blockName == fileBlock.name))
+								{
+									var ip = ShaderGenerator2.CurrentTemplate.injectionPoints.Find(item => item.name == fileBlock.autoInjection);
+									if (ip != null)
+									{
+										AddBlockAtInjectionPoint(ip, fileBlock);
+									}
+								}
+							}
+
+							foreach (var injectedPoint in injectedPoints)
+							{
+								injectedPoint.UpdateShaderProperties();
+							}
 						}
 					}
 
@@ -360,8 +498,53 @@ namespace ToonyColorsPro
 							return false;
 						}
 
-						var autoInjectionList = new Dictionary<string, InjectableBlock>();
+						contentHash = fileContent.GetHashCode();
 
+						var fileBlocks = TryParseFileForInjectableBlocks(fileContent);
+						if (fileBlocks == null)
+						{
+							return false;
+						}
+
+						foreach (var block in fileBlocks)
+						{
+							injectableBlocks.Add(block);
+							if (block.isReplaceBlock)
+							{
+								replaceBlockCount++;
+								AddReplaceBlock(block);
+							}
+						}
+
+						includeFile = file;
+						filename = includeFile.name;
+						guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(includeFile));
+
+						// Parse auto-inject points and add them if found
+						if (template != null)
+						{
+							foreach (var block in fileBlocks)
+							{
+								if (block.autoInjection != null)
+								{
+									foreach (var injectionPoint in template.injectionPoints)
+									{
+										if (injectionPoint.name == block.autoInjection)
+										{
+											AddBlockAtInjectionPoint(injectionPoint, block);
+										}
+									}
+								}
+							}
+						}
+
+						return true;
+					}
+
+					List<InjectableBlock> TryParseFileForInjectableBlocks(string fileContent)
+					{
+						var blockList = new List<InjectableBlock>();
+						
 						using (var stringReader = new StringReader(fileContent))
 						{
 							int lineNb = 0;
@@ -387,12 +570,7 @@ namespace ToonyColorsPro
 										|| !currentBlock.isReplaceBlock))
 										{
 											currentBlock.codeLines = codeLines.ToArray();
-											injectableBlocks.Add(currentBlock);
-
-											if (currentBlock.isReplaceBlock)
-											{
-												replaceBlockCount++;
-											}
+											blockList.Add(currentBlock);
 										}
 
 										codeLines.Clear();
@@ -403,6 +581,7 @@ namespace ToonyColorsPro
 								while ((line = stringReader.ReadLine()) != null)
 								{
 									string trimmedLine = line.Trim();
+									string trimmedLineLower = trimmedLine.ToLowerInvariant();
 
 									if (line.StartsWith("///"))
 									{
@@ -417,6 +596,11 @@ namespace ToonyColorsPro
 											addCurrentBlock();
 
 											string blockName = trimmedLine.Substring("//# BLOCK:".Length).Trim();
+											if (string.IsNullOrEmpty(blockName))
+											{
+												throw new System.Exception("Line '//# BLOCK:' requires a name, please see the documentation");
+											}
+											
 											currentBlock = new InjectableBlock()
 											{
 												name = blockName
@@ -427,9 +611,15 @@ namespace ToonyColorsPro
 										{
 											addCurrentBlock();
 
+											string blockName = trimmedLine.Substring("//# REPLACE:".Length).Trim();
+											if (string.IsNullOrEmpty(blockName))
+											{
+												throw new System.Exception("Line '//# REPLACE:' requires a name, please see the documentation");
+											}
+											
 											currentBlock = new InjectableBlock()
 											{
-												name = "replace",
+												name = blockName,
 												isReplaceBlock = true,
 												searchString = ""
 											};
@@ -449,7 +639,7 @@ namespace ToonyColorsPro
 											// replace block replacement
 											parsingSearchString = false;
 										}
-										else if (trimmedLine.ToLowerInvariant().StartsWith("//# inject @"))
+										else if (trimmedLineLower.StartsWith("//# inject @"))
 										{
 											if (currentBlock == null)
 											{
@@ -457,9 +647,10 @@ namespace ToonyColorsPro
 											}
 
 											string autoInjectPoint = trimmedLine.Substring("//# inject @".Length).Trim();
-											autoInjectionList.Add(autoInjectPoint, currentBlock);
+
+											currentBlock.autoInjection = autoInjectPoint;
 										}
-										else if (trimmedLine.ToLowerInvariant().StartsWith("//# info:"))
+										else if (trimmedLineLower.StartsWith("//# info:"))
 										{
 											if (currentBlock == null)
 											{
@@ -473,17 +664,34 @@ namespace ToonyColorsPro
 											currentBlock.info = trimmedLine.Substring("//# info:".Length).Trim();
 										}
 										// variable to parse
-										else if (line.StartsWith("//# float"))
+										else if (trimmedLineLower.StartsWith("//# float") || (trimmedLineLower.StartsWith("//# fragment") || trimmedLineLower.StartsWith("//# vertex")))
 										{
+											// Prevent Shader Properties for Replace blocks, it's more complicated than I initially thought to implement...
+											if (currentBlock.isReplaceBlock)
+											{
+												continue;
+											}
+											
 											if (currentBlock == null)
 											{
 												throw new System.Exception("Property declaration outside of block");
 											}
 
-											string[] parts = trimmedLine.Split(new char[] { ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries);
+											if (currentBlock.isReplaceBlock && trimmedLineLower.StartsWith("//# float"))
+											{
+												throw new System.Exception("//# REPLACE block variables must declare their shader program first ('vertex' or 'fragment')");
+											}
+											
+											if (!currentBlock.isReplaceBlock && !trimmedLineLower.StartsWith("//# float"))
+											{
+												throw new System.Exception("Regular block variables must not declare the shader program");
+											}
 
-											var variableType = ShaderProperty.VariableType.@float;
-											switch (parts[1])
+											string[] parts = trimmedLine.Split(new char[] { ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries);
+											int startIndex = currentBlock.isReplaceBlock ? 1 : 0;
+
+											ShaderProperty.VariableType variableType;
+											switch (parts[startIndex + 1])
 											{
 												case "float": variableType = ShaderProperty.VariableType.@float; break;
 												case "float2": variableType = ShaderProperty.VariableType.float2; break;
@@ -493,8 +701,8 @@ namespace ToonyColorsPro
 												case "color_rgba": variableType = ShaderProperty.VariableType.color_rgba; break;
 												default: throw new System.Exception("Invalid parsed property type: " + parts[1]);
 											}
-											string name = parts[2];
-											string defaultValue = (parts.Length >= 4) ? parts[3] : null;
+											string name = parts[startIndex + 2];
+											string defaultValue = (parts.Length >= (startIndex + 4)) ? parts[startIndex + 3] : null;
 
 											// check if property already exists with this block
 											foreach (var existingSpi in currentBlock.shaderPropertiesInfos)
@@ -511,6 +719,17 @@ namespace ToonyColorsPro
 												variableType = variableType,
 												defaultValue = defaultValue
 											};
+											
+											if (currentBlock.isReplaceBlock)
+											{
+												ShaderProperty.ProgramType programType = ShaderProperty.ProgramType.Fragment;
+												if (parts[0].ToLowerInvariant() == "vertex")
+												{
+													programType = ShaderProperty.ProgramType.Vertex;
+												}
+												spi.programType = programType;
+											}
+											
 											currentBlock.shaderPropertiesInfos.Add(spi);
 										}
 									}
@@ -532,32 +751,12 @@ namespace ToonyColorsPro
 							}
 							catch (System.Exception e)
 							{
-								Debug.LogError("Couldn't load code injection include file, error at line " + lineNb + ":\n" + e.ToString());
-								return false;
+								Debug.LogError(string.Format("[SG2 Code Injection] Couldn't load code injection include file, error at line {0}:  {1}", lineNb, e.ToString()));
+								return null;
 							}
 						}
 
-						includeFile = file;
-						filename = includeFile.name;
-						guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(includeFile));
-
-
-						// Parse auto-inject points and add them if found
-						if (template != null && autoInjectionList.Count > 0)
-						{
-							foreach (var kvp in autoInjectionList)
-							{
-								foreach (var injectionPoint in template.injectionPoints)
-								{
-									if (injectionPoint.name == kvp.Key)
-									{
-										AddBlockAtInjectionPoint(injectionPoint, autoInjectionList[kvp.Key]);
-									}
-								}
-							}
-						}
-
-						return true;
+						return blockList;
 					}
 
 					internal void ShowGUI(Template template, float margin)
@@ -579,7 +778,7 @@ namespace ToonyColorsPro
 								if (!TryParseIncludeFile(newIncludeFile, template))
 								{
 									includeFile = null;
-									Debug.LogError(ShaderGenerator2.ErrorMsg("Couldn't load code injection include file."));
+									Debug.LogError(ShaderGenerator2.ErrorMsg("[SG2 Code Injection] Couldn't load code injection include file."));
 								}
 							}
 						};
@@ -606,11 +805,13 @@ namespace ToonyColorsPro
 						GUILayout.BeginHorizontal();
 						{
 							GUILayout.Space(margin);
-							newIncludeFile = (TextAsset)EditorGUILayout.ObjectField(TCP2_GUI.TempContent("Source File", "Select a source file from which to insert custom code, with the .cginc or .hlslinc format"), includeFile, typeof(TextAsset), false);
-
-							GUILayout.Space(4);
-
-							// Adding injection point/code block
+							newIncludeFile = (TextAsset) EditorGUILayout.ObjectField(TCP2_GUI.TempContent("Source File", "Select a source file from which to insert custom code, with the .cginc or .hlslinc format"), includeFile, typeof(TextAsset), false);
+						}
+						GUILayout.EndHorizontal();
+						
+						GUILayout.BeginHorizontal();
+						{
+							GUILayout.Space(margin);
 							if (GUILayout.Button("Add Block at Injection Point", GUILayout.ExpandWidth(false)))
 							{
 								var injectionPointMenu = new GenericMenu();
@@ -632,7 +833,6 @@ namespace ToonyColorsPro
 									injectionPointMenu.AddDisabledItem(new GUIContent("No injectable blocks were found in the selected file!"));
 								}
 
-								mouseScreenPosition = Event.current.mousePosition;
 								injectionPointMenu.ShowAsContext();
 							}
 						}
@@ -653,23 +853,37 @@ namespace ToonyColorsPro
 							var point = injectedPoints[index];
 
 							Rect removeButtonRect;
-
+							Rect enableButtonRect;
+							
+							bool guiEnabled = GUI.enabled;
+							GUI.enabled &= point.enabled;
+							
 							EditorGUILayout.BeginHorizontal();
 							{
 								GUILayout.Space(margin + margin2);
 
-								var label = TCP2_GUI.TempContent("@ " + point.name);
+								var label = TCP2_GUI.TempContent(point.isReplace ? "Replace block" : "@ " + point.name);
 								var rect = GUILayoutUtility.GetRect(label, EditorStyles.label, GUILayout.ExpandWidth(true));
 								rect.xMin += 4; // small left padding
 
+								enableButtonRect = rect;
+								enableButtonRect.width = 20;
+								rect.xMin += enableButtonRect.width;
+
 								removeButtonRect = rect;
-								removeButtonRect.width = 30;
-								rect.xMax -= removeButtonRect.width;
+								removeButtonRect.width = 22;
+								removeButtonRect.height = 22;
+								removeButtonRect.y -= 22 - rect.height;
 								removeButtonRect.x += rect.width;
 
 								GUI.Label(rect, label, EditorStyles.label);
+								
+								GUILayout.Space(removeButtonRect.width);
 							}
 							EditorGUILayout.EndHorizontal();
+
+							margin2 += enableButtonRect.width;
+
 							EditorGUILayout.BeginHorizontal();
 							{
 								GUILayout.Space(margin + margin2);
@@ -682,15 +896,15 @@ namespace ToonyColorsPro
 									Rect hoverRect = rect;
 									rect.xMin += 4; // small left padding
 
-									removeButtonRect.yMax = rect.yMax;
-									rect.xMax -= removeButtonRect.width;
+									// removeButtonRect.yMax = rect.yMax;
+									// rect.xMax -= removeButtonRect.width;
 
 									bool hasShaderProperties = point.shaderProperties.Count > 0;
 									if (hasShaderProperties)
 									{
 										TCP2_GUI.DrawHoverRect(hoverRect);
 										bool highlight = point.shaderProperties.Exists(sp => sp.manuallyModified);
-										headersExpanded[point.displayName] = TCP2_GUI.HeaderFoldoutHighlightErrorGrayPosition(rect, headersExpanded[point.displayName], label, false, highlight);
+										headersExpanded[point] = TCP2_GUI.HeaderFoldoutHighlightErrorGrayPosition(rect, headersExpanded[point], label, false, highlight);
 									}
 									else
 									{
@@ -714,54 +928,44 @@ namespace ToonyColorsPro
 									}
 									*/
 								}
+								
+								GUILayout.Space(removeButtonRect.width);
 							}
 							EditorGUILayout.EndHorizontal();
 
+							if (point.isReplace && !string.IsNullOrEmpty(point.block.info))
+							{
+								EditorGUILayout.BeginHorizontal();
+								{
+									GUILayout.Space(margin + margin2 + 4);
+									GUILayout.Label(TCP2_GUI.TempContent(point.block.info), EditorStyles.wordWrappedMiniLabel);
+									GUILayout.Space(removeButtonRect.width);
+								}
+								EditorGUILayout.EndHorizontal();
+							}
+
+							GUI.enabled = guiEnabled;
+
+							// Enable button
+							Rect lastRect = GUILayoutUtility.GetLastRect();
+							enableButtonRect.y = (lastRect.y + enableButtonRect.y) / 2.0f;
+							point.enabled = GUI.Toggle(enableButtonRect, point.enabled, GUIContent.none);
+
 							// Remove button
-							float height = removeButtonRect.height;
-							removeButtonRect.yMin += Mathf.Ceil(height / 8.0f);
-							removeButtonRect.yMax -= Mathf.Ceil(height / 8.0f);
-							removeButtonRect.width = removeButtonRect.height;
-							if (GUI.Button(removeButtonRect, "X"))
+							removeButtonRect.y = (lastRect.y + removeButtonRect.y) / 2.0f;
+							if (!point.isReplace && GUI.Button(removeButtonRect, "X"))
 							{
 								injectedPointToRemove = index;
 							}
 
-							if (headersExpanded[point.displayName])
+							if (headersExpanded[point])
 							{
 								foreach (var sp in point.shaderProperties)
 								{
-									sp.ShowGUILayout(margin + margin2 + 16);
+									sp.ShowGUILayout(margin + margin2 + 8);
 								}
 							}
 						};
-
-						// Number of "replace mode" injectable blocks
-
-						if (replaceBlockCount == 0)
-						{
-							GUILayout.BeginHorizontal();
-							{
-								GUILayout.Space(margin);
-								EditorGUILayout.HelpBox(string.Format("0 'REPLACE' block found", replaceBlockCount), MessageType.Info);
-							}
-							GUILayout.EndHorizontal();
-						}
-						else
-						{
-							StringBuilder sb = new StringBuilder();
-							foreach (var block in injectableBlocks)
-							{
-								if (!block.isReplaceBlock) continue;
-								sb.AppendLine(block.info == null ? "- [No info]" : "- " + block.info);
-							}
-							GUILayout.BeginHorizontal();
-							{
-								GUILayout.Space(margin);
-								EditorGUILayout.HelpBox(string.Format("{0} 'REPLACE' block{1} found:\n{2}", replaceBlockCount, replaceBlockCount > 1 ? "s" : "", sb.ToString().TrimEnd(Environment.NewLine.ToCharArray())), MessageType.Info);
-							}
-							GUILayout.EndHorizontal();
-						}
 
 						GUILayout.Space(4);
 
@@ -771,7 +975,7 @@ namespace ToonyColorsPro
 
 						if (injectedPointToRemove >= 0)
 						{
-							OnRemoveInjectedPoint(injectedPointToRemove);
+							RemoveInjectedPoint(injectedPointToRemove);
 						}
 
 						GUILayout.Space(2);
@@ -780,11 +984,10 @@ namespace ToonyColorsPro
 					}
 
 
-					void OnRemoveInjectedPoint(int index)
+					void RemoveInjectedPoint(int index)
 					{
 						var ip = injectedPoints[index];
-						headersExpanded.Remove(ip.displayName);
-
+						headersExpanded.Remove(ip);
 						injectedPoints.RemoveAt(index);
 					}
 
@@ -801,7 +1004,7 @@ namespace ToonyColorsPro
 
 							if (this.injectedPoints.Exists(item => item.block == block))
 							{
-								blocksMenu.AddDisabledItem(new GUIContent(block.name + "(already added)"));
+								blocksMenu.AddDisabledItem(new GUIContent(block.name + " (already added)"));
 							}
 							else
 							{
@@ -823,9 +1026,39 @@ namespace ToonyColorsPro
 
 					void AddBlockAtInjectionPoint(Template.InjectionPoint injectionPoint, InjectableBlock block)
 					{
-						string displayName = string.Format("{0} : {1}", injectionPoint.name, block.name);
-						injectedPoints.Add(new InjectedPoint(injectionPoint.name, displayName, injectionPoint.program, block));
-						headersExpanded.Add(displayName, true);
+						var ip = new InjectedPoint(injectionPoint.name, injectionPoint.program, block);
+						injectedPoints.Add(ip);
+						headersExpanded.Add(ip, true);
+					}
+
+					void AddReplaceBlock(InjectableBlock block)
+					{
+						if (!block.isReplaceBlock)
+						{
+							return;
+						}
+
+						if (injectedPoints.Exists(i => i.blockName == block.name))
+						{
+							return;
+						}
+
+						var ip = new InjectedPoint()
+						{
+							isReplace = true,
+							block = block,
+							blockName = block.name,
+							info = block.info
+						};
+						injectedPoints.Add(ip);
+						ip.UpdateShaderProperties();
+						headersExpanded.Add(ip, true);
+					}
+
+					void RemoveReplaceBlock(InjectableBlock block)
+					{
+						var foundIp = injectedPoints.Find(ip => ip.blockName == block.name);
+						injectedPoints.Remove(foundIp);
 					}
 				}
 
@@ -833,7 +1066,7 @@ namespace ToonyColorsPro
 
 				internal static CodeInjectionManager instance;
 
-				[Serialization.SerializeAs("injectedFiles")] List<InjectedFile> injectedFiles = new List<InjectedFile>();
+				[Serialization.SerializeAs("injectedFiles")] internal List<InjectedFile> injectedFiles = new List<InjectedFile>();
 				[Serialization.SerializeAs("mark")] bool markInjectionPoints = false;
 
 				ReorderableLayoutList injectedFilesList = new ReorderableLayoutList();
@@ -874,10 +1107,11 @@ namespace ToonyColorsPro
 						}
 						EditorGUILayout.EndVertical();
 					};
-					injectedFilesList.DoLayoutList(drawInjectedFile, injectedFiles);
+					injectedFilesList.DoLayoutList(drawInjectedFile, injectedFiles, 10);
 
 					if (injectedFileToRemove >= 0)
 					{
+						this.injectedFiles[injectedFileToRemove].WillBeRemoved();
 						this.injectedFiles.RemoveAt(injectedFileToRemove);
 					}
 
@@ -900,6 +1134,11 @@ namespace ToonyColorsPro
 					{
 						foreach (var point in file.injectedPoints)
 						{
+							if (!point.enabled)
+							{
+								continue;
+							}
+							
 							foreach (var sp in point.shaderProperties)
 							{
 								list.AddRange(sp.NeededFeatures());
@@ -921,6 +1160,11 @@ namespace ToonyColorsPro
 					{
 						foreach (var point in file.injectedPoints)
 						{
+							if (!point.enabled)
+							{
+								continue;
+							}
+							
 							if (point.name == injectionPoint)
 							{
 								hasCode = true;
@@ -942,17 +1186,22 @@ namespace ToonyColorsPro
 				{
 					foreach (var file in injectedFiles)
 					{
-						foreach (var block in file.injectableBlocks)
+						foreach (var ip in file.injectedPoints)
 						{
-							if (block.isReplaceBlock)
+							if (!ip.enabled)
 							{
-								string[] replaceLines = new string[block.codeLines.Length + 3];
-								System.Array.Copy(block.codeLines, 0, replaceLines, 2, block.codeLines.Length);
-								replaceLines[0] = "//================================";
-								replaceLines[1] = "// Replaced through Code Injection:";
-								replaceLines[replaceLines.Length-1] = "//================================";
-
-								stringBuilder.Replace(block.searchString, string.Join("\n", replaceLines));
+								continue;
+							}
+							
+							if (ip.block.isReplaceBlock)
+							{
+								var list = ip.GetCodeLinesWithReplacedVariables("");
+								list.Insert(0, "//================================");
+								list.Insert(1, "// Replaced through Code Injection:");
+								list.Add("//================================");
+								
+								string replaceLines = string.Join("\n", list);
+								stringBuilder.Replace(ip.block.searchString, string.Join("\n", replaceLines));
 							}
 						}
 					}
@@ -966,9 +1215,17 @@ namespace ToonyColorsPro
 					{
 						foreach (var point in file.injectedPoints)
 						{
-							foreach (var sp in point.shaderProperties)
+							if (!point.enabled)
 							{
-								list.Add(sp);
+								continue;
+							}
+							
+							if (point.name == injectionPoint)
+							{
+								foreach (var sp in point.shaderProperties)
+								{
+									list.Add(sp);
+								}
 							}
 						}
 					}

@@ -1,5 +1,5 @@
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,6 @@ using UnityEngine;
 using ToonyColorsPro.Utilities;
 
 // Utility to generate meshes with encoded smoothed normals, to fix hard-edged broken outline
-// TODO Fully use UV2 now that we can use float4, plus UV3/4 options
 
 namespace ToonyColorsPro
 {
@@ -36,7 +35,7 @@ namespace ToonyColorsPro
 #if UNITY_EDITOR_WIN
 		private const string OUTPUT_FOLDER = "\\Smoothed Meshes\\";
 #else
-	private const string OUTPUT_FOLDER = "/Smoothed Meshes/";
+		private const string OUTPUT_FOLDER = "/Smoothed Meshes/";
 #endif
 
 		private class SelectedMesh

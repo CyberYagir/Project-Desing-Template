@@ -11,11 +11,14 @@
 		float3 normal : NORMAL;
 	#if defined(TCP2_UV1_AS_NORMALS) || defined(TCP2_OUTLINE_TEXTURED)
 		float4 texcoord0 : TEXCOORD0;
-	#elif defined(TCP2_UV2_AS_NORMALS)
+	#endif
+	#if defined(TCP2_UV2_AS_NORMALS)
 		float4 texcoord1 : TEXCOORD1;
-	#elif defined(TCP2_UV3_AS_NORMALS)
+	#endif
+	#if defined(TCP2_UV3_AS_NORMALS)
 		float4 texcoord2 : TEXCOORD2;
-	#elif defined(TCP2_UV4_AS_NORMALS)
+	#endif
+	#if defined(TCP2_UV4_AS_NORMALS)
 		float4 texcoord3 : TEXCOORD3;
 	#endif
 	#if defined(TCP2_COLORS_AS_NORMALS)
@@ -183,7 +186,7 @@ v2f TCP2_Outline_Vert(a2v v)
 	return o;
 }
 
-float4 TCP2_Outline_Frag (v2f IN) : COLOR
+float4 TCP2_Outline_Frag (v2f IN) : SV_Target
 {
 #if TCP2_OUTLINE_TEXTURED
 	return float4(IN.texlod, 1) * _OutlineColor;

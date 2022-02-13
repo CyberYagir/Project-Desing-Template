@@ -1,5 +1,5 @@
 ﻿// Toony Colors Pro 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace ToonyColorsPro
 				public const string worldPosUVLabel = "World Position";
 				public const string triplanarUVLabel = "Triplanar";
 				public const string shaderPropertyUVLabel = "Other Shader Property";
+				public const string customMaterialPropertyUVLabel = "Custom Material Property";
 
 				public static readonly string[] DefaultTextureValues =
 				{
@@ -44,7 +45,8 @@ namespace ToonyColorsPro
 					screenSpaceUVLabel,
 					worldPosUVLabel,
 					triplanarUVLabel,
-					shaderPropertyUVLabel
+					shaderPropertyUVLabel,
+					customMaterialPropertyUVLabel
 				};
 
 				public static readonly string[] UvChannelOptionsVertex =
@@ -55,7 +57,8 @@ namespace ToonyColorsPro
 					"texcoord3",
 					worldPosUVLabel,
 					triplanarUVLabel,
-					shaderPropertyUVLabel
+					shaderPropertyUVLabel,
+					customMaterialPropertyUVLabel
 				};
 
 				public static string[] LockedUvChannelOptions =
@@ -67,7 +70,8 @@ namespace ToonyColorsPro
 				{
 					"Off",
 					"Scrolling",
-					"Random Offset"
+					"Random Offset",
+					"Sine Distortion"
 				};
 			}
 
@@ -105,6 +109,8 @@ namespace ToonyColorsPro
 					}
 				}
 
+				internal static Color OrangeColor { get { return EditorGUIUtility.isProSkin ? new Color32(250, 130, 0, 255) : new Color32(200, 100, 20, 255); } }
+
 				static GUIStyle _OrangeBoldLabel;
 				internal static GUIStyle OrangeBoldLabel
 				{
@@ -112,7 +118,7 @@ namespace ToonyColorsPro
 					{
 						if(_OrangeBoldLabel == null)
 						{
-							var color = EditorGUIUtility.isProSkin ? new Color32(250, 130, 0, 255) : new Color32(220, 100, 0, 255);
+							var color = OrangeColor;
 							_OrangeBoldLabel = new GUIStyle(EditorStyles.label);
 							_OrangeBoldLabel.normal.textColor = color;
 							_OrangeBoldLabel.active.textColor = color;
@@ -368,6 +374,24 @@ namespace ToonyColorsPro
 						return _ShurikenValue;
 					}
 				}
+				
+				static GUIStyle _ShurikenValueMonospace;
+				internal static GUIStyle ShurikenValueMonospace
+				{
+					get
+					{
+						if (_ShurikenValueMonospace == null)
+						{
+							_ShurikenValueMonospace = new GUIStyle(ShurikenValue);
+							var robotoMonospace = AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath("64bf6567ab0269a47bfa164e4156cc4f"));
+							if (robotoMonospace != null)
+							{
+								_ShurikenValueMonospace.font = robotoMonospace;
+							}
+						}
+						return _ShurikenValueMonospace;
+					}
+				}
 
 				static GUIStyle _ShurikenPopup;
 				internal static GUIStyle ShurikenPopup
@@ -378,7 +402,8 @@ namespace ToonyColorsPro
 						{
 							_ShurikenPopup = new GUIStyle("ShurikenPopup")
 							{
-								fontSize = shurikenFontSize
+								fontSize = shurikenFontSize,
+								clipping = TextClipping.Clip
 							};
 						}
 						return _ShurikenPopup;
@@ -415,6 +440,24 @@ namespace ToonyColorsPro
 							};
 						}
 						return _ShurikenTextArea;
+					}
+				}
+
+				static GUIStyle _ShurikenTextAreaMonospace;
+				internal static GUIStyle ShurikenTextAreaMonospace
+				{
+					get
+					{
+						if (_ShurikenTextAreaMonospace == null)
+						{
+							_ShurikenTextAreaMonospace = new GUIStyle(ShurikenTextArea);
+						}
+						var robotoMonospace = AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath("64bf6567ab0269a47bfa164e4156cc4f"));
+						if (robotoMonospace != null)
+						{
+							_ShurikenTextAreaMonospace.font = robotoMonospace;
+						}
+						return _ShurikenTextAreaMonospace;
 					}
 				}
 
@@ -457,12 +500,98 @@ namespace ToonyColorsPro
 						return _ShurikenMiniButtonCustom;
 					}
 				}
+
+				static GUIStyle _ShurikenMiniButtonFlexible;
+				internal static GUIStyle ShurikenMiniButtonFlexible
+				{
+					get
+					{
+						if (_ShurikenMiniButtonFlexible == null)
+						{
+							_ShurikenMiniButtonFlexible = new GUIStyle(ShurikenMiniButtonCustom);
+							_ShurikenMiniButtonFlexible.fixedWidth = 0;
+						}
+						return _ShurikenMiniButtonFlexible;
+					}
+				}
+
+#if UNITY_2019_3_OR_NEWER
+				const int MINI_BUTTON_FONT_SIZE = 10;
+#endif
+				
+				static GUIStyle _MiniButtonLeft;
+				internal static GUIStyle MiniButtonLeft
+				{
+					get
+					{
+#if !UNITY_2019_3_OR_NEWER
+						return EditorStyles.miniButtonLeft;
+#else
+						if (_MiniButtonLeft == null)
+						{
+							_MiniButtonLeft = new GUIStyle(EditorStyles.miniButtonLeft){ fontSize = MINI_BUTTON_FONT_SIZE };
+						}
+						return _MiniButtonLeft;
+#endif
+					}
+				}
+				static GUIStyle _MiniButtonMid;
+				internal static GUIStyle MiniButtonMid
+				{
+					get
+					{
+#if !UNITY_2019_3_OR_NEWER
+						return EditorStyles.miniButtonMid;
+#else
+
+						if (_MiniButtonMid == null)
+						{
+							_MiniButtonMid = new GUIStyle(EditorStyles.miniButtonMid){ fontSize = MINI_BUTTON_FONT_SIZE };
+						}
+						return _MiniButtonMid;
+#endif
+					}
+				}
+
+				static GUIStyle _MiniButtonRight;
+				internal static GUIStyle MiniButtonRight
+				{
+					get
+					{
+#if !UNITY_2019_3_OR_NEWER
+						return EditorStyles.miniButtonRight;
+#else
+						if (_MiniButtonRight == null)
+						{
+							_MiniButtonRight = new GUIStyle(EditorStyles.miniButtonRight){ fontSize = MINI_BUTTON_FONT_SIZE };
+						}
+						return _MiniButtonRight;
+#endif
+					}
+				}
+				
+				static GUIStyle _MiniButton;
+				internal static GUIStyle MiniButton
+				{
+					get
+					{
+#if !UNITY_2019_3_OR_NEWER
+						return EditorStyles.miniButton;
+#else
+						if (_MiniButton == null)
+						{
+							_MiniButton = new GUIStyle(EditorStyles.miniButton){ fontSize = MINI_BUTTON_FONT_SIZE };
+						}
+						return _MiniButton;
+#endif
+					}
+				}
 			}
 
 			//--------------------------------------------------------------------------------------------------------------------------------
 			// GUILayout-like Methods
 
-			static Rect GetControlRect(GUIStyle style, float height = Styles.shurikenLineHeight, float width = 0f)
+			public static Rect GetControlRect(GUIStyle style, float height = Styles.shurikenLineHeight, float width = 0f)
 			{
 				return GUILayoutUtility.GetRect(width, height, style);
 			}
@@ -560,10 +689,18 @@ namespace ToonyColorsPro
 				var newSelected = EditorGUI.DelayedTextField(rect, selected, Styles.ShurikenValue);
 				if(EditorGUI.EndChangeCheck())
 				{
+					// empty string
+					if (newSelected.Length == 0)
+					{
+						return selected;
+					}
+					
 					// not enough characters
 					if (newSelected.Length < channelsCount)
 					{
-						return selected;
+						// expand the last valid character
+						char lastChar = newSelected[newSelected.Length - 1];
+						newSelected += new string(lastChar, channelsCount - newSelected.Length);
 					}
 
 					// remove extra characters
@@ -575,11 +712,10 @@ namespace ToonyColorsPro
 					newSelected = newSelected.ToUpperInvariant();
 					foreach(var c in newSelected)
 					{
-						for(var i = 0; i < options.Length; i++)
-							if(!options.Contains(c.ToString()))
-							{
-								return selected;
-							}
+						if (!options.Contains(c.ToString()))
+						{
+							return selected;
+						}
 					}
 				}
 
@@ -685,34 +821,46 @@ namespace ToonyColorsPro
 				Rect rect = GetControlRect(Styles.ShurikenPopup);
 				return EditorGUI.Popup(rect, index, values, Styles.ShurikenPopup);
 			}
-			public static string TextField(string str, bool delayed = false)
+			public static string TextField(string str, bool delayed = false, bool monospace = false)
 			{
-				Rect rect = GetControlRect(Styles.ShurikenValue);
+				Rect rect = GetControlRect(monospace ? Styles.ShurikenValueMonospace : Styles.ShurikenValue);
+				return TextField(rect, str, delayed, monospace);
+			}
+			public static string TextField(Rect rect, string str, bool delayed = false, bool monospace = false)
+			{
+				var style = monospace ? Styles.ShurikenValueMonospace : Styles.ShurikenValue;
 				if (delayed)
 				{
-					return EditorGUI.DelayedTextField(rect, GUIContent.none, str, Styles.ShurikenValue);
+					return EditorGUI.DelayedTextField(rect, GUIContent.none, str, style);
 				}
 				else
 				{
-					return EditorGUI.TextField(rect, GUIContent.none, str, Styles.ShurikenValue);
+					return EditorGUI.TextField(rect, GUIContent.none, str, style);
 				}
 			}
-			public static string TextFieldShaderVariable(string str)
+			
+			static readonly List<char> ValidVariableCharacters = new List<char>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789".ToCharArray());
+			public static string TextFieldShaderVariable(Rect rect, string str)
 			{
 				//special version with that only accepts alphanumerical and underscore
-				var result = TextField(str);
-				var authChars = new List<char>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789".ToCharArray());
-				for(var i = result.Length-1; i >= 0; i--)
-					if(!authChars.Contains(result[i]))
+				var result = TextField(rect, str, monospace: true);
+				for (var i = result.Length - 1; i >= 0; i--)
+				{
+					if (!ValidVariableCharacters.Contains(result[i]))
+					{
 						result = result.Remove(i, 1);
+					}
+				}
+
 				return result;
 			}
 
-			public static string TextArea(string str, float height = 0)
+			public static string TextArea(string str, float height = 0, bool monospace = false)
 			{
+				var style = monospace ? Styles.ShurikenTextAreaMonospace : Styles.ShurikenTextArea;
 				return height > 0 ?
-					EditorGUI.TextArea(GetControlRect(Styles.ShurikenTextArea, height), str, Styles.ShurikenTextArea) :
-					EditorGUI.TextArea(GetControlRect(Styles.ShurikenTextArea), str, Styles.ShurikenTextArea);
+					EditorGUI.TextArea(GetControlRect(Styles.ShurikenTextArea, height), str, style) :
+					EditorGUI.TextArea(GetControlRect(Styles.ShurikenTextArea), str, style);
 			}
 			public static T ObjectField<T>(T obj) where T : UnityEngine.Object
 			{
@@ -748,7 +896,12 @@ namespace ToonyColorsPro
 
 			public static bool ButtonPopup(string label)
 			{
-				return GUILayout.Button(label, Styles.ShurikenPopup, GUILayout.MinWidth(248), GUILayout.MinHeight(Styles.shurikenLineHeight));
+				return ButtonPopup(TCP2_GUI.TempContent(label));
+			}
+			
+			public static bool ButtonPopup(GUIContent content)
+			{
+				return GUILayout.Button(content, Styles.ShurikenPopup, GUILayout.MinWidth(248), GUILayout.MinHeight(Styles.shurikenLineHeight));
 			}
 			public static int IntField(int value)
 			{
@@ -890,7 +1043,7 @@ namespace ToonyColorsPro
 				}
 			}
 
-			public class IndentedLine : IDisposable
+			public struct IndentedLine : IDisposable
 			{
 				public IndentedLine(float indent = -1)
 				{

@@ -1,5 +1,5 @@
 ﻿// Toony Colors Pro 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System.Collections.Generic;
 using UnityEditor;
@@ -34,6 +34,7 @@ namespace ToonyColorsPro
 			public string[] ShaderFeaturesBlock = new string[0];
 			public string[] PropertiesBlock = new string[0];
 			public string[] Functions = new string[0];
+			public bool ExplicitFunctionsDeclaration;
 			public string[] Variables = new string[0];
 			public string[] InputStruct = new string[0];
 			Dictionary<string, string[]> Vertices = new Dictionary<string, string[]>();
@@ -41,6 +42,19 @@ namespace ToonyColorsPro
 
 			Dictionary<string, Argument[]> VerticesArgs = new Dictionary<string, Argument[]>();
 			Dictionary<string, Argument[]> FragmentsArgs = new Dictionary<string, Argument[]>();
+			
+			Dictionary<string, List<string>> ArbitraryBlocks = new Dictionary<string, List<string>>();
+
+			public List<string> GetArbitraryBlock(string block)
+			{
+				if (!ArbitraryBlocks.ContainsKey(block))
+				{
+					Debug.LogError(string.Format("Couldn't find block with name '{0}' in module '{1}'", block, this.name));
+					return null;
+				}
+
+				return this.ArbitraryBlocks[block];
+			}
 
 			static public Module CreateFromName(string moduleName)
 			{
@@ -81,11 +95,14 @@ namespace ToonyColorsPro
 				List<string> variables = new List<string>();
 				List<string> functions = new List<string>();
 				List<string> inputStruct = new List<string>();
+				bool explicitFunctions = false;
 
 				Dictionary<string, List<Argument>> verticesArgs = new Dictionary<string, List<Argument>>();
 				Dictionary<string, List<Argument>> fragmentsArgs = new Dictionary<string, List<Argument>>();
 				Dictionary<string, List<string>> vertices = new Dictionary<string, List<string>>();
 				Dictionary<string, List<string>> fragments = new Dictionary<string, List<string>>();
+				
+				Dictionary<string, List<string>> arbitraryBlocks = new Dictionary<string, List<string>>();
 
 				List<string> currentList = null;
 
@@ -122,7 +139,7 @@ namespace ToonyColorsPro
 							var key = "";
 							if (lineTrim.Contains(":"))
 							{
-								int start = "#FRAGMENT:".Length;
+								int start = "#FRAGMENT:".Length; // same character count for #LIGHTING
 								int end = lineTrim.IndexOf('(');
 								if(end >= 0)
 									key = lineTrim.Substring(start, end - start);
@@ -140,6 +157,12 @@ namespace ToonyColorsPro
 								fragmentsArgs.Add(key, fragmentArgs);
 							}
 						}
+						else if (lineTrim.StartsWith("#FUNCTIONS:EXPLICIT"))
+						{
+							// Explicit functions that have to be declared in the template with [[Module:FUNCTIONS:module_name]]
+							currentList = functions;
+							explicitFunctions = true;
+						}
 						else
 						{
 							switch(lineTrim)
@@ -153,6 +176,20 @@ namespace ToonyColorsPro
 								case "#VARIABLES": currentList = variables; break;
 								case "#INPUT": currentList = inputStruct; break;
 								case "#END": currentList = null; break;
+								default:
+								{
+									// An "arbitrary block" is parsed if not using a predefine keyword like above, and we are not iterating over an existing block
+									if (currentList == null)
+									{
+										string block = lineTrim.Substring(1);
+										if (block.Length > 0 && !char.IsWhiteSpace(block[0]))
+										{
+											currentList = new List<string>();
+											arbitraryBlocks.Add(block, currentList);
+										}
+									}
+									break;
+								}
 							}
 						}
 					}
@@ -175,6 +212,8 @@ namespace ToonyColorsPro
 				module.Functions = functions.ToArray();
 				module.Variables = variables.ToArray();
 				module.InputStruct = inputStruct.ToArray();
+				module.ExplicitFunctionsDeclaration = explicitFunctions;
+				module.ArbitraryBlocks = arbitraryBlocks;
 
 				// #VERTEX
 				if (vertices.Count == 0)

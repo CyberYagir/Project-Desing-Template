@@ -1,5 +1,5 @@
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System;
 using System.Collections.Generic;
@@ -376,7 +376,21 @@ namespace ToonyColorsPro
 				var newMesh = overwriteMesh ? originalMesh : new Mesh();
 				if (!overwriteMesh)
 				{
-					//			EditorUtility.CopySerialized(originalMesh, newMesh);
+					var originalAssetPath = AssetDatabase.GetAssetPath(originalMesh);
+					ModelImporter originalImporter = null;
+					bool restoreOptimizeGameObjects = false;
+					if (!string.IsNullOrEmpty(originalAssetPath))
+					{
+						originalImporter = AssetImporter.GetAtPath(originalAssetPath) as ModelImporter;
+
+						if (originalImporter != null && originalImporter.optimizeGameObjects)
+						{
+							originalImporter.optimizeGameObjects = false;
+							AssetDatabase.ImportAsset(originalAssetPath, ImportAssetOptions.ForceSynchronousImport);
+							restoreOptimizeGameObjects = true;
+						}
+					}
+
 					newMesh.vertices = originalMesh.vertices;
 					newMesh.normals = originalMesh.normals;
 					newMesh.tangents = originalMesh.tangents;
@@ -389,14 +403,25 @@ namespace ToonyColorsPro
 					newMesh.bindposes = originalMesh.bindposes;
 					newMesh.boneWeights = originalMesh.boneWeights;
 
-					//Only available from Unity 5.3 onward
 					if (originalMesh.blendShapeCount > 0)
+					{
 						CopyBlendShapes(originalMesh, newMesh);
+					}
 
 					newMesh.subMeshCount = originalMesh.subMeshCount;
 					if (newMesh.subMeshCount > 1)
+					{
 						for (var i = 0; i < newMesh.subMeshCount; i++)
+						{
 							newMesh.SetTriangles(originalMesh.GetTriangles(i), i);
+						}
+					}
+
+					if (restoreOptimizeGameObjects)
+					{
+						originalImporter.optimizeGameObjects = true;
+						AssetDatabase.ImportAsset(originalAssetPath, ImportAssetOptions.ForceSynchronousImport);
+					}
 				}
 
 				//--------------------------------

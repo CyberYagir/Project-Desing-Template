@@ -1,5 +1,5 @@
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 //Enable this to display the default Inspector (in case the custom Inspector is broken)
 //#define SHOW_DEFAULT_INSPECTOR
@@ -350,6 +350,8 @@ namespace ToonyColorsPro
 				{
 					bool force = (shaderImporter != null && shaderImporter.assetTimeStamp != lastTimestamp);
 					Initialize(materialEditor, properties, force);
+					
+					materialEditor.Repaint();
 				}
 
 				var shader = (materialEditor.target as Material).shader;
@@ -410,6 +412,27 @@ namespace ToonyColorsPro
 								string displayName = splitLabels.ContainsKey(i) ? splitLabels[i][_isMobile ? 1 : 0] : properties[i].displayName;
 								DisplayProperty(properties[i], displayName, materialEditor);
 							}
+
+							if (properties[i].name == "_UseAlphaTest" && GUI.changed)
+							{
+								IterateMaterials(mat =>
+								{
+									string currentTag = mat.GetTag("RenderType", false, null);
+									if (currentTag != "Transparent")
+									{
+										string tag = mat.IsKeywordEnabled("_ALPHATEST_ON") ? "TransparentCutout" : "";
+										mat.SetOverrideTag("RenderType", tag);
+										if (mat.IsKeywordEnabled("_ALPHATEST_ON"))
+										{
+											mat.renderQueue = (int)RenderQueue.AlphaTest;
+										}
+										else
+										{
+											mat.renderQueue = -1;
+										}
+									}
+								});
+							}
 						}
 
 						GUI.enabled = guiEnabled;
@@ -434,6 +457,14 @@ namespace ToonyColorsPro
 				}
 
 				GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+
+				EditorGUIUtility.labelWidth = labelWidth - 50;
+				materialEditor.LightmapEmissionFlagsProperty(0, System.Array.Exists(_materialEditor.targets, t =>
+				{
+					var mat = t as Material;
+					return mat != null && mat.IsKeywordEnabled("_EMISSION");
+				}));
+				EditorGUIUtility.labelWidth = labelWidth;
 				materialEditor.RenderQueueField();
 				materialEditor.EnableInstancingField();
 			}
@@ -616,30 +647,42 @@ namespace ToonyColorsPro
 				switch(mode)
 				{
 					case RenderingMode.Opaque:
-						SetRenderQueue(RenderQueue.Geometry);
+						SetRenderQueue(-1);
 						//SetCulling(Culling.Back);
 						SetZWrite(true);
 						SetBlending(BlendFactor.One, BlendFactor.Zero);
-						IterateMaterials(mat => mat.DisableKeyword("_ALPHAPREMULTIPLY_ON"));
+						IterateMaterials(mat =>
+						{
+							mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+							mat.SetOverrideTag("RenderType",  mat.IsKeywordEnabled("_ALPHATEST_ON") ? "TransparentCutout" : "");
+						});
 						break;
 
 					case RenderingMode.Fade:
-						SetRenderQueue(RenderQueue.Transparent);
+						SetRenderQueue((int)RenderQueue.Transparent);
 						//SetCulling(Culling.Off);
 						SetZWrite(false);
 						SetBlending(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
-						IterateMaterials(mat => mat.DisableKeyword("_ALPHAPREMULTIPLY_ON"));
+						IterateMaterials(mat =>
+						{
+							mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+							mat.SetOverrideTag("RenderType", "Transparent");
+						});
 						break;
 
 					case RenderingMode.Transparent:
-						SetRenderQueue(RenderQueue.Transparent);
+						SetRenderQueue((int)RenderQueue.Transparent);
 						//SetCulling(Culling.Off);
 						SetZWrite(false);
 						SetBlending(BlendFactor.One, BlendFactor.OneMinusSrcAlpha);
-						IterateMaterials(mat => mat.EnableKeyword("_ALPHAPREMULTIPLY_ON"));
+						IterateMaterials(mat =>
+						{
+							mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+							mat.SetOverrideTag("RenderType", "Transparent");
+						});
 						break;
 				}
-				IterateMaterials(mat => mat.SetFloat(PROP_RENDERING_MODE, (float)mode));
+				IterateMaterials(mat => { mat.SetFloat(PROP_RENDERING_MODE, (float) mode); });
 			}
 
 			void SetZWrite(bool enable)
@@ -647,9 +690,9 @@ namespace ToonyColorsPro
 				IterateMaterials(mat => mat.SetFloat(PROP_ZWRITE, enable ? 1.0f : 0.0f));
 			}
 
-			void SetRenderQueue(RenderQueue queue)
+			void SetRenderQueue(int queue)
 			{
-				IterateMaterials(mat => mat.renderQueue = (int)queue);
+				IterateMaterials(mat => mat.renderQueue = queue);
 			}
 
 			void SetCulling(Culling culling)

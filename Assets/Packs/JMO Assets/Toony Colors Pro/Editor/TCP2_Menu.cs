@@ -1,5 +1,5 @@
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +14,7 @@ namespace ToonyColorsPro
 	public static class Menu
 	{
 		//Change this path if you want the Toony Colors Pro menu to appear elsewhere in the menu bar
-		public const string MENU_PATH = @"Window/Other/Toony Colors Pro/";
+		public const string MENU_PATH = @"Tools/Toony Colors Pro/";
 
 		//--------------------------------------------------------------------------------------------------
 		// DOCUMENTATION

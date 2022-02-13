@@ -1,5 +1,5 @@
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System;
 using System.Collections.Generic;
@@ -209,6 +209,30 @@ namespace ToonyColorsPro
 					return _Tab;
 				}
 			}
+			private static GUIStyle _TabError;
+			
+			public static GUIStyle TabError
+			{
+				get
+				{
+					if (_TabError == null)
+					{
+						var red = EditorGUIUtility.isProSkin ? new Color(0.8f, 0.35f, 0.35f) : new Color(0.7f, 0.1f, 0.1f);
+						var redFocused = EditorGUIUtility.isProSkin ? new Color(1f, 0.35f, 0.35f) : new Color(0.9f, 0.1f, 0.1f);
+						
+						_TabError = new GUIStyle(Tab);
+						
+						_TabError.normal.textColor = red;
+						_TabError.focused.textColor = red;
+						_TabError.active.textColor = red;
+						
+						_TabError.onNormal.textColor = redFocused;
+						_TabError.onFocused.textColor = redFocused;
+						_TabError.onActive.textColor = redFocused;
+					}
+					return _TabError;
+				}
+			}
 
 			static GUIStyle ShurikenMiniButtonBorder(GUIStyle source)
 			{
@@ -332,20 +356,11 @@ namespace ToonyColorsPro
 				}
 			}
 
-			private static GUIStyle _HeaderLabel;
 			private static GUIStyle HeaderLabel
 			{
 				get
 				{
-					if (_HeaderLabel == null)
-					{
-						_HeaderLabel = new GUIStyle(EditorStyles.label);
-						_HeaderLabel.fontStyle = FontStyle.Bold;
-
-						var gray1 = EditorGUIUtility.isProSkin ? 0.7f : 0.35f;
-						_HeaderLabel.normal.textColor = new Color(gray1, gray1, gray1);
-					}
-					return _HeaderLabel;
+					return ToonyColorsPro.ShaderGenerator.SGUILayout.Styles.OrangeBoldLabel;
 				}
 			}
 
@@ -357,6 +372,8 @@ namespace ToonyColorsPro
 					if (_HeaderDropDown == null)
 					{
 						_HeaderDropDown = new GUIStyle(EditorStyles.foldout);
+
+						_HeaderDropDown.clipping = TextClipping.Clip;
 
 						_HeaderDropDown.focused.background = _HeaderDropDown.normal.background;
 						_HeaderDropDown.active.background = _HeaderDropDown.normal.background;
@@ -388,6 +405,8 @@ namespace ToonyColorsPro
 					{
 						_HeaderDropDownBold = new GUIStyle(HeaderDropDown);
 						_HeaderDropDownBold.fontStyle = FontStyle.Bold;
+						
+						_HeaderDropDownBold.clipping = TextClipping.Overflow;
 
 						var gray1 = EditorGUIUtility.isProSkin ? 0.7f : 0.3f;
 						var gray2 = EditorGUIUtility.isProSkin ? 0.6f : 0.45f;
@@ -437,7 +456,7 @@ namespace ToonyColorsPro
 					{
 						_SubHeaderLabel = new GUIStyle(EditorStyles.label);
 						_SubHeaderLabel.fontStyle = FontStyle.Normal;
-						_SubHeaderLabel.normal.textColor = EditorGUIUtility.isProSkin ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.35f, 0.35f, 0.35f);
+						_SubHeaderLabel.normal.textColor = EditorGUIUtility.isProSkin ? new Color(0.65f, 0.65f, 0.65f) : new Color(0.35f, 0.35f, 0.35f);
 					}
 					return _SubHeaderLabel;
 				}
@@ -453,6 +472,7 @@ namespace ToonyColorsPro
 						_BigHeaderLabel = new GUIStyle(EditorStyles.largeLabel);
 						_BigHeaderLabel.fontStyle = FontStyle.Bold;
 						_BigHeaderLabel.fixedHeight = 30;
+						_BigHeaderLabel.normal.textColor = ToonyColorsPro.ShaderGenerator.SGUILayout.Styles.OrangeColor;
 					}
 					return _BigHeaderLabel;
 				}
@@ -514,6 +534,19 @@ namespace ToonyColorsPro
 						_SmallHelpIconTexture = GetCustomTexture("TCP2_SmallHelpIcon");
 					}
 					return _SmallHelpIconTexture;
+				}
+			}
+			
+			public static Texture2D _LayersIconTexture;
+			public static Texture2D LayersIconTexture
+			{
+				get
+				{
+					if (_LayersIconTexture == null)
+					{
+						_LayersIconTexture = GetCustomTexture("TCP2_LayerIcon");
+					}
+					return _LayersIconTexture;
 				}
 			}
 
@@ -780,7 +813,7 @@ namespace ToonyColorsPro
 			{
 				HeaderAndHelp(header, null, helpTopic);
 			}
-			public static void HeaderAndHelp(string header, string tooltip, string helpTopic)
+			public static void HeaderAndHelp(string header, string tooltip, string helpTopic, GUIStyle style = null)
 			{
 				GUILayout.BeginHorizontal();
 				var r = GUILayoutUtility.GetRect(TempContent(header, tooltip), EditorStyles.label, GUILayout.ExpandWidth(true));
@@ -795,21 +828,25 @@ namespace ToonyColorsPro
 				GUI.Label(r, TempContent(header, tooltip), EditorStyles.boldLabel);
 				GUILayout.EndHorizontal();
 			}
-			public static void HeaderAndHelp(Rect position, string header, string tooltip, string helpTopic)
+			public static void HeaderAndHelp(Rect position, string header, string tooltip, string helpTopic, GUIStyle style = null)
 			{
 				if (!string.IsNullOrEmpty(helpTopic))
 				{
 					var btnRect = position;
 					btnRect.width = 16;
+					btnRect.y += 3;
+					btnRect.x -= 2;
 					//Button
 					if (GUI.Button(btnRect, TempContent("", "Help about:\n" + helpTopic), HelpIcon))
+					{
 						OpenHelpFor(helpTopic);
+					}
 				}
 
 				//Label
 				position.x += 16;
 				position.width -= 16;
-				GUI.Label(position, TempContent(header, tooltip), EditorStyles.boldLabel);
+				GUI.Label(position, TempContent(header, tooltip), style != null ? style : EditorStyles.boldLabel);
 			}
 
 			public static void HeaderBig(string header, string tooltip = null)
@@ -853,6 +890,20 @@ namespace ToonyColorsPro
 				// compensate the style margin: we can't set the right margin to 0, else the width isn't calculated correctly, so we compensate here
 				rect.xMax += HelpBoxRichTextStyle.margin.right;
 				GUI.Label(rect, guiContent, HelpBoxRichTextStyle);
+			}
+
+			public static bool HelpBoxWithButton(string message, string buttonLabel, float buttonWidth)
+			{
+				EditorGUILayout.HelpBox(message, MessageType.Info);
+				
+				var rect = GUILayoutUtility.GetLastRect();
+				rect.width -= buttonWidth;
+				rect.x += rect.width;
+				rect.width = buttonWidth - 4;
+				rect.yMin += 4;
+				rect.yMax -= 4;
+				
+				return GUI.Button(rect, TempContent(buttonLabel));
 			}
 
 			public static void ContextualHelpBoxLayout(string message, bool canHover = false)
@@ -944,8 +995,8 @@ namespace ToonyColorsPro
 
 		public class TCP2HeaderHelpDecorator : MaterialPropertyDrawer
 		{
-			protected readonly string header;
-			protected readonly string help;
+			readonly string header;
+			readonly string help;
 
 			public TCP2HeaderHelpDecorator(string header)
 			{
@@ -960,12 +1011,12 @@ namespace ToonyColorsPro
 
 			public override void OnGUI(Rect position, MaterialProperty prop, string label, MaterialEditor editor)
 			{
-				TCP2_GUI.HeaderAndHelp(position, header, null, help);
+				TCP2_GUI.HeaderAndHelp(position, header, null, help, ToonyColorsPro.ShaderGenerator.SGUILayout.Styles.OrangeBoldLabel);
 			}
 
 			public override float GetPropertyHeight(MaterialProperty prop, string label, MaterialEditor editor)
 			{
-				return 18f;
+				return EditorGUIUtility.singleLineHeight + 2;
 			}
 		}
 
@@ -1228,12 +1279,20 @@ namespace ToonyColorsPro
 
 		public class TCP2ColorNoAlphaDrawer : MaterialPropertyDrawer
 		{
+			readonly bool forceHdr;
+			
+			public TCP2ColorNoAlphaDrawer() { }
+			public TCP2ColorNoAlphaDrawer(string hdr)
+			{
+				forceHdr = hdr.ToUpperInvariant() == "HDR";
+			}
+			
 			public override void OnGUI(Rect position, MaterialProperty prop, GUIContent label, MaterialEditor editor)
 			{
 				//Code from ColorPropertyInternal, but with alpha turned off
 				EditorGUI.BeginChangeCheck();
 				EditorGUI.showMixedValue = prop.hasMixedValue;
-				bool hdr = (prop.flags & MaterialProperty.PropFlags.HDR) != MaterialProperty.PropFlags.None;
+				bool hdr = forceHdr || (prop.flags & MaterialProperty.PropFlags.HDR) != MaterialProperty.PropFlags.None;
 				bool showAlpha = false;
 #if UNITY_2018_1_OR_NEWER
 				Color colorValue = EditorGUI.ColorField(position, label, prop.colorValue, true, showAlpha, hdr);
@@ -1360,13 +1419,12 @@ namespace ToonyColorsPro
 
 			public override void OnGUI(Rect position, MaterialProperty prop, string label, MaterialEditor editor)
 			{
-				position.y += 2;
 				TCP2_GUI.Header(position, header);
 			}
 
 			public override float GetPropertyHeight(MaterialProperty prop, string label, MaterialEditor editor)
 			{
-				return 18f;
+				return EditorGUIUtility.singleLineHeight + 2;
 			}
 		}
 

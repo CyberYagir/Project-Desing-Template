@@ -1,5 +1,5 @@
 // Toony Colors Pro 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 
 using System;
 using System.Collections.Generic;
@@ -359,9 +359,11 @@ namespace ToonyColorsPro
 						case "subh": feature = new UIFeature_SubHeader(kvpList); break;
 						case "header": feature = new UIFeature_Header(kvpList); break;
 						case "warning": feature = new UIFeature_Warning(kvpList); break;
-						case "sngl": feature = new UIFeature_Single(kvpList); break;
-						case "gpu_inst_opt": feature = new UIFeature_Single(kvpList); break;
+						case "sngl": feature = new UIFeature_Single(kvpList, false); break;
+						case "nsngl": feature = new UIFeature_Single(kvpList, true); break;
+						case "gpu_inst_opt": feature = new UIFeature_Single(kvpList, false); break;
 						case "mult": feature = new UIFeature_Multiple(kvpList); break;
+						case "mult_flags": feature = new UIFeature_MultFlags(kvpList); break;
 						case "keyword": feature = new UIFeature_Keyword(kvpList); break;
 						case "keyword_str": feature = new UIFeature_KeywordString(kvpList); break;
 						case "dd_start": feature = new UIFeature_DropDownStart(kvpList); break;
@@ -402,10 +404,14 @@ namespace ToonyColorsPro
 
 		internal class UIFeature_Single : UIFeature
 		{
+			readonly bool negative;
 			string keyword;
 			string[] toggles;    //features forced to be toggled when this feature is enabled
 
-			internal UIFeature_Single(List<KeyValuePair<string, string>> list) : base(list) { }
+			internal UIFeature_Single(List<KeyValuePair<string, string>> list, bool negative) : base(list)
+			{
+				this.negative = negative;
+			}
 
 			protected override void ProcessProperty(string key, string value)
 			{
@@ -421,7 +427,18 @@ namespace ToonyColorsPro
 			{
 				var feature = Highlighted(config);
 				EditorGUI.BeginChangeCheck();
-				feature = EditorGUI.Toggle(position, feature);
+				if (negative)
+				{
+					bool check = EditorGUI.Toggle(position, !feature);
+					if (GUI.changed)
+					{
+						feature = !check;
+					}
+				}
+				else
+				{
+					feature = EditorGUI.Toggle(position, feature);
+				}
 				if (labelClicked)
 				{
 					feature = !feature;
@@ -433,8 +450,10 @@ namespace ToonyColorsPro
 
 					if(toggles != null)
 					{
-						foreach(var t in toggles)
+						foreach (var t in toggles)
+						{
 							config.ToggleFeature(t, feature);
+						}
 					}
 				}
 			}
@@ -538,6 +557,156 @@ namespace ToonyColorsPro
 					foreach(var t in toggles)
 						config.ToggleFeature(t, selectedFeature > 0);
 				}
+			}
+		}
+
+		//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		// MULT FLAGS: enum flags-like interface to select multiple flags
+
+		internal class UIFeature_MultFlags : UIFeature
+		{
+			string keyword;
+			string[] labels;
+			string[] values;
+			string cachedKeywordValue;
+			List<string> flagsList = new List<string>();
+			int cachedFlagListCount;
+
+			string popupLabel = "None";
+
+			Rect flagsMenuPosition;
+			bool reopenFlagsMenu = false;
+
+			internal UIFeature_MultFlags(List<KeyValuePair<string, string>> list) : base(list) { }
+
+			protected override void ProcessProperty(string key, string value)
+			{
+				if (key == "kw")
+				{
+					keyword = value;
+				}
+				else if (key == "default")
+				{
+					flagsList.Add(value);
+				}
+				else if(key == "values")
+				{
+					Debug.Log("process values: " + value);
+					var data = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+					labels = new string[data.Length];
+					this.values = new string[data.Length];
+
+					for(var i = 0; i < data.Length; i++)
+					{
+						var lbl_feat = data[i].Split('|');
+						if(lbl_feat.Length != 2)
+						{
+							Debug.LogWarning("[UIFeature_MultFlags] Invalid data:" + data[i]);
+							continue;
+						}
+
+						labels[i] = lbl_feat[0];
+						this.values[i] = lbl_feat[1];
+					}
+				}
+				else
+					base.ProcessProperty(key, value);
+			}
+
+			protected override void DrawGUI(Rect position, Config config, bool labelClicked)
+			{
+				// update from flag lists
+				if (cachedFlagListCount != flagsList.Count)
+				{
+					cachedFlagListCount = flagsList.Count;
+					string newKeywordValue = string.Join(" ", flagsList.ToArray());
+					config.SetKeyword(keyword, newKeywordValue);
+					cachedKeywordValue = newKeywordValue;
+					UpdateButtonLabel();
+				}
+
+				// update from config
+				string configKeywordValue = config.GetKeyword(keyword);
+				if (cachedKeywordValue != configKeywordValue)
+				{
+					cachedKeywordValue = configKeywordValue;
+					flagsList.Clear();
+					if (configKeywordValue != null)
+					{
+						var data = configKeywordValue.Split(' ');
+						flagsList.AddRange(data);
+					}
+				}
+
+				if (GUI.Button(position, TCP2_GUI.TempContent(popupLabel), EditorStyles.popup) || reopenFlagsMenu)
+				{
+					GetFlagsMenu(config, reopenFlagsMenu);
+					reopenFlagsMenu = false;
+				}
+			}
+
+			void GetFlagsMenu(Config config, bool reusePosition = false)
+			{
+				var flagsMenu = new GenericMenu();
+				for (int i = 0; i < labels.Length; i++)
+				{
+					flagsMenu.AddItem(new GUIContent(labels[i]), flagsList.Contains(values[i]), OnSelectFlag, new object[] { config, values[i] });
+				}
+
+				if (!reusePosition)
+				{
+					flagsMenuPosition = new Rect(Event.current.mousePosition, Vector2.zero);
+				}
+				flagsMenu.DropDown(flagsMenuPosition);
+			}
+
+			void UpdateButtonLabel()
+			{
+				if (flagsList.Count == 0)
+				{
+					popupLabel = "None";
+				}
+				else if (flagsList.Count == 1)
+				{
+					int index = Array.IndexOf(values, flagsList[0]);
+					popupLabel = labels[index];
+				}
+				else
+				{
+					popupLabel = "Multiple values...";
+				}
+			}
+
+			void OnSelectFlag(object data)
+			{
+				int previousCount = flagsList.Count;
+
+				Config config = (Config)((object[])data)[0];
+				string value = (string)((object[])data)[1];
+
+				if (flagsList.Contains(value))
+				{
+					flagsList.Remove(value);
+				}
+				else
+				{
+					flagsList.Add(value);
+				}
+
+				UpdateButtonLabel();
+				config.SetKeyword(keyword, string.Join(" ", flagsList.ToArray()));
+
+				reopenFlagsMenu = true;
+				EditorApplication.delayCall += () =>
+				{
+					// will force the menu to reopen next frame
+					ShaderGenerator2.RepaintWindow();
+				};
+			}
+
+			internal override bool Highlighted(Config config)
+			{
+				return flagsList.Count > 0;
 			}
 		}
 
@@ -831,7 +1000,7 @@ namespace ToonyColorsPro
 
 		internal class UIFeature_Flag : UIFeature
 		{
-			bool negative;
+			readonly bool negative;
 			string keyword;
 			string block = "pragma_surface_shader";
 			string[] toggles;    //features forced to be toggled when this flag is enabled

@@ -1,6 +1,6 @@
 //================================================================================================================================
 // Toony Colors Pro+Mobile 2
-// (c) 2014-2020 Jean Moreno
+// (c) 2014-2021 Jean Moreno
 //
 // UNITY_SHADER_NO_UPGRADE
 //
@@ -18,14 +18,14 @@
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Lighting.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Lighting.hlsl
 
 
 #ifndef UNIVERSAL_LIGHTING_INCLUDED
 #define UNIVERSAL_LIGHTING_INCLUDED
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Common.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Common.hlsl
 
 
 #ifndef UNITY_COMMON_INCLUDED
@@ -121,6 +121,7 @@
 
 #define real2x2 half2x2
 #define real2x3 half2x3
+#define real2x4 half2x4
 #define real3x2 half3x2
 #define real3x3 half3x3
 #define real3x4 half3x4
@@ -156,6 +157,7 @@
 
 #define real2x2 float2x2
 #define real2x3 float2x3
+#define real2x4 float2x4
 #define real3x2 float3x2
 #define real3x3 float3x3
 #define real3x4 float3x4
@@ -186,19 +188,29 @@
 #endif
 
 // Include language header
-#if defined(SHADER_API_XBOXONE)
+#if defined (SHADER_API_GAMECORE)
+//================================================================================================================================
+// WARNING: File not found: com.unity.render-pipelines.gamecore/ShaderLibrary/API/GameCore.hlsl
+//================================================================================================================================
+
+#elif defined(SHADER_API_XBOXONE)
 //================================================================================================================================
 // WARNING: File not found: com.unity.render-pipelines.xboxone/ShaderLibrary/API/XBoxOne.hlsl
 //================================================================================================================================
 
-#elif defined(SHADER_API_PSSL)
+#elif defined(SHADER_API_PS4)
 //================================================================================================================================
 // WARNING: File not found: com.unity.render-pipelines.ps4/ShaderLibrary/API/PSSL.hlsl
 //================================================================================================================================
 
+#elif defined(SHADER_API_PS5)
+//================================================================================================================================
+// WARNING: File not found: com.unity.render-pipelines.ps5/ShaderLibrary/API/PSSL.hlsl
+//================================================================================================================================
+
 #elif defined(SHADER_API_D3D11)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/D3D11.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/D3D11.hlsl
 
 
 // This file assume SHADER_API_D3D11 is defined
@@ -220,6 +232,7 @@
 #define PLATFORM_SUPPORTS_EXPLICIT_BINDING
 #define PLATFORM_NEEDS_UNORM_UAV_SPECIFIER
 #define PLATFORM_SUPPORTS_BUFFER_ATOMICS_IN_PIXEL_SHADER
+#define PLATFORM_SUPPORTS_PRIMITIVE_ID_IN_PIXEL_SHADER
 
 
 // flow control attributes
@@ -269,6 +282,7 @@
 
 #define SAMPLER(samplerName)                  SamplerState samplerName
 #define SAMPLER_CMP(samplerName)              SamplerComparisonState samplerName
+#define ASSIGN_SAMPLER(samplerName, samplerValue) samplerName = samplerValue
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                 TEXTURE2D(textureName),         SAMPLER(samplerName)
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)           TEXTURE2D_ARRAY(textureName),   SAMPLER(samplerName)
@@ -336,14 +350,14 @@
 #define GATHER_BLUE_TEXTURE2D(textureName, samplerName, coord2)           textureName.GatherBlue(samplerName, coord2)
 #define GATHER_ALPHA_TEXTURE2D(textureName, samplerName, coord2)          textureName.GatherAlpha(samplerName, coord2)
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/D3D11.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/D3D11.hlsl
 //================================================================================================================================
 
 
 
 #elif defined(SHADER_API_METAL)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Metal.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Metal.hlsl
 
 
 // This file assumes SHADER_API_METAL is defined
@@ -392,15 +406,15 @@
 #define TEXTURE3D(textureName)                Texture3D textureName
 
 #define TEXTURE2D_FLOAT(textureName)          Texture2D_float textureName
-#define TEXTURE2D_ARRAY_FLOAT(textureName)    Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_FLOAT(textureName)    Texture2DArray_float textureName
 #define TEXTURECUBE_FLOAT(textureName)        TextureCube_float textureName
-#define TEXTURECUBE_ARRAY_FLOAT(textureName)  TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_FLOAT(textureName)  TextureCubeArray_float textureName
 #define TEXTURE3D_FLOAT(textureName)          Texture3D_float textureName
 
 #define TEXTURE2D_HALF(textureName)           Texture2D_half textureName
-#define TEXTURE2D_ARRAY_HALF(textureName)     Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_HALF(textureName)     Texture2DArray_half textureName
 #define TEXTURECUBE_HALF(textureName)         TextureCube_half textureName
-#define TEXTURECUBE_ARRAY_HALF(textureName)   TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_HALF(textureName)   TextureCubeArray_half textureName
 #define TEXTURE3D_HALF(textureName)           Texture3D_half textureName
 
 #define TEXTURE2D_SHADOW(textureName)         TEXTURE2D(textureName)
@@ -414,6 +428,7 @@
 
 #define SAMPLER(samplerName)                  SamplerState samplerName
 #define SAMPLER_CMP(samplerName)              SamplerComparisonState samplerName
+#define ASSIGN_SAMPLER(samplerName, samplerValue) samplerName = samplerValue
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                 TEXTURE2D(textureName),         SAMPLER(samplerName)
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)           TEXTURE2D_ARRAY(textureName),   SAMPLER(samplerName)
@@ -481,14 +496,14 @@
 #define GATHER_BLUE_TEXTURE2D(textureName, samplerName, coord2)           textureName.GatherBlue(samplerName, coord2)
 #define GATHER_ALPHA_TEXTURE2D(textureName, samplerName, coord2)          textureName.GatherAlpha(samplerName, coord2)
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Metal.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Metal.hlsl
 //================================================================================================================================
 
 
 
 #elif defined(SHADER_API_VULKAN)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Vulkan.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Vulkan.hlsl
 
 
 // This file assume SHADER_API_VULKAN is defined
@@ -511,6 +526,7 @@
 #define PLATFORM_SUPPORTS_EXPLICIT_BINDING
 #define PLATFORM_NEEDS_UNORM_UAV_SPECIFIER
 #define PLATFORM_SUPPORTS_BUFFER_ATOMICS_IN_PIXEL_SHADER
+#define PLATFORM_SUPPORTS_PRIMITIVE_ID_IN_PIXEL_SHADER
 
 // flow control attributes
 #define UNITY_BRANCH        [branch]
@@ -537,15 +553,15 @@
 #define TEXTURE3D(textureName)                Texture3D textureName
 
 #define TEXTURE2D_FLOAT(textureName)          Texture2D_float textureName
-#define TEXTURE2D_ARRAY_FLOAT(textureName)    Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_FLOAT(textureName)    Texture2DArray_float textureName
 #define TEXTURECUBE_FLOAT(textureName)        TextureCube_float textureName
-#define TEXTURECUBE_ARRAY_FLOAT(textureName)  TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_FLOAT(textureName)  TextureCubeArray_float textureName
 #define TEXTURE3D_FLOAT(textureName)          Texture3D_float textureName
 
 #define TEXTURE2D_HALF(textureName)           Texture2D_half textureName
-#define TEXTURE2D_ARRAY_HALF(textureName)     Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_HALF(textureName)     Texture2DArray_half textureName
 #define TEXTURECUBE_HALF(textureName)         TextureCube_half textureName
-#define TEXTURECUBE_ARRAY_HALF(textureName)   TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_HALF(textureName)   TextureCubeArray_half textureName
 #define TEXTURE3D_HALF(textureName)           Texture3D_half textureName
 
 #define TEXTURE2D_SHADOW(textureName)         TEXTURE2D(textureName)
@@ -559,6 +575,7 @@
 
 #define SAMPLER(samplerName)                  SamplerState samplerName
 #define SAMPLER_CMP(samplerName)              SamplerComparisonState samplerName
+#define ASSIGN_SAMPLER(samplerName, samplerValue) samplerName = samplerValue
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                 TEXTURE2D(textureName),         SAMPLER(samplerName)
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)           TEXTURE2D_ARRAY(textureName),   SAMPLER(samplerName)
@@ -626,14 +643,14 @@
 #define GATHER_BLUE_TEXTURE2D(textureName, samplerName, coord2)           textureName.GatherBlue(samplerName, coord2)
 #define GATHER_ALPHA_TEXTURE2D(textureName, samplerName, coord2)          textureName.GatherAlpha(samplerName, coord2)
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Vulkan.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Vulkan.hlsl
 //================================================================================================================================
 
 
 
 #elif defined(SHADER_API_SWITCH)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Switch.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Switch.hlsl
 
 
 // This file assume SHADER_API_SWITCH is defined
@@ -682,15 +699,15 @@
 #define TEXTURE3D(textureName)                Texture3D textureName
 
 #define TEXTURE2D_FLOAT(textureName)          Texture2D_float textureName
-#define TEXTURE2D_ARRAY_FLOAT(textureName)    Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_FLOAT(textureName)    Texture2DArray_float textureName
 #define TEXTURECUBE_FLOAT(textureName)        TextureCube_float textureName
-#define TEXTURECUBE_ARRAY_FLOAT(textureName)  TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_FLOAT(textureName)  TextureCubeArray_float textureName
 #define TEXTURE3D_FLOAT(textureName)          Texture3D_float textureName
 
 #define TEXTURE2D_HALF(textureName)           Texture2D_half textureName
-#define TEXTURE2D_ARRAY_HALF(textureName)     Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_HALF(textureName)     Texture2DArray_half textureName
 #define TEXTURECUBE_HALF(textureName)         TextureCube_half textureName
-#define TEXTURECUBE_ARRAY_HALF(textureName)   TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_HALF(textureName)   TextureCubeArray_half textureName
 #define TEXTURE3D_HALF(textureName)           Texture3D_half textureName
 
 #define TEXTURE2D_SHADOW(textureName)         TEXTURE2D(textureName)
@@ -704,6 +721,7 @@
 
 #define SAMPLER(samplerName)                  SamplerState samplerName
 #define SAMPLER_CMP(samplerName)              SamplerComparisonState samplerName
+#define ASSIGN_SAMPLER(samplerName, samplerValue) samplerName = samplerValue
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                 TEXTURE2D(textureName),         SAMPLER(samplerName)
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)           TEXTURE2D_ARRAY(textureName),   SAMPLER(samplerName)
@@ -770,14 +788,14 @@
 #define GATHER_BLUE_TEXTURE2D(textureName, samplerName, coord2)           textureName.GatherBlue(samplerName, coord2)
 #define GATHER_ALPHA_TEXTURE2D(textureName, samplerName, coord2)          textureName.GatherAlpha(samplerName, coord2)
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Switch.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Switch.hlsl
 //================================================================================================================================
 
 
 
 #elif defined(SHADER_API_GLCORE)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/GLCore.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/GLCore.hlsl
 
 
 #ifndef SHADER_API_GLCORE
@@ -857,6 +875,7 @@
 
 #define SAMPLER(samplerName)                    SamplerState samplerName
 #define SAMPLER_CMP(samplerName)                SamplerComparisonState samplerName
+#define ASSIGN_SAMPLER(samplerName, samplerValue) samplerName = samplerValue
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                 TEXTURE2D(textureName),         SAMPLER(samplerName)
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)           TEXTURE2D_ARRAY(textureName),   SAMPLER(samplerName)
@@ -894,7 +913,7 @@
 #ifdef UNITY_NO_CUBEMAP_ARRAY
 #define SAMPLE_TEXTURECUBE_ARRAY(textureName, samplerName, coord3, index)           ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY)
 #define SAMPLE_TEXTURECUBE_ARRAY_LOD(textureName, samplerName, coord3, index, lod)  ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY_LOD)
-#define SAMPLE_TEXTURECUBE_ARRAY_LOD(textureName, samplerName, coord3, index, bias) ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY_LOD)
+#define SAMPLE_TEXTURECUBE_ARRAY_BIAS(textureName, samplerName, coord3, index, bias) ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY_BIAS)
 #else
 #define SAMPLE_TEXTURECUBE_ARRAY(textureName, samplerName, coord3, index)           textureName.Sample(samplerName, float4(coord3, index))
 #define SAMPLE_TEXTURECUBE_ARRAY_LOD(textureName, samplerName, coord3, index, lod)  textureName.SampleLevel(samplerName, float4(coord3, index), lod)
@@ -917,6 +936,8 @@
 #define LOAD_TEXTURE2D_ARRAY(textureName, unCoord2, index)                      textureName.Load(int4(unCoord2, index, 0))
 #define LOAD_TEXTURE2D_ARRAY_MSAA(textureName, unCoord2, index, sampleIndex)    textureName.Load(int3(unCoord2, index), sampleIndex)
 #define LOAD_TEXTURE2D_ARRAY_LOD(textureName, unCoord2, index, lod)             textureName.Load(int4(unCoord2, index, lod))
+#define LOAD_TEXTURE3D(textureName, unCoord3)                                   textureName.Load(int4(unCoord3, 0))
+#define LOAD_TEXTURE3D_LOD(textureName, unCoord3, lod)                          textureName.Load(int4(unCoord3, lod))
 
 #if OPENGL4_1_SM5
 #define PLATFORM_SUPPORT_GATHER
@@ -931,15 +952,14 @@
 #define GATHER_TEXTURECUBE_ARRAY(textureName, samplerName, coord3, index)   ERROR_ON_UNSUPPORTED_FUNCTION(GATHER_TEXTURECUBE_ARRAY)
 #endif
 
-
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/GLCore.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/GLCore.hlsl
 //================================================================================================================================
 
 
 
 #elif defined(SHADER_API_GLES3)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/GLES3.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/GLES3.hlsl
 
 
 #ifndef SHADER_API_GLES3
@@ -996,15 +1016,15 @@
 #define TEXTURE3D(textureName)                  Texture3D textureName
 
 #define TEXTURE2D_FLOAT(textureName)            Texture2D_float textureName
-#define TEXTURE2D_ARRAY_FLOAT(textureName)      Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_FLOAT(textureName)      Texture2DArray_float textureName
 #define TEXTURECUBE_FLOAT(textureName)          TextureCube_float textureName
-#define TEXTURECUBE_ARRAY_FLOAT(textureName)    TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_FLOAT(textureName)    TextureCubeArray_float textureName
 #define TEXTURE3D_FLOAT(textureName)            Texture3D_float textureName
 
 #define TEXTURE2D_HALF(textureName)             Texture2D_half textureName
-#define TEXTURE2D_ARRAY_HALF(textureName)       Texture2DArray textureName    // no support to _float on Array, it's being added
+#define TEXTURE2D_ARRAY_HALF(textureName)       Texture2DArray_half textureName
 #define TEXTURECUBE_HALF(textureName)           TextureCube_half textureName
-#define TEXTURECUBE_ARRAY_HALF(textureName)     TextureCubeArray textureName  // no support to _float on Array, it's being added
+#define TEXTURECUBE_ARRAY_HALF(textureName)     TextureCubeArray_half textureName
 #define TEXTURE3D_HALF(textureName)             Texture3D_half textureName
 
 #define TEXTURE2D_SHADOW(textureName)           TEXTURE2D(textureName)
@@ -1024,6 +1044,7 @@
 
 #define SAMPLER(samplerName)                    SamplerState samplerName
 #define SAMPLER_CMP(samplerName)                SamplerComparisonState samplerName
+#define ASSIGN_SAMPLER(samplerName, samplerValue) samplerName = samplerValue
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                 TEXTURE2D(textureName),         SAMPLER(samplerName)
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)           TEXTURE2D_ARRAY(textureName),   SAMPLER(samplerName)
@@ -1110,15 +1131,14 @@
 #define GATHER_ALPHA_TEXTURE2D(textureName, samplerName, coord2)            ERROR_ON_UNSUPPORTED_FUNCTION(GATHER_ALPHA_TEXTURE2D)
 #endif
 
-
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/GLES3.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/GLES3.hlsl
 //================================================================================================================================
 
 
 
 #elif defined(SHADER_API_GLES)
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/GLES2.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/GLES2.hlsl
 
 
 #ifndef SHADER_API_GLES
@@ -1213,6 +1233,7 @@
 
 #define SAMPLER(samplerName)
 #define SAMPLER_CMP(samplerName)
+#define ASSIGN_SAMPLER(samplerName, samplerValue)
 
 #define TEXTURE2D_PARAM(textureName, samplerName)                sampler2D textureName
 #define TEXTURE2D_ARRAY_PARAM(textureName, samplerName)          samplerCUBE textureName
@@ -1285,7 +1306,7 @@
 #define GATHER_BLUE_TEXTURE2D(textureName, samplerName, coord2)             ERROR_ON_UNSUPPORTED_FUNCTION(GATHER_BLUE_TEXTURE2D)
 #define GATHER_ALPHA_TEXTURE2D(textureName, samplerName, coord2)            ERROR_ON_UNSUPPORTED_FUNCTION(GATHER_ALPHA_TEXTURE2D)
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/GLES2.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/GLES2.hlsl
 //================================================================================================================================
 
 
@@ -1294,7 +1315,7 @@
 #error unsupported shader api
 #endif
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Validate.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Validate.hlsl
 
 
 // Wait for a fix from Trunk #error not supported yet
@@ -1336,14 +1357,14 @@ REQUIRE_DEFINED(INITIALIZE_OUTPUT)
 #   define UNITY_LOOP
 #endif
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/API/Validate.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/API/Validate.hlsl
 //================================================================================================================================
 
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Macros.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Macros.hlsl
 
 
 #ifndef UNITY_MACROS_INCLUDED
@@ -1377,6 +1398,8 @@ REQUIRE_DEFINED(INITIALIZE_OUTPUT)
 #define HALF_PI     1.57079632679489661923
 #define INV_HALF_PI 0.63661977236758134308
 #define LOG2_E      1.44269504088896340736
+#define INV_SQRT2   0.70710678118654752440
+#define PI_DIV_FOUR 0.78539816339744830961
 
 #define MILLIMETERS_PER_METER 1000
 #define METERS_PER_MILLIMETER rcp(MILLIMETERS_PER_METER)
@@ -1389,21 +1412,23 @@ REQUIRE_DEFINED(INITIALIZE_OUTPUT)
 #define FLT_MAX  3.402823466e+38 // Maximum representable floating-point number
 #define HALF_EPS 4.8828125e-4    // 2^-11, machine epsilon: 1 + EPS = 1 (half of the ULP for 1.0f)
 #define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
+#define HALF_MIN_SQRT 0.0078125  // 2^-7 == sqrt(HALF_MIN), useful for ensuring HALF_MIN after x^2
 #define HALF_MAX 65504.0
 #define UINT_MAX 0xFFFFFFFFu
+#define INT_MAX  0x7FFFFFFF
 
 
 #ifdef SHADER_API_GLES
 
 #define GENERATE_INT_FLOAT_1_ARG(FunctionName, Parameter1, FunctionBody) \
     float  FunctionName(float  Parameter1) { FunctionBody; } \
-    int    FunctionName(int  Parameter1) { FunctionBody; } 
+    int    FunctionName(int  Parameter1) { FunctionBody; }
 #else
 
 #define GENERATE_INT_FLOAT_1_ARG(FunctionName, Parameter1, FunctionBody) \
     float  FunctionName(float  Parameter1) { FunctionBody; } \
     uint   FunctionName(uint  Parameter1) { FunctionBody; } \
-    int    FunctionName(int  Parameter1) { FunctionBody; } 
+    int    FunctionName(int  Parameter1) { FunctionBody; }
 
 #endif
 
@@ -1575,22 +1600,22 @@ REQUIRE_DEFINED(INITIALIZE_OUTPUT)
 #define GET_TEXELSIZE_NAME(name) (name##_TexelSize)
 
 #if UNITY_REVERSED_Z
-# define COMPARE_DEVICE_DEPTH_CLOSER(shadowMapDepth, zDevice)      (shadowMapDepth >  zDevice) 
-# define COMPARE_DEVICE_DEPTH_CLOSEREQUAL(shadowMapDepth, zDevice) (shadowMapDepth >= zDevice) 
+# define COMPARE_DEVICE_DEPTH_CLOSER(shadowMapDepth, zDevice)      (shadowMapDepth >  zDevice)
+# define COMPARE_DEVICE_DEPTH_CLOSEREQUAL(shadowMapDepth, zDevice) (shadowMapDepth >= zDevice)
 #else
-# define COMPARE_DEVICE_DEPTH_CLOSER(shadowMapDepth, zDevice)      (shadowMapDepth <  zDevice) 
-# define COMPARE_DEVICE_DEPTH_CLOSEREQUAL(shadowMapDepth, zDevice) (shadowMapDepth <= zDevice) 
+# define COMPARE_DEVICE_DEPTH_CLOSER(shadowMapDepth, zDevice)      (shadowMapDepth <  zDevice)
+# define COMPARE_DEVICE_DEPTH_CLOSEREQUAL(shadowMapDepth, zDevice) (shadowMapDepth <= zDevice)
 #endif
 
 #endif // UNITY_MACROS_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Macros.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Macros.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Random.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Random.hlsl
 
 
 #ifndef UNITY_RANDOM_INCLUDED
@@ -1698,11 +1723,15 @@ float InterleavedGradientNoise(float2 pixCoord, int frameCount)
 
 #endif // UNITY_RANDOM_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Random.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Random.hlsl
 //================================================================================================================================
 
 
 
+
+#ifdef SHADER_API_XBOXONE // TODO: to move in .nda package in 21.1
+#define PLATFORM_SUPPORTS_PRIMITIVE_ID_IN_PIXEL_SHADER
+#endif
 
 // ----------------------------------------------------------------------------
 // Common intrinsic (general implementation of intrinsic available on some platform)
@@ -1719,8 +1748,8 @@ float InterleavedGradientNoise(float2 pixCoord, int frameCount)
 #define LODDitheringTransition ERROR_ON_UNSUPPORTED_FUNCTION(LODDitheringTransition)
 #endif
 
-// On everything but GCN consoles we error on cross-lane operations
-#ifndef PLATFORM_SUPPORTS_WAVE_INTRINSICS
+// On everything but GCN consoles or DXC compiled shaders we error on cross-lane operations
+#if !defined(PLATFORM_SUPPORTS_WAVE_INTRINSICS) && !defined(UNITY_COMPILER_DXC)
 #define WaveActiveAllTrue ERROR_ON_UNSUPPORTED_FUNCTION(WaveActiveAllTrue)
 #define WaveActiveAnyTrue ERROR_ON_UNSUPPORTED_FUNCTION(WaveActiveAnyTrue)
 #define WaveGetLaneIndex ERROR_ON_UNSUPPORTED_FUNCTION(WaveGetLaneIndex)
@@ -1735,8 +1764,14 @@ float InterleavedGradientNoise(float2 pixCoord, int frameCount)
 #define WaveGetLaneCount ERROR_ON_UNSUPPORTED_FUNCTION(WaveGetLaneCount)
 #endif
 
+#if defined(PLATFORM_SUPPORTS_WAVE_INTRINSICS)
+// Helper macro to compute lane swizzle offset starting from andMask, orMask and xorMask.
+// IMPORTANT, to guarantee compatibility with all platforms, the masks need to be constant literals (constants at compile time)
+#define LANE_SWIZZLE_OFFSET(andMask, orMask, xorMask)  (andMask | (orMask << 5) | (xorMask << 10))
+#endif
+
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/CommonDeprecated.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/CommonDeprecated.hlsl
 
 
 #ifndef UNITY_COMMON_DEPRECATED_INCLUDED
@@ -1758,7 +1793,7 @@ void LODDitheringTransition(uint3 fadeMaskSeed, float ditherFactor)
 
 #endif
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/CommonDeprecated.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/CommonDeprecated.hlsl
 //================================================================================================================================
 
 
@@ -1843,8 +1878,13 @@ void ToggleBit(inout uint data, uint offset)
 
 TEMPLATE_3_REAL(Avg3, a, b, c, return (a + b + c) * 0.33333333)
 
+// Important! Quad functions only valid in pixel shaders!
+    float2 GetQuadOffset(int2 screenPos)
+    {
+        return float2(float(screenPos.x & 1) * 2.0 - 1.0, float(screenPos.y & 1) * 2.0 - 1.0);
+    }
+
 #ifndef INTRINSIC_QUAD_SHUFFLE
-    // Important! Only valid in pixel shaders!
     float QuadReadAcrossX(float value, int2 screenPos)
     {
         return value - (ddx_fine(value) * (float(screenPos.x & 1) * 2.0 - 1.0));
@@ -1859,11 +1899,41 @@ TEMPLATE_3_REAL(Avg3, a, b, c, return (a + b + c) * 0.33333333)
     {
         float dX = ddx_fine(value);
         float dY = ddy_fine(value);
-        float2 quadDir = float2(float(screenPos.x & 1) * 2.0 - 1.0, float(screenPos.y & 1) * 2.0 - 1.0);
+        float2 quadDir = GetQuadOffset(screenPos);
         float X = value - (dX * quadDir.x);
         return X - (ddy_fine(value) * quadDir.y);
     }
 #endif
+
+    float3 QuadReadFloat3AcrossX(float3 val, int2 positionSS)
+    {
+        return float3(QuadReadAcrossX(val.x, positionSS), QuadReadAcrossX(val.y, positionSS), QuadReadAcrossX(val.z, positionSS));
+    }
+
+    float4 QuadReadFloat4AcrossX(float4 val, int2 positionSS)
+    {
+        return float4(QuadReadAcrossX(val.x, positionSS), QuadReadAcrossX(val.y, positionSS), QuadReadAcrossX(val.z, positionSS), QuadReadAcrossX(val.w, positionSS));
+    }
+
+    float3 QuadReadFloat3AcrossY(float3 val, int2 positionSS)
+    {
+        return float3(QuadReadAcrossY(val.x, positionSS), QuadReadAcrossY(val.y, positionSS), QuadReadAcrossY(val.z, positionSS));
+    }
+
+    float4 QuadReadFloat4AcrossY(float4 val, int2 positionSS)
+    {
+        return float4(QuadReadAcrossY(val.x, positionSS), QuadReadAcrossY(val.y, positionSS), QuadReadAcrossY(val.z, positionSS), QuadReadAcrossY(val.w, positionSS));
+    }
+
+    float3 QuadReadFloat3AcrossDiagonal(float3 val, int2 positionSS)
+    {
+        return float3(QuadReadAcrossDiagonal(val.x, positionSS), QuadReadAcrossDiagonal(val.y, positionSS), QuadReadAcrossDiagonal(val.z, positionSS));
+    }
+
+    float4 QuadReadFloat4AcrossDiagonal(float4 val, int2 positionSS)
+    {
+        return float4(QuadReadAcrossDiagonal(val.x, positionSS), QuadReadAcrossDiagonal(val.y, positionSS), QuadReadAcrossDiagonal(val.z, positionSS), QuadReadAcrossDiagonal(val.w, positionSS));
+    }
 
 TEMPLATE_SWAP(Swap) // Define a Swap(a, b) function for all types
 
@@ -2048,6 +2118,51 @@ uint FastLog2(uint x)
 // Note: https://msdn.microsoft.com/en-us/library/windows/desktop/bb509636(v=vs.85).aspx pow(0, >0) == 0
 TEMPLATE_2_REAL(PositivePow, base, power, return pow(abs(base), power))
 
+// SafePositivePow: Same as pow(x,y) but considers x always positive and never exactly 0 such that
+// SafePositivePow(0,y) will numerically converge to 1 as y -> 0, including SafePositivePow(0,0) returning 1.
+//
+// First, like PositivePow, SafePositivePow removes this warning for when you know the x value is positive or 0 and you know
+// you avoid a NaN:
+// ie you know that x == 0 and y > 0, such that pow(x,y) == pow(0, >0) == 0
+// SafePositivePow(0, y) will however return close to 1 as y -> 0, see below.
+//
+// Also, pow(x,y) is most probably approximated as exp2(log2(x) * y), so pow(0,0) will give exp2(-inf * 0) == exp2(NaN) == NaN.
+//
+// SafePositivePow avoids NaN in allowing SafePositivePow(x,y) where (x,y) == (0,y) for any y including 0 by clamping x to a
+// minimum of FLT_EPS. The consequences are:
+//
+// -As a replacement for pow(0,y) where y >= 1, the result of SafePositivePow(x,y) should be close enough to 0.
+// -For cases where we substitute for pow(0,y) where 0 < y < 1, SafePositivePow(x,y) will quickly reach 1 as y -> 0, while
+// normally pow(0,y) would give 0 instead of 1 for all 0 < y.
+// eg: if we #define FLT_EPS  5.960464478e-8 (for fp32),
+// SafePositivePow(0, 0.1)   = 0.1894646
+// SafePositivePow(0, 0.01)  = 0.8467453
+// SafePositivePow(0, 0.001) = 0.9835021
+//
+// Depending on the intended usage of pow(), this difference in behavior might be a moot point since:
+// 1) by leaving "y" free to get to 0, we get a NaNs
+// 2) the behavior of SafePositivePow() has more continuity when both x and y get closer together to 0, since
+// when x is assured to be positive non-zero, pow(x,x) -> 1 as x -> 0.
+//
+// TL;DR: SafePositivePow(x,y) avoids NaN and is safe for positive (x,y) including (x,y) == (0,0),
+//        but SafePositivePow(0, y) will return close to 1 as y -> 0, instead of 0, so watch out
+//        for behavior depending on pow(0, y) giving always 0, especially for 0 < y < 1.
+//
+// Ref: https://msdn.microsoft.com/en-us/library/windows/desktop/bb509636(v=vs.85).aspx
+TEMPLATE_2_REAL(SafePositivePow, base, power, return pow(max(abs(base), real(REAL_EPS)), power))
+
+// Helpers for making shadergraph functions consider precision spec through the same $precision token used for variable types
+TEMPLATE_2_FLT(SafePositivePow_float, base, power, return pow(max(abs(base), float(FLT_EPS)), power))
+TEMPLATE_2_HALF(SafePositivePow_half, base, power, return pow(max(abs(base), half(HALF_EPS)), power))
+
+float Eps_float() { return FLT_EPS; }
+float Min_float() { return FLT_MIN; }
+float Max_float() { return FLT_MAX; }
+half Eps_half() { return HALF_EPS; }
+half Min_half() { return HALF_MIN; }
+half Max_half() { return HALF_MAX; }
+
+
 // Composes a floating point value with the magnitude of 'x' and the sign of 's'.
 // See the comment about FastSign() below.
 float CopySign(float x, float s, bool ignoreNegZero = true)
@@ -2149,40 +2264,81 @@ real Pow4(real x)
 
 TEMPLATE_3_FLT(RangeRemap, min, max, t, return saturate((t - min) / (max - min)))
 
+float4x4 Inverse(float4x4 m)
+{
+    float n11 = m[0][0], n12 = m[1][0], n13 = m[2][0], n14 = m[3][0];
+    float n21 = m[0][1], n22 = m[1][1], n23 = m[2][1], n24 = m[3][1];
+    float n31 = m[0][2], n32 = m[1][2], n33 = m[2][2], n34 = m[3][2];
+    float n41 = m[0][3], n42 = m[1][3], n43 = m[2][3], n44 = m[3][3];
+
+    float t11 = n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 - n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44;
+    float t12 = n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 + n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44;
+    float t13 = n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 - n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44;
+    float t14 = n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 + n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34;
+
+    float det = n11 * t11 + n21 * t12 + n31 * t13 + n41 * t14;
+    float idet = 1.0f / det;
+
+    float4x4 ret;
+
+    ret[0][0] = t11 * idet;
+    ret[0][1] = (n24 * n33 * n41 - n23 * n34 * n41 - n24 * n31 * n43 + n21 * n34 * n43 + n23 * n31 * n44 - n21 * n33 * n44) * idet;
+    ret[0][2] = (n22 * n34 * n41 - n24 * n32 * n41 + n24 * n31 * n42 - n21 * n34 * n42 - n22 * n31 * n44 + n21 * n32 * n44) * idet;
+    ret[0][3] = (n23 * n32 * n41 - n22 * n33 * n41 - n23 * n31 * n42 + n21 * n33 * n42 + n22 * n31 * n43 - n21 * n32 * n43) * idet;
+
+    ret[1][0] = t12 * idet;
+    ret[1][1] = (n13 * n34 * n41 - n14 * n33 * n41 + n14 * n31 * n43 - n11 * n34 * n43 - n13 * n31 * n44 + n11 * n33 * n44) * idet;
+    ret[1][2] = (n14 * n32 * n41 - n12 * n34 * n41 - n14 * n31 * n42 + n11 * n34 * n42 + n12 * n31 * n44 - n11 * n32 * n44) * idet;
+    ret[1][3] = (n12 * n33 * n41 - n13 * n32 * n41 + n13 * n31 * n42 - n11 * n33 * n42 - n12 * n31 * n43 + n11 * n32 * n43) * idet;
+
+    ret[2][0] = t13 * idet;
+    ret[2][1] = (n14 * n23 * n41 - n13 * n24 * n41 - n14 * n21 * n43 + n11 * n24 * n43 + n13 * n21 * n44 - n11 * n23 * n44) * idet;
+    ret[2][2] = (n12 * n24 * n41 - n14 * n22 * n41 + n14 * n21 * n42 - n11 * n24 * n42 - n12 * n21 * n44 + n11 * n22 * n44) * idet;
+    ret[2][3] = (n13 * n22 * n41 - n12 * n23 * n41 - n13 * n21 * n42 + n11 * n23 * n42 + n12 * n21 * n43 - n11 * n22 * n43) * idet;
+
+    ret[3][0] = t14 * idet;
+    ret[3][1] = (n13 * n24 * n31 - n14 * n23 * n31 + n14 * n21 * n33 - n11 * n24 * n33 - n13 * n21 * n34 + n11 * n23 * n34) * idet;
+    ret[3][2] = (n14 * n22 * n31 - n12 * n24 * n31 - n14 * n21 * n32 + n11 * n24 * n32 + n12 * n21 * n34 - n11 * n22 * n34) * idet;
+    ret[3][3] = (n12 * n23 * n31 - n13 * n22 * n31 + n13 * n21 * n32 - n11 * n23 * n32 - n12 * n21 * n33 + n11 * n22 * n33) * idet;
+
+    return ret;
+}
+
 // ----------------------------------------------------------------------------
 // Texture utilities
 // ----------------------------------------------------------------------------
 
-float ComputeTextureLOD(float2 uvdx, float2 uvdy, float2 scale)
+float ComputeTextureLOD(float2 uvdx, float2 uvdy, float2 scale, float bias = 0.0)
 {
     float2 ddx_ = scale * uvdx;
     float2 ddy_ = scale * uvdy;
-    float d = max(dot(ddx_, ddx_), dot(ddy_, ddy_));
+    float  d    = max(dot(ddx_, ddx_), dot(ddy_, ddy_));
 
-    return max(0.5 * log2(d), 0.0);
+    return max(0.5 * log2(d) - bias, 0.0);
 }
 
-float ComputeTextureLOD(float2 uv)
+float ComputeTextureLOD(float2 uv, float bias = 0.0)
 {
     float2 ddx_ = ddx(uv);
     float2 ddy_ = ddy(uv);
 
-    return ComputeTextureLOD(ddx_, ddy_, 1.0);
+    return ComputeTextureLOD(ddx_, ddy_, 1.0, bias);
 }
 
 // x contains width, w contains height
-float ComputeTextureLOD(float2 uv, float2 texelSize)
+float ComputeTextureLOD(float2 uv, float2 texelSize, float bias = 0.0)
 {
     uv *= texelSize;
 
-    return ComputeTextureLOD(uv);
+    return ComputeTextureLOD(uv, bias);
 }
 
 // LOD clamp is optional and happens outside the function.
-float ComputeTextureLOD(float3 duvw_dx, float3 duvw_dy, float3 duvw_dz, float scale)
+float ComputeTextureLOD(float3 duvw_dx, float3 duvw_dy, float3 duvw_dz, float scale, float bias = 0.0)
 {
     float d = Max3(dot(duvw_dx, duvw_dx), dot(duvw_dy, duvw_dy), dot(duvw_dz, duvw_dz));
-    return 0.5 * log2(d * (scale * scale));
+
+    return max(0.5f * log2(d * (scale * scale)) - bias, 0.0);
 }
 
 
@@ -2191,7 +2347,8 @@ uint GetMipCount(Texture2D tex)
 #if defined(SHADER_API_D3D11) || defined(SHADER_API_D3D12) || defined(SHADER_API_D3D11_9X) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_PSSL)
     #define MIP_COUNT_SUPPORTED 1
 #endif
-#if (defined(SHADER_API_OPENGL) || defined(SHADER_API_VULKAN)) && !defined(SHADER_STAGE_COMPUTE)
+    // TODO: Bug workaround, switch defines GLCORE when it shouldn't
+#if ((defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_VULKAN)) && !defined(SHADER_STAGE_COMPUTE)
     // OpenGL only supports textureSize for width, height, depth
     // textureQueryLevels (GL_ARB_texture_query_levels) needs OpenGL 4.3 or above and doesn't compile in compute shaders
     // tex.GetDimensions converted to textureQueryLevels
@@ -2212,6 +2369,48 @@ uint GetMipCount(Texture2D tex)
 // ----------------------------------------------------------------------------
 // Texture format sampling
 // ----------------------------------------------------------------------------
+
+// DXC no longer supports DX9-style HLSL syntax for sampler2D, tex2D and the like.
+// These are emulated for backwards compatibilit using our own small structs and functions which manually combine samplers and textures.
+#if defined(UNITY_COMPILER_DXC) && !defined(DXC_SAMPLER_COMPATIBILITY)
+#define DXC_SAMPLER_COMPATIBILITY 1
+struct sampler1D            { Texture1D t; SamplerState s; };
+struct sampler2D            { Texture2D t; SamplerState s; };
+struct sampler3D            { Texture3D t; SamplerState s; };
+struct samplerCUBE          { TextureCube t; SamplerState s; };
+
+float4 tex1D(sampler1D x, float v)              { return x.t.Sample(x.s, v); }
+float4 tex2D(sampler2D x, float2 v)             { return x.t.Sample(x.s, v); }
+float4 tex3D(sampler3D x, float3 v)             { return x.t.Sample(x.s, v); }
+float4 texCUBE(samplerCUBE x, float3 v)         { return x.t.Sample(x.s, v); }
+
+float4 tex1Dbias(sampler1D x, in float4 t)              { return x.t.SampleBias(x.s, t.x, t.w); }
+float4 tex2Dbias(sampler2D x, in float4 t)              { return x.t.SampleBias(x.s, t.xy, t.w); }
+float4 tex3Dbias(sampler3D x, in float4 t)              { return x.t.SampleBias(x.s, t.xyz, t.w); }
+float4 texCUBEbias(samplerCUBE x, in float4 t)          { return x.t.SampleBias(x.s, t.xyz, t.w); }
+
+float4 tex1Dlod(sampler1D x, in float4 t)           { return x.t.SampleLevel(x.s, t.x, t.w); }
+float4 tex2Dlod(sampler2D x, in float4 t)           { return x.t.SampleLevel(x.s, t.xy, t.w); }
+float4 tex3Dlod(sampler3D x, in float4 t)           { return x.t.SampleLevel(x.s, t.xyz, t.w); }
+float4 texCUBElod(samplerCUBE x, in float4 t)       { return x.t.SampleLevel(x.s, t.xyz, t.w); }
+
+float4 tex1Dgrad(sampler1D x, float t, float dx, float dy)              { return x.t.SampleGrad(x.s, t, dx, dy); }
+float4 tex2Dgrad(sampler2D x, float2 t, float2 dx, float2 dy)           { return x.t.SampleGrad(x.s, t, dx, dy); }
+float4 tex3Dgrad(sampler3D x, float3 t, float3 dx, float3 dy)           { return x.t.SampleGrad(x.s, t, dx, dy); }
+float4 texCUBEgrad(samplerCUBE x, float3 t, float3 dx, float3 dy)       { return x.t.SampleGrad(x.s, t, dx, dy); }
+
+float4 tex1D(sampler1D x, float t, float dx, float dy)              { return x.t.SampleGrad(x.s, t, dx, dy); }
+float4 tex2D(sampler2D x, float2 t, float2 dx, float2 dy)           { return x.t.SampleGrad(x.s, t, dx, dy); }
+float4 tex3D(sampler3D x, float3 t, float3 dx, float3 dy)           { return x.t.SampleGrad(x.s, t, dx, dy); }
+float4 texCUBE(samplerCUBE x, float3 t, float3 dx, float3 dy)       { return x.t.SampleGrad(x.s, t, dx, dy); }
+
+float4 tex1Dproj(sampler1D s, in float2 t)              { return tex1D(s, t.x / t.y); }
+float4 tex1Dproj(sampler1D s, in float4 t)              { return tex1D(s, t.x / t.w); }
+float4 tex2Dproj(sampler2D s, in float3 t)              { return tex2D(s, t.xy / t.z); }
+float4 tex2Dproj(sampler2D s, in float4 t)              { return tex2D(s, t.xy / t.w); }
+float4 tex3Dproj(sampler3D s, in float4 t)              { return tex3D(s, t.xyz / t.w); }
+float4 texCUBEproj(samplerCUBE s, in float4 t)          { return texCUBE(s, t.xyz / t.w); }
+#endif
 
 float2 DirectionToLatLongCoordinate(float3 unDir)
 {
@@ -2437,6 +2636,12 @@ float3 ComputeWorldSpacePosition(float2 positionNDC, float deviceDepth, float4x4
     return hpositionWS.xyz / hpositionWS.w;
 }
 
+float3 ComputeWorldSpacePosition(float4 positionCS, float4x4 invViewProjMatrix)
+{
+    float4 hpositionWS = mul(invViewProjMatrix, positionCS);
+    return hpositionWS.xyz / hpositionWS.w;
+}
+
 // ----------------------------------------------------------------------------
 // PositionInputs
 // ----------------------------------------------------------------------------
@@ -2476,6 +2681,16 @@ PositionInputs GetPositionInput(float2 positionSS, float2 invScreenSize, uint2 t
 PositionInputs GetPositionInput(float2 positionSS, float2 invScreenSize)
 {
     return GetPositionInput(positionSS, invScreenSize, uint2(0, 0));
+}
+
+// For Raytracing only
+// This function does not initialize deviceDepth and linearDepth
+PositionInputs GetPositionInput(float2 positionSS, float2 invScreenSize, float3 positionWS)
+{
+    PositionInputs posInput = GetPositionInput(positionSS, invScreenSize, uint2(0, 0));
+    posInput.positionWS = positionWS;
+
+    return posInput;
 }
 
 // From forward
@@ -2573,8 +2788,15 @@ bool HasFlag(uint bitfield, uint flag)
 // Normalize that account for vectors with zero length
 real3 SafeNormalize(float3 inVec)
 {
-    float dp3 = max(FLT_MIN, dot(inVec, inVec));
+    real dp3 = max(FLT_MIN, dot(inVec, inVec));
     return inVec * rsqrt(dp3);
+}
+
+// Checks if a vector is normalized
+bool IsNormalized(float3 inVec)
+{
+    real l = length(inVec);
+    return length(l) < 1.0001 && length(l) > 0.9999;
 }
 
 // Division which returns 1 for (inf/inf) and (0/0).
@@ -2669,792 +2891,33 @@ void LODDitheringTransition(uint2 fadeMaskSeed, float ditherFactor)
 // while on other APIs is in the red channel. Note that on some platform, always using the green channel might work, but is not guaranteed.
 uint GetStencilValue(uint2 stencilBufferVal)
 {
-#if defined(SHADER_API_D3D11) || defined(SHADER_API_XBOXONE)  
+#if defined(SHADER_API_D3D11) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_GAMECORE)
     return stencilBufferVal.y;
 #else
     return stencilBufferVal.x;
 #endif
-} 
-
-#endif // UNITY_COMMON_INCLUDED
-
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Common.hlsl
-//================================================================================================================================
-
-
-
-//================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/EntityLighting.hlsl
-
-
-#ifndef UNITY_ENTITY_LIGHTING_INCLUDED
-#define UNITY_ENTITY_LIGHTING_INCLUDED
-
-
-#define LIGHTMAP_RGBM_MAX_GAMMA     real(5.0)       // NB: Must match value in RGBMRanges.h
-#define LIGHTMAP_RGBM_MAX_LINEAR    real(34.493242) // LIGHTMAP_RGBM_MAX_GAMMA ^ 2.2
-
-#ifdef UNITY_LIGHTMAP_RGBM_ENCODING
-    #ifdef UNITY_COLORSPACE_GAMMA
-        #define LIGHTMAP_HDR_MULTIPLIER LIGHTMAP_RGBM_MAX_GAMMA
-        #define LIGHTMAP_HDR_EXPONENT   real(1.0)   // Not used in gamma color space
-    #else
-        #define LIGHTMAP_HDR_MULTIPLIER LIGHTMAP_RGBM_MAX_LINEAR
-        #define LIGHTMAP_HDR_EXPONENT   real(2.2)
-    #endif
-#elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
-    #ifdef UNITY_COLORSPACE_GAMMA
-        #define LIGHTMAP_HDR_MULTIPLIER real(2.0)
-    #else
-        #define LIGHTMAP_HDR_MULTIPLIER real(4.59) // 2.0 ^ 2.2
-    #endif
-    #define LIGHTMAP_HDR_EXPONENT real(0.0)
-#else // (UNITY_LIGHTMAP_FULL_HDR)
-    #define LIGHTMAP_HDR_MULTIPLIER real(1.0)
-    #define LIGHTMAP_HDR_EXPONENT real(1.0)
-#endif
-
-// TODO: Check if PI is correctly handled!
-
-// Ref: "Efficient Evaluation of Irradiance Environment Maps" from ShaderX 2
-real3 SHEvalLinearL0L1(real3 N, real4 shAr, real4 shAg, real4 shAb)
-{
-    real4 vA = real4(N, 1.0);
-
-    real3 x1;
-    // Linear (L1) + constant (L0) polynomial terms
-    x1.r = dot(shAr, vA);
-    x1.g = dot(shAg, vA);
-    x1.b = dot(shAb, vA);
-
-    return x1;
 }
 
-real3 SHEvalLinearL2(real3 N, real4 shBr, real4 shBg, real4 shBb, real4 shC)
+// Sharpens the alpha of a texture to the width of a single pixel
+// Used for alpha to coverage
+// source: https://medium.com/@bgolus/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f
+float SharpenAlpha(float alpha, float alphaClipTreshold)
 {
-    real3 x2;
-    // 4 of the quadratic (L2) polynomials
-    real4 vB = N.xyzz * N.yzzx;
-    x2.r = dot(shBr, vB);
-    x2.g = dot(shBg, vB);
-    x2.b = dot(shBb, vB);
-
-    // Final (5th) quadratic (L2) polynomial
-    real vC = N.x * N.x - N.y * N.y;
-    real3 x3 = shC.rgb * vC;
-
-    return x2 + x3;
+    return saturate((alpha - alphaClipTreshold) / max(fwidth(alpha), 0.0001) + 0.5);
 }
-
-#if HAS_HALF
-half3 SampleSH9(half4 SHCoefficients[7], half3 N)
-{
-    half4 shAr = SHCoefficients[0];
-    half4 shAg = SHCoefficients[1];
-    half4 shAb = SHCoefficients[2];
-    half4 shBr = SHCoefficients[3];
-    half4 shBg = SHCoefficients[4];
-    half4 shBb = SHCoefficients[5];
-    half4 shCr = SHCoefficients[6];
-
-    // Linear + constant polynomial terms
-    half3 res = SHEvalLinearL0L1(N, shAr, shAg, shAb);
-
-    // Quadratic polynomials
-    res += SHEvalLinearL2(N, shBr, shBg, shBb, shCr);
-
-    return res;
-}
-#endif
-float3 SampleSH9(float4 SHCoefficients[7], float3 N)
-{
-    float4 shAr = SHCoefficients[0];
-    float4 shAg = SHCoefficients[1];
-    float4 shAb = SHCoefficients[2];
-    float4 shBr = SHCoefficients[3];
-    float4 shBg = SHCoefficients[4];
-    float4 shBb = SHCoefficients[5];
-    float4 shCr = SHCoefficients[6];
-
-    // Linear + constant polynomial terms
-    float3 res = SHEvalLinearL0L1(N, shAr, shAg, shAb);
-
-    // Quadratic polynomials
-    res += SHEvalLinearL2(N, shBr, shBg, shBb, shCr);
-
-    return res;
-}
-
-
-// texture3dLod is not supported on gles2.
-#if !defined(SHADER_API_GLES)
-// This sample a 3D volume storing SH
-// Volume is store as 3D texture with 4 R, G, B, Occ set of 4 coefficient store atlas in same 3D texture. Occ is use for occlusion.
-// TODO: the packing here is inefficient as we will fetch values far away from each other and they may not fit into the cache - Suggest we pack RGB continuously
-// TODO: The calcul of texcoord could be perform with a single matrix multicplication calcualted on C++ side that will fold probeVolumeMin and probeVolumeSizeInv into it and handle the identity case, no reasons to do it in C++ (ask Ionut about it)
-// It should also handle the camera relative path (if the render pipeline use it)
-float3 SampleProbeVolumeSH4(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
-                            float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
-{
-    float3 position = (transformToLocal == 1.0) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
-    float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv.xyz;
-    // Each component is store in the same texture 3D. Each use one quater on the x axis
-    // Here we get R component then increase by step size (0.25) to get other component. This assume 4 component
-    // but last one is not used.
-    // Clamp to edge of the "internal" texture, as R is from half texel to size of R texture minus half texel.
-    // This avoid leaking
-    texCoord.x = clamp(texCoord.x * 0.25, 0.5 * texelSizeX, 0.25 - 0.5 * texelSizeX);
-
-    float4 shAr = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
-    texCoord.x += 0.25;
-    float4 shAg = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
-    texCoord.x += 0.25;
-    float4 shAb = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
-
-    return SHEvalLinearL0L1(normalWS, shAr, shAg, shAb);
-}
-
-// The SphericalHarmonicsL2 coefficients are packed into 7 coefficients per color channel instead of 9.
-// The packing from 9 to 7 is done from engine code and will use the alpha component of the pixel to store an additional SH coefficient.
-// The 3D atlas texture will contain 7 SH coefficient parts.
-float3 SampleProbeVolumeSH9(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
-                                           float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
-{
-    float3 position = (transformToLocal == 1.0f) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
-    float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv;
-
-    const uint shCoeffCount = 7;
-    const float invShCoeffCount = 1.0f / float(shCoeffCount);
-
-    // We need to compute proper X coordinate to sample into the atlas.
-    texCoord.x = texCoord.x / shCoeffCount;
-
-    // Clamp the x coordinate otherwise we'll have leaking between RGB coefficients.
-    float texCoordX = clamp(texCoord.x, 0.5f * texelSizeX, invShCoeffCount - 0.5f * texelSizeX);
-
-    float4 SHCoefficients[7];
-
-    for (uint i = 0; i < shCoeffCount; i++)
-    {
-        texCoord.x = texCoordX + i * invShCoeffCount;
-        SHCoefficients[i] = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
-    }
-
-    return SampleSH9(SHCoefficients, normalize(normalWS));
-}
-#endif
-
-float4 SampleProbeOcclusion(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float4x4 WorldToTexture,
-                            float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
-{
-    float3 position = (transformToLocal == 1.0) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
-    float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv.xyz;
-
-    // Sample fourth texture in the atlas
-    // We need to compute proper U coordinate to sample.
-    // Clamp the coordinate otherwize we'll have leaking between ShB coefficients and Probe Occlusion(Occ) info
-    texCoord.x = max(texCoord.x * 0.25 + 0.75, 0.75 + 0.5 * texelSizeX);
-
-    return SAMPLE_TEXTURE3D(SHVolumeTexture, SHVolumeSampler, texCoord);
-}
-
-// Following functions are to sample enlighten lightmaps (or lightmaps encoded the same way as our
-// enlighten implementation). They assume use of RGB9E5 for dynamic illuminance map and RGBM for baked ones.
-// It is required for other platform that aren't supporting this format to implement variant of these functions
-// (But these kind of platform should use regular render loop and not news shaders).
-
-// TODO: This is the max value allowed for emissive (bad name - but keep for now to retrieve it) (It is 8^2.2 (gamma) and 8 is the limit of punctual light slider...), comme from UnityCg.cginc. Fix it!
-// Ask Jesper if this can be change for HDRenderPipeline
-#define EMISSIVE_RGBM_SCALE 97.0
-
-// RGBM stuff is temporary. For now baked lightmap are in RGBM and the RGBM range for lightmaps is specific so we can't use the generic method.
-// In the end baked lightmaps are going to be BC6H so the code will be the same as dynamic lightmaps.
-// Same goes for emissive packed as an input for Enlighten with another hard coded multiplier.
-
-// TODO: This function is used with the LightTransport pass to encode lightmap or emissive
-real4 PackEmissiveRGBM(real3 rgb)
-{
-    real kOneOverRGBMMaxRange = 1.0 / EMISSIVE_RGBM_SCALE;
-    const real kMinMultiplier = 2.0 * 1e-2;
-
-    real4 rgbm = real4(rgb * kOneOverRGBMMaxRange, 1.0);
-        rgbm.a = max(max(rgbm.r, rgbm.g), max(rgbm.b, kMinMultiplier));
-    rgbm.a = ceil(rgbm.a * 255.0) / 255.0;
-
-    // Division-by-zero warning from d3d9, so make compiler happy.
-    rgbm.a = max(rgbm.a, kMinMultiplier);
-
-    rgbm.rgb /= rgbm.a;
-    return rgbm;
-}
-
-real3 UnpackLightmapRGBM(real4 rgbmInput, real4 decodeInstructions)
-{
-#ifdef UNITY_COLORSPACE_GAMMA
-    return rgbmInput.rgb * (rgbmInput.a * decodeInstructions.x);
-#else
-    return rgbmInput.rgb * (PositivePow(rgbmInput.a, decodeInstructions.y) * decodeInstructions.x);
-#endif
-}
-
-real3 UnpackLightmapDoubleLDR(real4 encodedColor, real4 decodeInstructions)
-{
-    return encodedColor.rgb * decodeInstructions.x;
-}
-
-real3 DecodeLightmap(real4 encodedIlluminance, real4 decodeInstructions)
-{
-#if defined(UNITY_LIGHTMAP_RGBM_ENCODING)
-    return UnpackLightmapRGBM(encodedIlluminance, decodeInstructions);
-#elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
-    return UnpackLightmapDoubleLDR(encodedIlluminance, decodeInstructions);
-#else // (UNITY_LIGHTMAP_FULL_HDR)
-    return encodedIlluminance.rgb;
-#endif
-}
-
-real3 DecodeHDREnvironment(real4 encodedIrradiance, real4 decodeInstructions)
-{
-    // Take into account texture alpha if decodeInstructions.w is true(the alpha value affects the RGB channels)
-    real alpha = max(decodeInstructions.w * (encodedIrradiance.a - 1.0) + 1.0, 0.0);
-
-    // If Linear mode is not supported we can skip exponent part
-    return (decodeInstructions.x * PositivePow(alpha, decodeInstructions.y)) * encodedIrradiance.rgb;
-}
-
-real3 SampleSingleLightmap(TEXTURE2D_PARAM(lightmapTex, lightmapSampler), float2 uv, float4 transform, bool encodedLightmap, real4 decodeInstructions)
-{
-    // transform is scale and bias
-    uv = uv * transform.xy + transform.zw;
-    real3 illuminance = real3(0.0, 0.0, 0.0);
-    // Remark: baked lightmap is RGBM for now, dynamic lightmap is RGB9E5
-    if (encodedLightmap)
-    {
-        real4 encodedIlluminance = SAMPLE_TEXTURE2D(lightmapTex, lightmapSampler, uv).rgba;
-        illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
-    }
-    else
-    {
-        illuminance = SAMPLE_TEXTURE2D(lightmapTex, lightmapSampler, uv).rgb;
-    }
-    return illuminance;
-}
-
-real3 SampleDirectionalLightmap(TEXTURE2D_PARAM(lightmapTex, lightmapSampler), TEXTURE2D_PARAM(lightmapDirTex, lightmapDirSampler), float2 uv, float4 transform, float3 normalWS, bool encodedLightmap, real4 decodeInstructions)
-{
-    // In directional mode Enlighten bakes dominant light direction
-    // in a way, that using it for half Lambert and then dividing by a "rebalancing coefficient"
-    // gives a result close to plain diffuse response lightmaps, but normalmapped.
-
-    // Note that dir is not unit length on purpose. Its length is "directionality", like
-    // for the directional specular lightmaps.
-
-    // transform is scale and bias
-    uv = uv * transform.xy + transform.zw;
-
-    real4 direction = SAMPLE_TEXTURE2D(lightmapDirTex, lightmapDirSampler, uv);
-    // Remark: baked lightmap is RGBM for now, dynamic lightmap is RGB9E5
-    real3 illuminance = real3(0.0, 0.0, 0.0);
-    if (encodedLightmap)
-    {
-        real4 encodedIlluminance = SAMPLE_TEXTURE2D(lightmapTex, lightmapSampler, uv).rgba;
-        illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
-    }
-    else
-    {
-        illuminance = SAMPLE_TEXTURE2D(lightmapTex, lightmapSampler, uv).rgb;
-    }
-    real halfLambert = dot(normalWS, direction.xyz - 0.5) + 0.5;
-    return illuminance * halfLambert / max(1e-4, direction.w);
-}
-
-#endif // UNITY_ENTITY_LIGHTING_INCLUDED
-
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/EntityLighting.hlsl
-//================================================================================================================================
-
-
-
-//================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/ImageBasedLighting.hlsl
-
-
-#ifndef UNITY_IMAGE_BASED_LIGHTING_INCLUDED
-#define UNITY_IMAGE_BASED_LIGHTING_INCLUDED
-
-//================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/CommonLighting.hlsl
-
-
-#ifndef UNITY_COMMON_LIGHTING_INCLUDED
-#define UNITY_COMMON_LIGHTING_INCLUDED
 
 // These clamping function to max of floating point 16 bit are use to prevent INF in code in case of extreme value
 TEMPLATE_1_REAL(ClampToFloat16Max, value, return min(value, HALF_MAX))
 
-// Ligthing convention
-// Light direction is oriented backward (-Z). i.e in shader code, light direction is -lightData.forward
+#endif // UNITY_COMMON_INCLUDED
 
-//-----------------------------------------------------------------------------
-// Helper functions
-//-----------------------------------------------------------------------------
-
-// Performs the mapping of the vector 'v' centered within the axis-aligned cube
-// of dimensions [-1, 1]^3 to a vector centered within the unit sphere.
-// The function expects 'v' to be within the cube (possibly unexpected results otherwise).
-// Ref: http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
-real3 MapCubeToSphere(real3 v)
-{
-    real3 v2 = v * v;
-    real2 vr3 = v2.xy * rcp(3.0);
-    return v * sqrt((real3)1.0 - 0.5 * v2.yzx - 0.5 * v2.zxy + vr3.yxx * v2.zzy);
-}
-
-// Computes the squared magnitude of the vector computed by MapCubeToSphere().
-real ComputeCubeToSphereMapSqMagnitude(real3 v)
-{
-    real3 v2 = v * v;
-    // Note: dot(v, v) is often computed before this function is called,
-    // so the compiler should optimize and use the precomputed result here.
-    return dot(v, v) - v2.x * v2.y - v2.y * v2.z - v2.z * v2.x + v2.x * v2.y * v2.z;
-}
-
-// texelArea = 4.0 / (resolution * resolution).
-// Ref: http://bpeers.com/blog/?itemid=1017
-// This version is less accurate, but much faster than this one:
-// http://www.rorydriscoll.com/2012/01/15/cubemap-texel-solid-angle/
-real ComputeCubemapTexelSolidAngle(real3 L, real texelArea)
-{
-    // Stretch 'L' by (1/d) so that it points at a side of a [-1, 1]^2 cube.
-    real d = Max3(abs(L.x), abs(L.y), abs(L.z));
-    // Since 'L' is a unit vector, we can directly compute its
-    // new (inverse) length without dividing 'L' by 'd' first.
-    real invDist = d;
-
-    // dw = dA * cosTheta / (dist * dist), cosTheta = 1.0 / dist,
-    // where 'dA' is the area of the cube map texel.
-    return texelArea * invDist * invDist * invDist;
-}
-
-// Only makes sense for Monte-Carlo integration.
-// Normalize by dividing by the total weight (or the number of samples) in the end.
-// Integrate[6*(u^2+v^2+1)^(-3/2), {u,-1,1},{v,-1,1}] = 4 * Pi
-// Ref: "Stupid Spherical Harmonics Tricks", p. 9.
-real ComputeCubemapTexelSolidAngle(real2 uv)
-{
-    real u = uv.x, v = uv.y;
-    return pow(1 + u * u + v * v, -1.5);
-}
-
-real ConvertEvToLuminance(real ev)
-{
-    return exp2(ev - 3.0);
-}
-
-real ConvertLuminanceToEv(real luminance)
-{
-    real k = 12.5f;
-
-    return log2((luminance * 100.0) / k);
-}
-
-//-----------------------------------------------------------------------------
-// Attenuation functions
-//-----------------------------------------------------------------------------
-
-// Ref: Moving Frostbite to PBR.
-
-// Non physically based hack to limit light influence to attenuationRadius.
-// Square the result to smoothen the function.
-real DistanceWindowing(real distSquare, real rangeAttenuationScale, real rangeAttenuationBias)
-{
-    // If (range attenuation is enabled)
-    //   rangeAttenuationScale = 1 / r^2
-    //   rangeAttenuationBias  = 1
-    // Else
-    //   rangeAttenuationScale = 2^12 / r^2
-    //   rangeAttenuationBias  = 2^24
-    return saturate(rangeAttenuationBias - Sq(distSquare * rangeAttenuationScale));
-}
-
-real SmoothDistanceWindowing(real distSquare, real rangeAttenuationScale, real rangeAttenuationBias)
-{
-    real factor = DistanceWindowing(distSquare, rangeAttenuationScale, rangeAttenuationBias);
-    return Sq(factor);
-}
-
-#define PUNCTUAL_LIGHT_THRESHOLD 0.01 // 1cm (in Unity 1 is 1m)
-
-// Return physically based quadratic attenuation + influence limit to reach 0 at attenuationRadius
-real SmoothWindowedDistanceAttenuation(real distSquare, real distRcp, real rangeAttenuationScale, real rangeAttenuationBias)
-{
-    real attenuation = min(distRcp, 1.0 / PUNCTUAL_LIGHT_THRESHOLD);
-    attenuation *= DistanceWindowing(distSquare, rangeAttenuationScale, rangeAttenuationBias);
-
-    // Effectively results in (distRcp)^2 * SmoothDistanceWindowing(...).
-    return Sq(attenuation);
-}
-
-// Square the result to smoothen the function.
-real AngleAttenuation(real cosFwd, real lightAngleScale, real lightAngleOffset)
-{
-    return saturate(cosFwd * lightAngleScale + lightAngleOffset);
-}
-
-real SmoothAngleAttenuation(real cosFwd, real lightAngleScale, real lightAngleOffset)
-{
-    real attenuation = AngleAttenuation(cosFwd, lightAngleScale, lightAngleOffset);
-    return Sq(attenuation);
-}
-
-// Combines SmoothWindowedDistanceAttenuation() and SmoothAngleAttenuation() in an efficient manner.
-// distances = {d, d^2, 1/d, d_proj}, where d_proj = dot(lightToSample, lightData.forward).
-real PunctualLightAttenuation(real4 distances, real rangeAttenuationScale, real rangeAttenuationBias,
-                              real lightAngleScale, real lightAngleOffset)
-{
-    real distSq   = distances.y;
-    real distRcp  = distances.z;
-    real distProj = distances.w;
-    real cosFwd   = distProj * distRcp;
-
-    real attenuation = min(distRcp, 1.0 / PUNCTUAL_LIGHT_THRESHOLD);
-    attenuation *= DistanceWindowing(distSq, rangeAttenuationScale, rangeAttenuationBias);
-    attenuation *= AngleAttenuation(cosFwd, lightAngleScale, lightAngleOffset);
-
-    // Effectively results in SmoothWindowedDistanceAttenuation(...) * SmoothAngleAttenuation(...).
-    return Sq(attenuation);
-}
-
-// Applies SmoothDistanceWindowing() after transforming the attenuation ellipsoid into a sphere.
-// If r = rsqrt(invSqRadius), then the ellipsoid is defined s.t. r1 = r / invAspectRatio, r2 = r3 = r.
-// The transformation is performed along the major axis of the ellipsoid (corresponding to 'r1').
-// Both the ellipsoid (e.i. 'axis') and 'unL' should be in the same coordinate system.
-// 'unL' should be computed from the center of the ellipsoid.
-real EllipsoidalDistanceAttenuation(real3 unL, real3 axis, real invAspectRatio,
-                                    real rangeAttenuationScale, real rangeAttenuationBias)
-{
-    // Project the unnormalized light vector onto the axis.
-    real projL = dot(unL, axis);
-
-    // Transform the light vector so that we can work with
-    // with the ellipsoid as if it was a sphere with the radius of light's range.
-    real diff = projL - projL * invAspectRatio;
-    unL -= diff * axis;
-
-    real sqDist = dot(unL, unL);
-    return SmoothDistanceWindowing(sqDist, rangeAttenuationScale, rangeAttenuationBias);
-}
-
-// Applies SmoothDistanceWindowing() using the axis-aligned ellipsoid of the given dimensions.
-// Both the ellipsoid and 'unL' should be in the same coordinate system.
-// 'unL' should be computed from the center of the ellipsoid.
-real EllipsoidalDistanceAttenuation(real3 unL, real3 invHalfDim,
-                                    real rangeAttenuationScale, real rangeAttenuationBias)
-{
-    // Transform the light vector so that we can work with
-    // with the ellipsoid as if it was a unit sphere.
-    unL *= invHalfDim;
-
-    real sqDist = dot(unL, unL);
-    return SmoothDistanceWindowing(sqDist, rangeAttenuationScale, rangeAttenuationBias);
-}
-
-// Applies SmoothDistanceWindowing() after mapping the axis-aligned box to a sphere.
-// If the diagonal of the box is 'd', invHalfDim = rcp(0.5 * d).
-// Both the box and 'unL' should be in the same coordinate system.
-// 'unL' should be computed from the center of the box.
-real BoxDistanceAttenuation(real3 unL, real3 invHalfDim,
-                            real rangeAttenuationScale, real rangeAttenuationBias)
-{
-    real attenuation = 0.0;
-
-    // Transform the light vector so that we can work with
-    // with the box as if it was a [-1, 1]^2 cube.
-    unL *= invHalfDim;
-
-    // Our algorithm expects the input vector to be within the cube.
-    if (!(Max3(abs(unL.x), abs(unL.y), abs(unL.z)) > 1.0))
-    {
-        real sqDist = ComputeCubeToSphereMapSqMagnitude(unL);
-        attenuation = SmoothDistanceWindowing(sqDist, rangeAttenuationScale, rangeAttenuationBias);
-    }
-    return attenuation;
-}
-
-//-----------------------------------------------------------------------------
-// IES Helper
-//-----------------------------------------------------------------------------
-
-real2 GetIESTextureCoordinate(real3x3 lightToWord, real3 L)
-{
-    // IES need to be sample in light space
-    real3 dir = mul(lightToWord, -L); // Using matrix on left side do a transpose
-
-    // convert to spherical coordinate
-    real2 sphericalCoord; // .x is theta, .y is phi
-    // Texture is encoded with cos(phi), scale from -1..1 to 0..1
-    sphericalCoord.y = (dir.z * 0.5) + 0.5;
-    real theta = atan2(dir.y, dir.x);
-    sphericalCoord.x = theta * INV_TWO_PI;
-
-    return sphericalCoord;
-}
-
-//-----------------------------------------------------------------------------
-// Lighting functions
-//-----------------------------------------------------------------------------
-
-// Ref: Horizon Occlusion for Normal Mapped Reflections: http://marmosetco.tumblr.com/post/81245981087
-real GetHorizonOcclusion(real3 V, real3 normalWS, real3 vertexNormal, real horizonFade)
-{
-    real3 R = reflect(-V, normalWS);
-    real specularOcclusion = saturate(1.0 + horizonFade * dot(R, vertexNormal));
-    // smooth it
-    return specularOcclusion * specularOcclusion;
-}
-
-// Ref: Moving Frostbite to PBR - Gotanda siggraph 2011
-// Return specular occlusion based on ambient occlusion (usually get from SSAO) and view/roughness info
-real GetSpecularOcclusionFromAmbientOcclusion(real NdotV, real ambientOcclusion, real roughness)
-{
-    return saturate(PositivePow(NdotV + ambientOcclusion, exp2(-16.0 * roughness - 1.0)) - 1.0 + ambientOcclusion);
-}
-
-// ref: Practical Realtime Strategies for Accurate Indirect Occlusion
-// Update ambient occlusion to colored ambient occlusion based on statitics of how light is bouncing in an object and with the albedo of the object
-real3 GTAOMultiBounce(real visibility, real3 albedo)
-{
-    real3 a =  2.0404 * albedo - 0.3324;
-    real3 b = -4.7951 * albedo + 0.6417;
-    real3 c =  2.7552 * albedo + 0.6903;
-
-    real x = visibility;
-    return max(x, ((x * a + b) * x + c) * x);
-}
-
-// Based on Oat and Sander's 2008 technique
-// Area/solidAngle of intersection of two cone
-real SphericalCapIntersectionSolidArea(real cosC1, real cosC2, real cosB)
-{
-    real r1 = FastACos(cosC1);
-    real r2 = FastACos(cosC2);
-    real rd = FastACos(cosB);
-    real area = 0.0;
-
-    if (rd <= max(r1, r2) - min(r1, r2))
-    {
-        // One cap is completely inside the other
-        area = TWO_PI - TWO_PI * max(cosC1, cosC2);
-    }
-    else if (rd >= r1 + r2)
-    {
-        // No intersection exists
-        area = 0.0;
-    }
-    else
-    {
-        real diff = abs(r1 - r2);
-        real den = r1 + r2 - diff;
-        real x = 1.0 - saturate((rd - diff) / max(den, 0.0001));
-        area = smoothstep(0.0, 1.0, x);
-        area *= TWO_PI - TWO_PI * max(cosC1, cosC2);
-    }
-
-    return area;
-}
-
-// ref: Practical Realtime Strategies for Accurate Indirect Occlusion
-// http://blog.selfshadow.com/publications/s2016-shading-course/#course_content
-// Original Cone-Cone method with cosine weighted assumption (p129 s2016_pbs_activision_occlusion)
-real GetSpecularOcclusionFromBentAO(real3 V, real3 bentNormalWS, real3 normalWS, real ambientOcclusion, real roughness)
-{
-    // Retrieve cone angle
-    // Ambient occlusion is cosine weighted, thus use following equation. See slide 129
-    real cosAv = sqrt(1.0 - ambientOcclusion);
-    roughness = max(roughness, 0.01); // Clamp to 0.01 to avoid edge cases
-    real cosAs = exp2((-log(10.0) / log(2.0)) * Sq(roughness));
-    real cosB = dot(bentNormalWS, reflect(-V, normalWS));
-    return SphericalCapIntersectionSolidArea(cosAv, cosAs, cosB) / (TWO_PI * (1.0 - cosAs));
-}
-
-// Ref: Steve McAuley - Energy-Conserving Wrapped Diffuse
-real ComputeWrappedDiffuseLighting(real NdotL, real w)
-{
-    return saturate((NdotL + w) / ((1.0 + w) * (1.0 + w)));
-}
-
-// Jimenez variant for eye
-real ComputeWrappedPowerDiffuseLighting(real NdotL, real w, real p)
-{
-    return pow(saturate((NdotL + w) / (1.0 + w)), p) * (p + 1) / (w * 2.0 + 2.0);
-}
-
-// Ref: The Technical Art of Uncharted 4 - Brinck and Maximov 2016
-real ComputeMicroShadowing(real AO, real NdotL, real opacity)
-{
-	real aperture = 2.0 * AO * AO;
-	real microshadow = saturate(NdotL + aperture - 1.0);
-	return lerp(1.0, microshadow, opacity);
-}
-
-real3 ComputeShadowColor(real shadow, real3 shadowTint, real penumbraFlag)
-{
-    // The origin expression is
-    // lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * (real3(1.0, 1.0, 1.0) - shadowTint))
-    //            , shadow * lerp(shadowTint, lerp(shadowTint, real3(1.0, 1.0, 1.0), shadow), shadow)
-    //            , penumbraFlag);
-    // it has been simplified to this
-    real3 invTint = real3(1.0, 1.0, 1.0) - shadowTint;
-    real shadow3 = shadow * shadow * shadow;
-    return lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * invTint)
-                , shadow3 * invTint + shadow * shadowTint,
-                penumbraFlag);
-
-}
-
-// This is the same method as the one above. Simply the shadow is a real3 to support colored shadows.
-real3 ComputeShadowColor(real3 shadow, real3 shadowTint, real penumbraFlag)
-{
-    // The origin expression is
-    // lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * (real3(1.0, 1.0, 1.0) - shadowTint))
-    //            , shadow * lerp(shadowTint, lerp(shadowTint, real3(1.0, 1.0, 1.0), shadow), shadow)
-    //            , penumbraFlag);
-    // it has been simplified to this
-    real3 invTint = real3(1.0, 1.0, 1.0) - shadowTint;
-    real3 shadow3 = shadow * shadow * shadow;
-    return lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * invTint)
-                , shadow3 * invTint + shadow * shadowTint,
-                penumbraFlag);
-
-}
-
-//-----------------------------------------------------------------------------
-// Helper functions
-//--------------------------------------------------------------------------- --
-
-// Ref: "Crafting a Next-Gen Material Pipeline for The Order: 1886".
-real ClampNdotV(real NdotV)
-{
-    return max(NdotV, 0.0001); // Approximately 0.0057 degree bias
-}
-
-// Helper function to return a set of common angle used when evaluating BSDF
-// NdotL and NdotV are unclamped
-void GetBSDFAngle(real3 V, real3 L, real NdotL, real NdotV,
-                  out real LdotV, out real NdotH, out real LdotH, out real invLenLV)
-{
-    // Optimized math. Ref: PBR Diffuse Lighting for GGX + Smith Microsurfaces (slide 114).
-    LdotV = dot(L, V);
-    invLenLV = rsqrt(max(2.0 * LdotV + 2.0, FLT_EPS));    // invLenLV = rcp(length(L + V)), clamp to avoid rsqrt(0) = inf, inf * 0 = NaN
-    NdotH = saturate((NdotL + NdotV) * invLenLV);
-    LdotH = saturate(invLenLV * LdotV + invLenLV);
-}
-
-// Inputs:    normalized normal and view vectors.
-// Outputs:   front-facing normal, and the new non-negative value of the cosine of the view angle.
-// Important: call Orthonormalize() on the tangent and recompute the bitangent afterwards.
-real3 GetViewReflectedNormal(real3 N, real3 V, out real NdotV)
-{
-    // Fragments of front-facing geometry can have back-facing normals due to interpolation,
-    // normal mapping and decals. This can cause visible artifacts from both direct (negative or
-    // extremely high values) and indirect (incorrect lookup direction) lighting.
-    // There are several ways to avoid this problem. To list a few:
-    //
-    // 1. Setting { NdotV = max(<N,V>, SMALL_VALUE) }. This effectively removes normal mapping
-    // from the affected fragments, making the surface appear flat.
-    //
-    // 2. Setting { NdotV = abs(<N,V>) }. This effectively reverses the convexity of the surface.
-    // It also reduces light leaking from non-shadow-casting lights. Note that 'NdotV' can still
-    // be 0 in this case.
-    //
-    // It's important to understand that simply changing the value of the cosine is insufficient.
-    // For one, it does not solve the incorrect lookup direction problem, since the normal itself
-    // is not modified. There is a more insidious issue, however. 'NdotV' is a constituent element
-    // of the mathematical system describing the relationships between different vectors - and
-    // not just normal and view vectors, but also light vectors, half vectors, tangent vectors, etc.
-    // Changing only one angle (or its cosine) leaves the system in an inconsistent state, where
-    // certain relationships can take on different values depending on whether 'NdotV' is used
-    // in the calculation or not. Therefore, it is important to change the normal (or another
-    // vector) in order to leave the system in a consistent state.
-    //
-    // We choose to follow the conceptual approach (2) by reflecting the normal around the
-    // (<N,V> = 0) boundary if necessary, as it allows us to preserve some normal mapping details.
-
-    NdotV = dot(N, V);
-
-    // N = (NdotV >= 0.0) ? N : (N - 2.0 * NdotV * V);
-    N += (2.0 * saturate(-NdotV)) * V;
-    NdotV = abs(NdotV);
-
-    return N;
-}
-
-// Generates an orthonormal (row-major) basis from a unit vector. TODO: make it column-major.
-// The resulting rotation matrix has the determinant of +1.
-// Ref: 'ortho_basis_pixar_r2' from http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html
-real3x3 GetLocalFrame(real3 localZ)
-{
-    real x  = localZ.x;
-    real y  = localZ.y;
-    real z  = localZ.z;
-    real sz = FastSign(z);
-    real a  = 1 / (sz + z);
-    real ya = y * a;
-    real b  = x * ya;
-    real c  = x * sz;
-
-    real3 localX = real3(c * x * a - 1, sz * b, c);
-    real3 localY = real3(b, y * ya - sz, y);
-
-    // Note: due to the quaternion formulation, the generated frame is rotated by 180 degrees,
-    // s.t. if localZ = {0, 0, 1}, then localX = {-1, 0, 0} and localY = {0, -1, 0}.
-    return real3x3(localX, localY, localZ);
-}
-
-// Generates an orthonormal (row-major) basis from a unit vector. TODO: make it column-major.
-// The resulting rotation matrix has the determinant of +1.
-real3x3 GetLocalFrame(real3 localZ, real3 localX)
-{
-    real3 localY = cross(localZ, localX);
-
-    return real3x3(localX, localY, localZ);
-}
-
-// Construct a right-handed view-dependent orthogonal basis around the normal:
-// b0-b2 is the view-normal aka reflection plane.
-real3x3 GetOrthoBasisViewNormal(real3 V, real3 N, real unclampedNdotV, bool testSingularity = false)
-{
-    real3x3 orthoBasisViewNormal;
-    if (testSingularity && (abs(1.0 - unclampedNdotV) <= FLT_EPS))
-    {
-        // In this case N == V, and azimuth orientation around N shouldn't matter for the caller,
-        // we can use any quaternion-based method, like Frisvad or Reynold's (Pixar): 
-        orthoBasisViewNormal = GetLocalFrame(N);
-    }
-    else
-    {
-        orthoBasisViewNormal[0] = normalize(V - N * unclampedNdotV);
-        orthoBasisViewNormal[2] = N;
-        orthoBasisViewNormal[1] = cross(orthoBasisViewNormal[2], orthoBasisViewNormal[0]);
-    }
-    return orthoBasisViewNormal;
-}
-
-// Move this here since it's used by both LightLoop.hlsl and RaytracingLightLoop.hlsl
-bool IsMatchingLightLayer(uint lightLayers, uint renderingLayers)
-{
-    return (lightLayers & renderingLayers) != 0;
-}
-
-#endif // UNITY_COMMON_LIGHTING_INCLUDED
-
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/CommonLighting.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Common.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/CommonMaterial.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/CommonMaterial.hlsl
 
 
 #ifndef UNITY_COMMON_MATERIAL_INCLUDED
@@ -3517,9 +2980,9 @@ real PerceptualSmoothnessToPerceptualRoughness(real perceptualSmoothness)
 // but chopping the far tails of GGX and keeping 94% of the mass yields a distribution with a defined variance where
 // we can then relate the roughness of GGX to a variance (see Ray Tracing Gems p153 - the reference is wrong though,
 // the Conty paper doesn't mention this at all, but it can be found in stats using quantiles):
-// 
+//
 // roughnessGGX^2 = variance / 2
-// 
+//
 // From the two previous, if we want roughly comparable variances of slopes between a Beckmann and a GGX NDF, we can
 // equate the variances and get a conversion of their roughnesses:
 //
@@ -3788,30 +3251,29 @@ real3 LerpWhiteTo(real3 b, real t)
     real oneMinusT = 1.0 - t;
     return real3(oneMinusT, oneMinusT, oneMinusT) + b * t;
 }
-
 #endif // UNITY_COMMON_MATERIAL_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/CommonMaterial.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/CommonMaterial.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/BSDF.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/EntityLighting.hlsl
 
 
-#ifndef UNITY_BSDF_INCLUDED
-#define UNITY_BSDF_INCLUDED
+#ifndef UNITY_ENTITY_LIGHTING_INCLUDED
+#define UNITY_ENTITY_LIGHTING_INCLUDED
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Color.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Color.hlsl
 
 
 #ifndef UNITY_COLOR_INCLUDED
 #define UNITY_COLOR_INCLUDED
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/ACES.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/ACES.hlsl
 
 
 #ifndef __ACES__
@@ -4084,7 +3546,9 @@ half3 ACEScc_to_ACES(half3 x)
 // converts ACES2065-1 (AP0 w/ linear encoding) to
 //          ACEScg (AP1 w/ linear encoding)
 //
-half3 ACES_to_ACEScg(half3 x)
+// Uses float3 to avoid going out of half-precision bounds
+//
+float3 ACES_to_ACEScg(float3 x)
 {
     return mul(AP0_2_AP1_MAT, x);
 }
@@ -4095,7 +3559,9 @@ half3 ACES_to_ACEScg(half3 x)
 // converts ACEScg (AP1 w/ linear encoding) to
 //          ACES2065-1 (AP0 w/ linear encoding)
 //
-half3 ACEScg_to_ACES(half3 x)
+// Uses float3 to avoid going out of half-precision bounds
+//
+float3 ACEScg_to_ACES(float3 x)
 {
     return mul(AP1_2_AP0_MAT, x);
 }
@@ -4135,6 +3601,7 @@ half rgb_2_yc(half3 rgb)
     half g = rgb.y;
     half b = rgb.z;
     half k = b * (b - g) + g * (g - r) + r * (r - b);
+    k = max(k, 0.0h); // Clamp to avoid precision issue causing k < 0, making sqrt(k) undefined
 #if defined(SHADER_API_SWITCH)
     half chroma = k == 0.0 ? 0.0 : sqrt(k); // Fix NaN on Nintendo Switch (should not happen in theory).
 #else
@@ -5132,7 +4599,7 @@ half3 ODT_P3DCI_48nits(half3 oces)
 
 #endif // __ACES__
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/ACES.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/ACES.hlsl
 //================================================================================================================================
 
 
@@ -5389,7 +4856,7 @@ real YCoCgCheckBoardEdgeFilter(real centerLum, real2 a0, real2 a1, real2 a2, rea
 }
 
 // Converts linear RGB to LMS
-real3 LinearToLMS(real3 x)
+float3 LinearToLMS(float3 x) // Full float precision to avoid precision artefact when using ACES tonemapping
 {
     const real3x3 LIN_2_LMS_MAT = {
         3.90405e-1, 5.49941e-1, 8.92632e-3,
@@ -5400,7 +4867,7 @@ real3 LinearToLMS(real3 x)
     return mul(LIN_2_LMS_MAT, x);
 }
 
-real3 LMSToLinear(real3 x)
+float3 LMSToLinear(float3 x) // Full float precision to avoid precision artefact when using ACES tonemapping
 {
     const real3x3 LMS_2_LIN_MAT = {
         2.85847e+0, -1.62879e+0, -2.48910e-2,
@@ -5524,13 +4991,13 @@ real LinearToLogC_Precise(real x)
 {
     real o;
     if (x > LogC.cut)
-        o = LogC.c * log10(LogC.a * x + LogC.b) + LogC.d;
+        o = LogC.c * log10(max(LogC.a * x + LogC.b, 0.0)) + LogC.d;
     else
         o = LogC.e * x + LogC.f;
     return o;
 }
 
-real3 LinearToLogC(real3 x)
+float3 LinearToLogC(float3 x) // Full float precision to avoid precision artefact when using ACES tonemapping
 {
 #if USE_PRECISE_LOGC
     return real3(
@@ -5539,7 +5006,7 @@ real3 LinearToLogC(real3 x)
         LinearToLogC_Precise(x.z)
     );
 #else
-    return LogC.c * log10(LogC.a * x + LogC.b) + LogC.d;
+    return LogC.c * log10(max(LogC.a * x + LogC.b, 0.0)) + LogC.d;
 #endif
 }
 
@@ -5553,7 +5020,7 @@ real LogCToLinear_Precise(real x)
     return o;
 }
 
-real3 LogCToLinear(real3 x)
+float3 LogCToLinear(float3 x) // Full float precision to avoid precision artefact when using ACES tonemapping
 {
 #if USE_PRECISE_LOGC
     return real3(
@@ -5682,6 +5149,11 @@ real3 NeutralCurve(real3 x, real a, real b, real c, real d, real e, real f)
     return ((x * (a * x + c * b) + d * e) / (x * (a * x + b) + d * f)) - e / f;
 }
 
+#define TONEMAPPING_CLAMP_MAX 435.18712 //(-b + sqrt(b * b - 4 * a * (HALF_MAX - d * f))) / (2 * a * whiteScale)
+//Extremely high values cause NaN output when using fp16, we clamp to avoid the performace hit of switching to fp32
+//The overflow happens in (x * (a * x + b) + d * f) of the NeutralCurve, highest value that avoids fp16 precision errors is ~571.56873
+//Since whiteScale is constant (~1.31338) max input is ~435.18712
+
 real3 NeutralTonemap(real3 x)
 {
     // Tonemap
@@ -5693,6 +5165,10 @@ real3 NeutralTonemap(real3 x)
     const real f = 0.3;
     const real whiteLevel = 5.3;
     const real whiteClip = 1.0;
+
+#if defined(SHADER_API_MOBILE)
+    x = min(x, TONEMAPPING_CLAMP_MAX);
+#endif
 
     real3 whiteScale = (1.0).xxx / NeutralCurve(whiteLevel, a, b, c, d, e, f);
     x = NeutralCurve(x * whiteScale, a, b, c, d, e, f);
@@ -5859,10 +5335,852 @@ half3 DecodeRGBM(half4 rgbm)
 
 #endif // UNITY_COLOR_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Color.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Color.hlsl
 //================================================================================================================================
 
 
+
+
+#define LIGHTMAP_RGBM_MAX_GAMMA     real(5.0)       // NB: Must match value in RGBMRanges.h
+#define LIGHTMAP_RGBM_MAX_LINEAR    real(34.493242) // LIGHTMAP_RGBM_MAX_GAMMA ^ 2.2
+
+#ifdef UNITY_LIGHTMAP_RGBM_ENCODING
+    #ifdef UNITY_COLORSPACE_GAMMA
+        #define LIGHTMAP_HDR_MULTIPLIER LIGHTMAP_RGBM_MAX_GAMMA
+        #define LIGHTMAP_HDR_EXPONENT   real(1.0)   // Not used in gamma color space
+    #else
+        #define LIGHTMAP_HDR_MULTIPLIER LIGHTMAP_RGBM_MAX_LINEAR
+        #define LIGHTMAP_HDR_EXPONENT   real(2.2)
+    #endif
+#elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
+    #ifdef UNITY_COLORSPACE_GAMMA
+        #define LIGHTMAP_HDR_MULTIPLIER real(2.0)
+    #else
+        #define LIGHTMAP_HDR_MULTIPLIER real(4.59) // 2.0 ^ 2.2
+    #endif
+    #define LIGHTMAP_HDR_EXPONENT real(0.0)
+#else // (UNITY_LIGHTMAP_FULL_HDR)
+    #define LIGHTMAP_HDR_MULTIPLIER real(1.0)
+    #define LIGHTMAP_HDR_EXPONENT real(1.0)
+#endif
+
+// TODO: Check if PI is correctly handled!
+
+// Ref: "Efficient Evaluation of Irradiance Environment Maps" from ShaderX 2
+real3 SHEvalLinearL0L1(real3 N, real4 shAr, real4 shAg, real4 shAb)
+{
+    real4 vA = real4(N, 1.0);
+
+    real3 x1;
+    // Linear (L1) + constant (L0) polynomial terms
+    x1.r = dot(shAr, vA);
+    x1.g = dot(shAg, vA);
+    x1.b = dot(shAb, vA);
+
+    return x1;
+}
+
+real3 SHEvalLinearL2(real3 N, real4 shBr, real4 shBg, real4 shBb, real4 shC)
+{
+    real3 x2;
+    // 4 of the quadratic (L2) polynomials
+    real4 vB = N.xyzz * N.yzzx;
+    x2.r = dot(shBr, vB);
+    x2.g = dot(shBg, vB);
+    x2.b = dot(shBb, vB);
+
+    // Final (5th) quadratic (L2) polynomial
+    real vC = N.x * N.x - N.y * N.y;
+    real3 x3 = shC.rgb * vC;
+
+    return x2 + x3;
+}
+
+#if HAS_HALF
+half3 SampleSH9(half4 SHCoefficients[7], half3 N)
+{
+    half4 shAr = SHCoefficients[0];
+    half4 shAg = SHCoefficients[1];
+    half4 shAb = SHCoefficients[2];
+    half4 shBr = SHCoefficients[3];
+    half4 shBg = SHCoefficients[4];
+    half4 shBb = SHCoefficients[5];
+    half4 shCr = SHCoefficients[6];
+
+    // Linear + constant polynomial terms
+    half3 res = SHEvalLinearL0L1(N, shAr, shAg, shAb);
+
+    // Quadratic polynomials
+    res += SHEvalLinearL2(N, shBr, shBg, shBb, shCr);
+
+#ifdef UNITY_COLORSPACE_GAMMA
+    res = LinearToSRGB(res);
+#endif
+
+    return res;
+}
+#endif
+
+float3 SampleSH9(float4 SHCoefficients[7], float3 N)
+{
+    float4 shAr = SHCoefficients[0];
+    float4 shAg = SHCoefficients[1];
+    float4 shAb = SHCoefficients[2];
+    float4 shBr = SHCoefficients[3];
+    float4 shBg = SHCoefficients[4];
+    float4 shBb = SHCoefficients[5];
+    float4 shCr = SHCoefficients[6];
+
+    // Linear + constant polynomial terms
+    float3 res = SHEvalLinearL0L1(N, shAr, shAg, shAb);
+
+    // Quadratic polynomials
+    res += SHEvalLinearL2(N, shBr, shBg, shBb, shCr);
+
+#ifdef UNITY_COLORSPACE_GAMMA
+    res = LinearToSRGB(res);
+#endif
+
+    return res;
+}
+
+
+// texture3dLod is not supported on gles2.
+#if !defined(SHADER_API_GLES)
+// This sample a 3D volume storing SH
+// Volume is store as 3D texture with 4 R, G, B, Occ set of 4 coefficient store atlas in same 3D texture. Occ is use for occlusion.
+// TODO: the packing here is inefficient as we will fetch values far away from each other and they may not fit into the cache - Suggest we pack RGB continuously
+// TODO: The calcul of texcoord could be perform with a single matrix multicplication calcualted on C++ side that will fold probeVolumeMin and probeVolumeSizeInv into it and handle the identity case, no reasons to do it in C++ (ask Ionut about it)
+// It should also handle the camera relative path (if the render pipeline use it)
+// bakeDiffuseLighting and backBakeDiffuseLighting must be initialize outside the function
+void SampleProbeVolumeSH4(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float3 backNormalWS, float4x4 WorldToTexture,
+                            float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv,
+                            inout float3 bakeDiffuseLighting, inout float3 backBakeDiffuseLighting)
+{
+    float3 position = (transformToLocal == 1.0) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
+    float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv.xyz;
+    // Each component is store in the same texture 3D. Each use one quater on the x axis
+    // Here we get R component then increase by step size (0.25) to get other component. This assume 4 component
+    // but last one is not used.
+    // Clamp to edge of the "internal" texture, as R is from half texel to size of R texture minus half texel.
+    // This avoid leaking
+    texCoord.x = clamp(texCoord.x * 0.25, 0.5 * texelSizeX, 0.25 - 0.5 * texelSizeX);
+
+    float4 shAr = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
+    texCoord.x += 0.25;
+    float4 shAg = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
+    texCoord.x += 0.25;
+    float4 shAb = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
+
+    bakeDiffuseLighting += SHEvalLinearL0L1(normalWS, shAr, shAg, shAb);
+    backBakeDiffuseLighting += SHEvalLinearL0L1(backNormalWS, shAr, shAg, shAb);
+}
+
+// Just a shortcut that call function above
+float3 SampleProbeVolumeSH4(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
+                                float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
+{
+    float3 backNormalWSUnused = 0.0;
+    float3 bakeDiffuseLighting = 0.0;
+    float3 backBakeDiffuseLightingUnused = 0.0;
+    SampleProbeVolumeSH4(TEXTURE3D_ARGS(SHVolumeTexture, SHVolumeSampler), positionWS, normalWS, backNormalWSUnused, WorldToTexture,
+                            transformToLocal, texelSizeX, probeVolumeMin, probeVolumeSizeInv,
+                            bakeDiffuseLighting, backBakeDiffuseLightingUnused);
+    return bakeDiffuseLighting;
+}
+
+// The SphericalHarmonicsL2 coefficients are packed into 7 coefficients per color channel instead of 9.
+// The packing from 9 to 7 is done from engine code and will use the alpha component of the pixel to store an additional SH coefficient.
+// The 3D atlas texture will contain 7 SH coefficient parts.
+// bakeDiffuseLighting and backBakeDiffuseLighting must be initialize outside the function
+void SampleProbeVolumeSH9(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float3 backNormalWS, float4x4 WorldToTexture,
+                                           float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv,
+                                           inout float3 bakeDiffuseLighting, inout float3 backBakeDiffuseLighting)
+{
+    float3 position = (transformToLocal == 1.0f) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
+    float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv;
+
+    const uint shCoeffCount = 7;
+    const float invShCoeffCount = 1.0f / float(shCoeffCount);
+
+    // We need to compute proper X coordinate to sample into the atlas.
+    texCoord.x = texCoord.x / shCoeffCount;
+
+    // Clamp the x coordinate otherwise we'll have leaking between RGB coefficients.
+    float texCoordX = clamp(texCoord.x, 0.5f * texelSizeX, invShCoeffCount - 0.5f * texelSizeX);
+
+    float4 SHCoefficients[7];
+
+    for (uint i = 0; i < shCoeffCount; i++)
+    {
+        texCoord.x = texCoordX + i * invShCoeffCount;
+        SHCoefficients[i] = SAMPLE_TEXTURE3D_LOD(SHVolumeTexture, SHVolumeSampler, texCoord, 0);
+    }
+
+    bakeDiffuseLighting += SampleSH9(SHCoefficients, normalize(normalWS));
+    backBakeDiffuseLighting += SampleSH9(SHCoefficients, normalize(backNormalWS));
+}
+
+// Just a shortcut that call function above
+float3 SampleProbeVolumeSH9(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float3 normalWS, float4x4 WorldToTexture,
+                                float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
+{
+    float3 backNormalWSUnused = 0.0;
+    float3 bakeDiffuseLighting = 0.0;
+    float3 backBakeDiffuseLightingUnused = 0.0;
+    SampleProbeVolumeSH9(TEXTURE3D_ARGS(SHVolumeTexture, SHVolumeSampler), positionWS, normalWS, backNormalWSUnused, WorldToTexture,
+                            transformToLocal, texelSizeX, probeVolumeMin, probeVolumeSizeInv,
+                            bakeDiffuseLighting, backBakeDiffuseLightingUnused);
+    return bakeDiffuseLighting;
+}
+
+#endif
+
+float4 SampleProbeOcclusion(TEXTURE3D_PARAM(SHVolumeTexture, SHVolumeSampler), float3 positionWS, float4x4 WorldToTexture,
+                            float transformToLocal, float texelSizeX, float3 probeVolumeMin, float3 probeVolumeSizeInv)
+{
+    float3 position = (transformToLocal == 1.0) ? mul(WorldToTexture, float4(positionWS, 1.0)).xyz : positionWS;
+    float3 texCoord = (position - probeVolumeMin) * probeVolumeSizeInv.xyz;
+
+    // Sample fourth texture in the atlas
+    // We need to compute proper U coordinate to sample.
+    // Clamp the coordinate otherwize we'll have leaking between ShB coefficients and Probe Occlusion(Occ) info
+    texCoord.x = max(texCoord.x * 0.25 + 0.75, 0.75 + 0.5 * texelSizeX);
+
+    return SAMPLE_TEXTURE3D(SHVolumeTexture, SHVolumeSampler, texCoord);
+}
+
+// Following functions are to sample enlighten lightmaps (or lightmaps encoded the same way as our
+// enlighten implementation). They assume use of RGB9E5 for dynamic illuminance map and RGBM for baked ones.
+// It is required for other platform that aren't supporting this format to implement variant of these functions
+// (But these kind of platform should use regular render loop and not news shaders).
+
+// TODO: This is the max value allowed for emissive (bad name - but keep for now to retrieve it) (It is 8^2.2 (gamma) and 8 is the limit of punctual light slider...), comme from UnityCg.cginc. Fix it!
+// Ask Jesper if this can be change for HDRenderPipeline
+#define EMISSIVE_RGBM_SCALE 97.0
+
+// RGBM stuff is temporary. For now baked lightmap are in RGBM and the RGBM range for lightmaps is specific so we can't use the generic method.
+// In the end baked lightmaps are going to be BC6H so the code will be the same as dynamic lightmaps.
+// Same goes for emissive packed as an input for Enlighten with another hard coded multiplier.
+
+// TODO: This function is used with the LightTransport pass to encode lightmap or emissive
+real4 PackEmissiveRGBM(real3 rgb)
+{
+    real kOneOverRGBMMaxRange = 1.0 / EMISSIVE_RGBM_SCALE;
+    const real kMinMultiplier = 2.0 * 1e-2;
+
+    real4 rgbm = real4(rgb * kOneOverRGBMMaxRange, 1.0);
+        rgbm.a = max(max(rgbm.r, rgbm.g), max(rgbm.b, kMinMultiplier));
+    rgbm.a = ceil(rgbm.a * 255.0) / 255.0;
+
+    // Division-by-zero warning from d3d9, so make compiler happy.
+    rgbm.a = max(rgbm.a, kMinMultiplier);
+
+    rgbm.rgb /= rgbm.a;
+    return rgbm;
+}
+
+real3 UnpackLightmapRGBM(real4 rgbmInput, real4 decodeInstructions)
+{
+#ifdef UNITY_COLORSPACE_GAMMA
+    return rgbmInput.rgb * (rgbmInput.a * decodeInstructions.x);
+#else
+    return rgbmInput.rgb * (PositivePow(rgbmInput.a, decodeInstructions.y) * decodeInstructions.x);
+#endif
+}
+
+real3 UnpackLightmapDoubleLDR(real4 encodedColor, real4 decodeInstructions)
+{
+    return encodedColor.rgb * decodeInstructions.x;
+}
+
+real3 DecodeLightmap(real4 encodedIlluminance, real4 decodeInstructions)
+{
+#if defined(UNITY_LIGHTMAP_RGBM_ENCODING)
+    return UnpackLightmapRGBM(encodedIlluminance, decodeInstructions);
+#elif defined(UNITY_LIGHTMAP_DLDR_ENCODING)
+    return UnpackLightmapDoubleLDR(encodedIlluminance, decodeInstructions);
+#else // (UNITY_LIGHTMAP_FULL_HDR)
+    return encodedIlluminance.rgb;
+#endif
+}
+
+real3 DecodeHDREnvironment(real4 encodedIrradiance, real4 decodeInstructions)
+{
+    // Take into account texture alpha if decodeInstructions.w is true(the alpha value affects the RGB channels)
+    real alpha = max(decodeInstructions.w * (encodedIrradiance.a - 1.0) + 1.0, 0.0);
+
+    // If Linear mode is not supported we can skip exponent part
+    return (decodeInstructions.x * PositivePow(alpha, decodeInstructions.y)) * encodedIrradiance.rgb;
+}
+
+#if defined(UNITY_DOTS_INSTANCING_ENABLED)
+#define TEXTURE2D_LIGHTMAP_PARAM TEXTURE2D_ARRAY_PARAM
+#define TEXTURE2D_LIGHTMAP_ARGS TEXTURE2D_ARRAY_ARGS
+#define SAMPLE_TEXTURE2D_LIGHTMAP SAMPLE_TEXTURE2D_ARRAY
+#define LIGHTMAP_EXTRA_ARGS float2 uv, float slice
+#define LIGHTMAP_EXTRA_ARGS_USE uv, slice
+#else
+#define TEXTURE2D_LIGHTMAP_PARAM TEXTURE2D_PARAM
+#define TEXTURE2D_LIGHTMAP_ARGS TEXTURE2D_ARGS
+#define SAMPLE_TEXTURE2D_LIGHTMAP SAMPLE_TEXTURE2D
+#define LIGHTMAP_EXTRA_ARGS float2 uv
+#define LIGHTMAP_EXTRA_ARGS_USE uv
+#endif
+
+real3 SampleSingleLightmap(TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), LIGHTMAP_EXTRA_ARGS, float4 transform, bool encodedLightmap, real4 decodeInstructions)
+{
+    // transform is scale and bias
+    uv = uv * transform.xy + transform.zw;
+    real3 illuminance = real3(0.0, 0.0, 0.0);
+    // Remark: baked lightmap is RGBM for now, dynamic lightmap is RGB9E5
+    if (encodedLightmap)
+    {
+        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgba;
+        illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
+    }
+    else
+    {
+        illuminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgb;
+    }
+    return illuminance;
+}
+
+void SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
+    float3 normalWS, float3 backNormalWS, bool encodedLightmap, real4 decodeInstructions, inout real3 bakeDiffuseLighting, inout real3 backBakeDiffuseLighting)
+{
+     // In directional mode Enlighten bakes dominant light direction
+    // in a way, that using it for half Lambert and then dividing by a "rebalancing coefficient"
+    // gives a result close to plain diffuse response lightmaps, but normalmapped.
+
+    // Note that dir is not unit length on purpose. Its length is "directionality", like
+    // for the directional specular lightmaps.
+
+    // transform is scale and bias
+    uv = uv * transform.xy + transform.zw;
+
+    real4 direction = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapDirTex, lightmapDirSampler, LIGHTMAP_EXTRA_ARGS_USE);
+    // Remark: baked lightmap is RGBM for now, dynamic lightmap is RGB9E5
+    real3 illuminance = real3(0.0, 0.0, 0.0);
+    if (encodedLightmap)
+    {
+        real4 encodedIlluminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgba;
+        illuminance = DecodeLightmap(encodedIlluminance, decodeInstructions);
+    }
+    else
+    {
+        illuminance = SAMPLE_TEXTURE2D_LIGHTMAP(lightmapTex, lightmapSampler, LIGHTMAP_EXTRA_ARGS_USE).rgb;
+    }
+
+    real halfLambert = dot(normalWS, direction.xyz - 0.5) + 0.5;
+    bakeDiffuseLighting += illuminance * halfLambert / max(1e-4, direction.w);
+
+    real backHalfLambert = dot(backNormalWS, direction.xyz - 0.5) + 0.5;
+    backBakeDiffuseLighting += illuminance * backHalfLambert / max(1e-4, direction.w);
+}
+
+// Just a shortcut that call function above
+real3 SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_PARAM(lightmapTex, lightmapSampler), TEXTURE2D_LIGHTMAP_PARAM(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS, float4 transform,
+    float3 normalWS, bool encodedLightmap, real4 decodeInstructions)
+{
+    float3 backNormalWSUnused = 0.0;
+    real3 bakeDiffuseLighting = 0.0;
+    real3 backBakeDiffuseLightingUnused = 0.0;
+    SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_ARGS(lightmapTex, lightmapSampler), TEXTURE2D_LIGHTMAP_ARGS(lightmapDirTex, lightmapDirSampler), LIGHTMAP_EXTRA_ARGS_USE, transform,
+                                normalWS, backNormalWSUnused, encodedLightmap, decodeInstructions, bakeDiffuseLighting, backBakeDiffuseLightingUnused);
+
+    return bakeDiffuseLighting;
+}
+
+
+#endif // UNITY_ENTITY_LIGHTING_INCLUDED
+
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/EntityLighting.hlsl
+//================================================================================================================================
+
+
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/ImageBasedLighting.hlsl
+
+
+#ifndef UNITY_IMAGE_BASED_LIGHTING_INCLUDED
+#define UNITY_IMAGE_BASED_LIGHTING_INCLUDED
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/CommonLighting.hlsl
+
+
+#ifndef UNITY_COMMON_LIGHTING_INCLUDED
+#define UNITY_COMMON_LIGHTING_INCLUDED
+
+// Ligthing convention
+// Light direction is oriented backward (-Z). i.e in shader code, light direction is -lightData.forward
+
+//-----------------------------------------------------------------------------
+// Helper functions
+//-----------------------------------------------------------------------------
+
+// Performs the mapping of the vector 'v' centered within the axis-aligned cube
+// of dimensions [-1, 1]^3 to a vector centered within the unit sphere.
+// The function expects 'v' to be within the cube (possibly unexpected results otherwise).
+// Ref: http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
+real3 MapCubeToSphere(real3 v)
+{
+    real3 v2 = v * v;
+    real2 vr3 = v2.xy * rcp(3.0);
+    return v * sqrt((real3)1.0 - 0.5 * v2.yzx - 0.5 * v2.zxy + vr3.yxx * v2.zzy);
+}
+
+// Computes the squared magnitude of the vector computed by MapCubeToSphere().
+real ComputeCubeToSphereMapSqMagnitude(real3 v)
+{
+    real3 v2 = v * v;
+    // Note: dot(v, v) is often computed before this function is called,
+    // so the compiler should optimize and use the precomputed result here.
+    return dot(v, v) - v2.x * v2.y - v2.y * v2.z - v2.z * v2.x + v2.x * v2.y * v2.z;
+}
+
+// texelArea = 4.0 / (resolution * resolution).
+// Ref: http://bpeers.com/blog/?itemid=1017
+// This version is less accurate, but much faster than this one:
+// http://www.rorydriscoll.com/2012/01/15/cubemap-texel-solid-angle/
+real ComputeCubemapTexelSolidAngle(real3 L, real texelArea)
+{
+    // Stretch 'L' by (1/d) so that it points at a side of a [-1, 1]^2 cube.
+    real d = Max3(abs(L.x), abs(L.y), abs(L.z));
+    // Since 'L' is a unit vector, we can directly compute its
+    // new (inverse) length without dividing 'L' by 'd' first.
+    real invDist = d;
+
+    // dw = dA * cosTheta / (dist * dist), cosTheta = 1.0 / dist,
+    // where 'dA' is the area of the cube map texel.
+    return texelArea * invDist * invDist * invDist;
+}
+
+// Only makes sense for Monte-Carlo integration.
+// Normalize by dividing by the total weight (or the number of samples) in the end.
+// Integrate[6*(u^2+v^2+1)^(-3/2), {u,-1,1},{v,-1,1}] = 4 * Pi
+// Ref: "Stupid Spherical Harmonics Tricks", p. 9.
+real ComputeCubemapTexelSolidAngle(real2 uv)
+{
+    real u = uv.x, v = uv.y;
+    return pow(1 + u * u + v * v, -1.5);
+}
+
+real ConvertEvToLuminance(real ev)
+{
+    return exp2(ev - 3.0);
+}
+
+real ConvertLuminanceToEv(real luminance)
+{
+    real k = 12.5f;
+
+    return log2((luminance * 100.0) / k);
+}
+
+//-----------------------------------------------------------------------------
+// Attenuation functions
+//-----------------------------------------------------------------------------
+
+// Ref: Moving Frostbite to PBR.
+
+// Non physically based hack to limit light influence to attenuationRadius.
+// Square the result to smoothen the function.
+real DistanceWindowing(real distSquare, real rangeAttenuationScale, real rangeAttenuationBias)
+{
+    // If (range attenuation is enabled)
+    //   rangeAttenuationScale = 1 / r^2
+    //   rangeAttenuationBias  = 1
+    // Else
+    //   rangeAttenuationScale = 2^12 / r^2
+    //   rangeAttenuationBias  = 2^24
+    return saturate(rangeAttenuationBias - Sq(distSquare * rangeAttenuationScale));
+}
+
+real SmoothDistanceWindowing(real distSquare, real rangeAttenuationScale, real rangeAttenuationBias)
+{
+    real factor = DistanceWindowing(distSquare, rangeAttenuationScale, rangeAttenuationBias);
+    return Sq(factor);
+}
+
+#define PUNCTUAL_LIGHT_THRESHOLD 0.01 // 1cm (in Unity 1 is 1m)
+
+// Return physically based quadratic attenuation + influence limit to reach 0 at attenuationRadius
+real SmoothWindowedDistanceAttenuation(real distSquare, real distRcp, real rangeAttenuationScale, real rangeAttenuationBias)
+{
+    real attenuation = min(distRcp, 1.0 / PUNCTUAL_LIGHT_THRESHOLD);
+    attenuation *= DistanceWindowing(distSquare, rangeAttenuationScale, rangeAttenuationBias);
+
+    // Effectively results in (distRcp)^2 * SmoothDistanceWindowing(...).
+    return Sq(attenuation);
+}
+
+// Square the result to smoothen the function.
+real AngleAttenuation(real cosFwd, real lightAngleScale, real lightAngleOffset)
+{
+    return saturate(cosFwd * lightAngleScale + lightAngleOffset);
+}
+
+real SmoothAngleAttenuation(real cosFwd, real lightAngleScale, real lightAngleOffset)
+{
+    real attenuation = AngleAttenuation(cosFwd, lightAngleScale, lightAngleOffset);
+    return Sq(attenuation);
+}
+
+// Combines SmoothWindowedDistanceAttenuation() and SmoothAngleAttenuation() in an efficient manner.
+// distances = {d, d^2, 1/d, d_proj}, where d_proj = dot(lightToSample, lightData.forward).
+real PunctualLightAttenuation(real4 distances, real rangeAttenuationScale, real rangeAttenuationBias,
+                              real lightAngleScale, real lightAngleOffset)
+{
+    real distSq   = distances.y;
+    real distRcp  = distances.z;
+    real distProj = distances.w;
+    real cosFwd   = distProj * distRcp;
+
+    real attenuation = min(distRcp, 1.0 / PUNCTUAL_LIGHT_THRESHOLD);
+    attenuation *= DistanceWindowing(distSq, rangeAttenuationScale, rangeAttenuationBias);
+    attenuation *= AngleAttenuation(cosFwd, lightAngleScale, lightAngleOffset);
+
+    // Effectively results in SmoothWindowedDistanceAttenuation(...) * SmoothAngleAttenuation(...).
+    return Sq(attenuation);
+}
+
+// Applies SmoothDistanceWindowing() after transforming the attenuation ellipsoid into a sphere.
+// If r = rsqrt(invSqRadius), then the ellipsoid is defined s.t. r1 = r / invAspectRatio, r2 = r3 = r.
+// The transformation is performed along the major axis of the ellipsoid (corresponding to 'r1').
+// Both the ellipsoid (e.i. 'axis') and 'unL' should be in the same coordinate system.
+// 'unL' should be computed from the center of the ellipsoid.
+real EllipsoidalDistanceAttenuation(real3 unL, real3 axis, real invAspectRatio,
+                                    real rangeAttenuationScale, real rangeAttenuationBias)
+{
+    // Project the unnormalized light vector onto the axis.
+    real projL = dot(unL, axis);
+
+    // Transform the light vector so that we can work with
+    // with the ellipsoid as if it was a sphere with the radius of light's range.
+    real diff = projL - projL * invAspectRatio;
+    unL -= diff * axis;
+
+    real sqDist = dot(unL, unL);
+    return SmoothDistanceWindowing(sqDist, rangeAttenuationScale, rangeAttenuationBias);
+}
+
+// Applies SmoothDistanceWindowing() using the axis-aligned ellipsoid of the given dimensions.
+// Both the ellipsoid and 'unL' should be in the same coordinate system.
+// 'unL' should be computed from the center of the ellipsoid.
+real EllipsoidalDistanceAttenuation(real3 unL, real3 invHalfDim,
+                                    real rangeAttenuationScale, real rangeAttenuationBias)
+{
+    // Transform the light vector so that we can work with
+    // with the ellipsoid as if it was a unit sphere.
+    unL *= invHalfDim;
+
+    real sqDist = dot(unL, unL);
+    return SmoothDistanceWindowing(sqDist, rangeAttenuationScale, rangeAttenuationBias);
+}
+
+// Applies SmoothDistanceWindowing() after mapping the axis-aligned box to a sphere.
+// If the diagonal of the box is 'd', invHalfDim = rcp(0.5 * d).
+// Both the box and 'unL' should be in the same coordinate system.
+// 'unL' should be computed from the center of the box.
+real BoxDistanceAttenuation(real3 unL, real3 invHalfDim,
+                            real rangeAttenuationScale, real rangeAttenuationBias)
+{
+    real attenuation = 0.0;
+
+    // Transform the light vector so that we can work with
+    // with the box as if it was a [-1, 1]^2 cube.
+    unL *= invHalfDim;
+
+    // Our algorithm expects the input vector to be within the cube.
+    if (!(Max3(abs(unL.x), abs(unL.y), abs(unL.z)) > 1.0))
+    {
+        real sqDist = ComputeCubeToSphereMapSqMagnitude(unL);
+        attenuation = SmoothDistanceWindowing(sqDist, rangeAttenuationScale, rangeAttenuationBias);
+    }
+    return attenuation;
+}
+
+//-----------------------------------------------------------------------------
+// IES Helper
+//-----------------------------------------------------------------------------
+
+real2 GetIESTextureCoordinate(real3x3 lightToWord, real3 L)
+{
+    // IES need to be sample in light space
+    real3 dir = mul(lightToWord, -L); // Using matrix on left side do a transpose
+
+    // convert to spherical coordinate
+    real2 sphericalCoord; // .x is theta, .y is phi
+    // Texture is encoded with cos(phi), scale from -1..1 to 0..1
+    sphericalCoord.y = (dir.z * 0.5) + 0.5;
+    real theta = atan2(dir.y, dir.x);
+    sphericalCoord.x = theta * INV_TWO_PI;
+
+    return sphericalCoord;
+}
+
+//-----------------------------------------------------------------------------
+// Lighting functions
+//-----------------------------------------------------------------------------
+
+// Ref: Horizon Occlusion for Normal Mapped Reflections: http://marmosetco.tumblr.com/post/81245981087
+real GetHorizonOcclusion(real3 V, real3 normalWS, real3 vertexNormal, real horizonFade)
+{
+    real3 R = reflect(-V, normalWS);
+    real specularOcclusion = saturate(1.0 + horizonFade * dot(R, vertexNormal));
+    // smooth it
+    return specularOcclusion * specularOcclusion;
+}
+
+// Ref: Moving Frostbite to PBR - Gotanda siggraph 2011
+// Return specular occlusion based on ambient occlusion (usually get from SSAO) and view/roughness info
+real GetSpecularOcclusionFromAmbientOcclusion(real NdotV, real ambientOcclusion, real roughness)
+{
+    return saturate(PositivePow(NdotV + ambientOcclusion, exp2(-16.0 * roughness - 1.0)) - 1.0 + ambientOcclusion);
+}
+
+// ref: Practical Realtime Strategies for Accurate Indirect Occlusion
+// Update ambient occlusion to colored ambient occlusion based on statitics of how light is bouncing in an object and with the albedo of the object
+real3 GTAOMultiBounce(real visibility, real3 albedo)
+{
+    real3 a =  2.0404 * albedo - 0.3324;
+    real3 b = -4.7951 * albedo + 0.6417;
+    real3 c =  2.7552 * albedo + 0.6903;
+
+    real x = visibility;
+    return max(x, ((x * a + b) * x + c) * x);
+}
+
+// Based on Oat and Sander's 2008 technique
+// Area/solidAngle of intersection of two cone
+real SphericalCapIntersectionSolidArea(real cosC1, real cosC2, real cosB)
+{
+    real r1 = FastACos(cosC1);
+    real r2 = FastACos(cosC2);
+    real rd = FastACos(cosB);
+    real area = 0.0;
+
+    if (rd <= max(r1, r2) - min(r1, r2))
+    {
+        // One cap is completely inside the other
+        area = TWO_PI - TWO_PI * max(cosC1, cosC2);
+    }
+    else if (rd >= r1 + r2)
+    {
+        // No intersection exists
+        area = 0.0;
+    }
+    else
+    {
+        real diff = abs(r1 - r2);
+        real den = r1 + r2 - diff;
+        real x = 1.0 - saturate((rd - diff) / max(den, 0.0001));
+        area = smoothstep(0.0, 1.0, x);
+        area *= TWO_PI - TWO_PI * max(cosC1, cosC2);
+    }
+
+    return area;
+}
+
+// ref: Practical Realtime Strategies for Accurate Indirect Occlusion
+// http://blog.selfshadow.com/publications/s2016-shading-course/#course_content
+// Original Cone-Cone method with cosine weighted assumption (p129 s2016_pbs_activision_occlusion)
+real GetSpecularOcclusionFromBentAO(real3 V, real3 bentNormalWS, real3 normalWS, real ambientOcclusion, real roughness)
+{
+    // Retrieve cone angle
+    // Ambient occlusion is cosine weighted, thus use following equation. See slide 129
+    real cosAv = sqrt(1.0 - ambientOcclusion);
+    roughness = max(roughness, 0.01); // Clamp to 0.01 to avoid edge cases
+    real cosAs = exp2((-log(10.0) / log(2.0)) * Sq(roughness));
+    real cosB = dot(bentNormalWS, reflect(-V, normalWS));
+    return SphericalCapIntersectionSolidArea(cosAv, cosAs, cosB) / (TWO_PI * (1.0 - cosAs));
+}
+
+// Ref: Steve McAuley - Energy-Conserving Wrapped Diffuse
+real ComputeWrappedDiffuseLighting(real NdotL, real w)
+{
+    return saturate((NdotL + w) / ((1.0 + w) * (1.0 + w)));
+}
+
+// Jimenez variant for eye
+real ComputeWrappedPowerDiffuseLighting(real NdotL, real w, real p)
+{
+    return pow(saturate((NdotL + w) / (1.0 + w)), p) * (p + 1) / (w * 2.0 + 2.0);
+}
+
+// Ref: The Technical Art of Uncharted 4 - Brinck and Maximov 2016
+real ComputeMicroShadowing(real AO, real NdotL, real opacity)
+{
+    real aperture = 2.0 * AO * AO;
+    real microshadow = saturate(NdotL + aperture - 1.0);
+    return lerp(1.0, microshadow, opacity);
+}
+
+real3 ComputeShadowColor(real shadow, real3 shadowTint, real penumbraFlag)
+{
+    // The origin expression is
+    // lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * (real3(1.0, 1.0, 1.0) - shadowTint))
+    //            , shadow * lerp(shadowTint, lerp(shadowTint, real3(1.0, 1.0, 1.0), shadow), shadow)
+    //            , penumbraFlag);
+    // it has been simplified to this
+    real3 invTint = real3(1.0, 1.0, 1.0) - shadowTint;
+    real shadow3 = shadow * shadow * shadow;
+    return lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * invTint)
+                , shadow3 * invTint + shadow * shadowTint,
+                penumbraFlag);
+
+}
+
+// This is the same method as the one above. Simply the shadow is a real3 to support colored shadows.
+real3 ComputeShadowColor(real3 shadow, real3 shadowTint, real penumbraFlag)
+{
+    // The origin expression is
+    // lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * (real3(1.0, 1.0, 1.0) - shadowTint))
+    //            , shadow * lerp(shadowTint, lerp(shadowTint, real3(1.0, 1.0, 1.0), shadow), shadow)
+    //            , penumbraFlag);
+    // it has been simplified to this
+    real3 invTint = real3(1.0, 1.0, 1.0) - shadowTint;
+    real3 shadow3 = shadow * shadow * shadow;
+    return lerp(real3(1.0, 1.0, 1.0) - ((1.0 - shadow) * invTint)
+                , shadow3 * invTint + shadow * shadowTint,
+                penumbraFlag);
+
+}
+
+//-----------------------------------------------------------------------------
+// Helper functions
+//--------------------------------------------------------------------------- --
+
+// Ref: "Crafting a Next-Gen Material Pipeline for The Order: 1886".
+real ClampNdotV(real NdotV)
+{
+    return max(NdotV, 0.0001); // Approximately 0.0057 degree bias
+}
+
+// Helper function to return a set of common angle used when evaluating BSDF
+// NdotL and NdotV are unclamped
+void GetBSDFAngle(real3 V, real3 L, real NdotL, real NdotV,
+                  out real LdotV, out real NdotH, out real LdotH, out real invLenLV)
+{
+    // Optimized math. Ref: PBR Diffuse Lighting for GGX + Smith Microsurfaces (slide 114).
+    LdotV = dot(L, V);
+    invLenLV = rsqrt(max(2.0 * LdotV + 2.0, FLT_EPS));    // invLenLV = rcp(length(L + V)), clamp to avoid rsqrt(0) = inf, inf * 0 = NaN
+    NdotH = saturate((NdotL + NdotV) * invLenLV);
+    LdotH = saturate(invLenLV * LdotV + invLenLV);
+}
+
+// Inputs:    normalized normal and view vectors.
+// Outputs:   front-facing normal, and the new non-negative value of the cosine of the view angle.
+// Important: call Orthonormalize() on the tangent and recompute the bitangent afterwards.
+real3 GetViewReflectedNormal(real3 N, real3 V, out real NdotV)
+{
+    // Fragments of front-facing geometry can have back-facing normals due to interpolation,
+    // normal mapping and decals. This can cause visible artifacts from both direct (negative or
+    // extremely high values) and indirect (incorrect lookup direction) lighting.
+    // There are several ways to avoid this problem. To list a few:
+    //
+    // 1. Setting { NdotV = max(<N,V>, SMALL_VALUE) }. This effectively removes normal mapping
+    // from the affected fragments, making the surface appear flat.
+    //
+    // 2. Setting { NdotV = abs(<N,V>) }. This effectively reverses the convexity of the surface.
+    // It also reduces light leaking from non-shadow-casting lights. Note that 'NdotV' can still
+    // be 0 in this case.
+    //
+    // It's important to understand that simply changing the value of the cosine is insufficient.
+    // For one, it does not solve the incorrect lookup direction problem, since the normal itself
+    // is not modified. There is a more insidious issue, however. 'NdotV' is a constituent element
+    // of the mathematical system describing the relationships between different vectors - and
+    // not just normal and view vectors, but also light vectors, half vectors, tangent vectors, etc.
+    // Changing only one angle (or its cosine) leaves the system in an inconsistent state, where
+    // certain relationships can take on different values depending on whether 'NdotV' is used
+    // in the calculation or not. Therefore, it is important to change the normal (or another
+    // vector) in order to leave the system in a consistent state.
+    //
+    // We choose to follow the conceptual approach (2) by reflecting the normal around the
+    // (<N,V> = 0) boundary if necessary, as it allows us to preserve some normal mapping details.
+
+    NdotV = dot(N, V);
+
+    // N = (NdotV >= 0.0) ? N : (N - 2.0 * NdotV * V);
+    N += (2.0 * saturate(-NdotV)) * V;
+    NdotV = abs(NdotV);
+
+    return N;
+}
+
+// Generates an orthonormal (row-major) basis from a unit vector. TODO: make it column-major.
+// The resulting rotation matrix has the determinant of +1.
+// Ref: 'ortho_basis_pixar_r2' from http://marc-b-reynolds.github.io/quaternions/2016/07/06/Orthonormal.html
+real3x3 GetLocalFrame(real3 localZ)
+{
+    real x  = localZ.x;
+    real y  = localZ.y;
+    real z  = localZ.z;
+    real sz = FastSign(z);
+    real a  = 1 / (sz + z);
+    real ya = y * a;
+    real b  = x * ya;
+    real c  = x * sz;
+
+    real3 localX = real3(c * x * a - 1, sz * b, c);
+    real3 localY = real3(b, y * ya - sz, y);
+
+    // Note: due to the quaternion formulation, the generated frame is rotated by 180 degrees,
+    // s.t. if localZ = {0, 0, 1}, then localX = {-1, 0, 0} and localY = {0, -1, 0}.
+    return real3x3(localX, localY, localZ);
+}
+
+// Generates an orthonormal (row-major) basis from a unit vector. TODO: make it column-major.
+// The resulting rotation matrix has the determinant of +1.
+real3x3 GetLocalFrame(real3 localZ, real3 localX)
+{
+    real3 localY = cross(localZ, localX);
+
+    return real3x3(localX, localY, localZ);
+}
+
+// Construct a right-handed view-dependent orthogonal basis around the normal:
+// b0-b2 is the view-normal aka reflection plane.
+real3x3 GetOrthoBasisViewNormal(real3 V, real3 N, real unclampedNdotV, bool testSingularity = false)
+{
+    real3x3 orthoBasisViewNormal;
+    if (testSingularity && (abs(1.0 - unclampedNdotV) <= FLT_EPS))
+    {
+        // In this case N == V, and azimuth orientation around N shouldn't matter for the caller,
+        // we can use any quaternion-based method, like Frisvad or Reynold's (Pixar):
+        orthoBasisViewNormal = GetLocalFrame(N);
+    }
+    else
+    {
+        orthoBasisViewNormal[0] = normalize(V - N * unclampedNdotV);
+        orthoBasisViewNormal[2] = N;
+        orthoBasisViewNormal[1] = cross(orthoBasisViewNormal[2], orthoBasisViewNormal[0]);
+    }
+    return orthoBasisViewNormal;
+}
+
+// Move this here since it's used by both LightLoop.hlsl and RaytracingLightLoop.hlsl
+bool IsMatchingLightLayer(uint lightLayers, uint renderingLayers)
+{
+    return (lightLayers & renderingLayers) != 0;
+}
+
+#endif // UNITY_COMMON_LIGHTING_INCLUDED
+
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/CommonLighting.hlsl
+//================================================================================================================================
+
+
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/BSDF.hlsl
+
+
+#ifndef UNITY_BSDF_INCLUDED
+#define UNITY_BSDF_INCLUDED
 
 
 // Note: All NDF and diffuse term have a version with and without divide by PI.
@@ -6002,6 +6320,9 @@ TEMPLATE_1_REAL(Fresnel0ToIor, fresnel0, return ((1.0 + sqrt(fresnel0)) / (1.0 -
 // Optimization: Fit of the function (3 mad) for range [0.04 (should return 0), 1 (should return 1)]
 TEMPLATE_1_REAL(ConvertF0ForAirInterfaceToF0ForClearCoat15, fresnel0, return saturate(-0.0256868 + fresnel0 * (0.326846 + (0.978946 - 0.283835 * fresnel0) * fresnel0)))
 
+// Even coarser approximation of ConvertF0ForAirInterfaceToF0ForClearCoat15 (above) for mobile (2 mad)
+TEMPLATE_1_REAL(ConvertF0ForAirInterfaceToF0ForClearCoat15Fast, fresnel0, return saturate(fresnel0 * (fresnel0 * 0.526868 + 0.529324) - 0.0482256))
+
 // Artist Friendly Metallic Fresnel Ref: http://jcgt.org/published/0003/04/03/paper.pdf
 
 real3 GetIorN(real3 f0, real3 edgeTint)
@@ -6026,6 +6347,11 @@ real3 CoatRefract(real3 X, real3 N, real ieta)
 //-----------------------------------------------------------------------------
 // Specular BRDF
 //-----------------------------------------------------------------------------
+
+float Lambda_GGX(float roughness, float3 V)
+{
+    return 0.5 * (sqrt(1.0 + (Sq(roughness * V.x) + Sq(roughness * V.y)) / Sq(V.z)) - 1.0);
+}
 
 real D_GGXNoPI(real NdotH, real roughness)
 {
@@ -6056,12 +6382,6 @@ real G_MaskingSmithGGX(real NdotV, real roughness)
     return 1.0 / (0.5 + 0.5 * sqrt(1.0 + Sq(roughness) * (1.0 / Sq(NdotV) - 1.0)));
 }
 
-// Ref: Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs, p. 12.
-real D_GGX_Visible(real NdotH, real NdotV, real VdotH, real roughness)
-{
-    return D_GGX(NdotH, roughness) * G_MaskingSmithGGX(NdotV, roughness) * VdotH / NdotV;
-}
-
 // Precompute part of lambdaV
 real GetSmithJointGGXPartLambdaV(real NdotV, real roughness)
 {
@@ -6085,7 +6405,7 @@ real V_SmithJointGGX(real NdotL, real NdotV, real roughness, real partLambdaV)
     real lambdaL = NdotV * sqrt((-NdotL * a2 + NdotL) * NdotL + a2);
 
     // Simplify visibility term: (2.0 * NdotL * NdotV) /  ((4.0 * NdotL * NdotV) * (lambda_v + lambda_l))
-    return 0.5 / (lambdaV + lambdaL);
+    return 0.5 / max(lambdaV + lambdaL, REAL_MIN);
 }
 
 real V_SmithJointGGX(real NdotL, real NdotV, real roughness)
@@ -6499,13 +6819,13 @@ real3 D_KajiyaKay(real3 T, real3 H, real specularExponent)
 }
 #endif // UNITY_BSDF_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/BSDF.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/BSDF.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Sampling/Sampling.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Sampling/Sampling.hlsl
 
 
 #ifndef UNITY_SAMPLING_INCLUDED
@@ -6516,7 +6836,7 @@ real3 D_KajiyaKay(real3 T, real3 H, real specularExponent)
 //-----------------------------------------------------------------------------
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Sampling/Fibonacci.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Sampling/Fibonacci.hlsl
 
 
 #ifndef UNITY_FIBONACCI_INCLUDED
@@ -6533,8 +6853,8 @@ real2 Fibonacci2dSeq(real fibN1, real fibN2, uint i)
     return real2(i / fibN1 + (0.5 / fibN1), frac(i * (fibN2 / fibN1)));
 }
 
-#define GOLDEN_RATIO 1.61803
-#define GOLDEN_ANGLE 2.39996
+#define GOLDEN_RATIO 1.618033988749895
+#define GOLDEN_ANGLE 2.399963229728653
 
 // Replaces the Fibonacci sequence in Fibonacci2dSeq() with the Golden ratio.
 real2 Golden2dSeq(uint i, real n)
@@ -6789,6 +7109,12 @@ real2 Fibonacci2d(uint i, uint sampleCount)
     }
 }
 
+real2 SampleDiskGolden(uint i, uint sampleCount)
+{
+    real2 f = Golden2dSeq(i, sampleCount);
+    return real2(sqrt(f.x), TWO_PI * f.y);
+}
+
 // Returns the radius as the X coordinate, and the angle as the Y coordinate.
 real2 SampleDiskFibonacci(uint i, uint sampleCount)
 {
@@ -6812,13 +7138,13 @@ real2 SampleSphereFibonacci(uint i, uint sampleCount)
 
 #endif // UNITY_FIBONACCI_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Sampling/Fibonacci.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Sampling/Fibonacci.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Sampling/Hammersley.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Sampling/Hammersley.hlsl
 
 
 #ifndef UNITY_HAMMERSLEY_INCLUDED
@@ -7245,7 +7571,7 @@ real2 Hammersley2d(uint i, uint sampleCount)
 
 #endif // UNITY_HAMMERSLEY_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Sampling/Hammersley.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Sampling/Hammersley.hlsl
 //================================================================================================================================
 
 
@@ -7363,6 +7689,18 @@ real2 SampleDiskUniform(real u1, real u2)
     return r * real2(cosPhi, sinPhi);
 }
 
+// Performs cubic sampling of the unit disk.
+real2 SampleDiskCubic(real u1, real u2)
+{
+    real r   = u1;
+    real phi = TWO_PI * u2;
+
+    real sinPhi, cosPhi;
+    sincos(phi, sinPhi, cosPhi);
+
+    return r * real2(cosPhi, sinPhi);
+}
+
 real3 SampleConeUniform(real u1, real u2, real cos_theta)
 {
     float r0 = cos_theta + u1 * (1.0f - cos_theta);
@@ -7399,8 +7737,11 @@ real3 SampleHemisphereCosine(real u1, real u2)
 // Ref: http://www.amietia.com/lambertnotangent.html
 real3 SampleHemisphereCosine(real u1, real u2, real3 normal)
 {
+    // This function needs to used safenormalize because there is a probability
+    // that the generated direction is the exact opposite of the normal and that would lead
+    // to a nan vector otheriwse.
     real3 pointOnSphere = SampleSphereUniform(u1, u2);
-    return normalize(normal + pointOnSphere);
+    return SafeNormalize(normal + pointOnSphere);
 }
 
 real3 SampleHemisphereUniform(real u1, real u2)
@@ -7535,7 +7876,7 @@ void SampleCone(real2 u, real cosHalfAngle,
 
 #endif // UNITY_SAMPLING_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Sampling/Sampling.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Sampling/Sampling.hlsl
 //================================================================================================================================
 
 
@@ -7564,12 +7905,6 @@ real PerceptualRoughnessToMipmapLevel(real perceptualRoughness, uint mipMapCount
 real PerceptualRoughnessToMipmapLevel(real perceptualRoughness)
 {
     return PerceptualRoughnessToMipmapLevel(perceptualRoughness, UNITY_SPECCUBE_LOD_STEPS);
-}
-
-// Mapping for convolved Texture2D, this is an empirical remapping to match GGX version of cubemap convolution
-real PlanarPerceptualRoughnessToMipmapLevel(real perceptualRoughness, uint mipMapcount)
-{
-    return PositivePow(perceptualRoughness, 0.8) * uint(max(mipMapcount - 1, 0));
 }
 
 // The *accurate* version of the non-linear remapping. It works by
@@ -7699,71 +8034,6 @@ void SampleGGXDir(real2   u,
     L = mul(localL, localToWorld);
 }
 
-// Ref: "A Simpler and Exact Sampling Routine for the GGX Distribution of Visible Normals".
-void SampleVisibleAnisoGGXDir(real2 u,
-                              real3 V,
-                              real3x3 localToWorld,
-                              real roughnessT,
-                              real roughnessB,
-                          out real3 L,
-                          out real  NdotL,
-                          out real  NdotH,
-                          out real  VdotH,
-                              bool  VeqN = false)
-{
-    real3 localV = mul(V, transpose(localToWorld));
-
-    // Construct an orthonormal basis around the stretched view direction
-    real3x3 viewToLocal;
-    if (VeqN)
-    {
-        viewToLocal = k_identity3x3;
-    }
-    else
-    {
-        // TODO: this code is tacky. We should make it cleaner
-        viewToLocal[2] = normalize(real3(roughnessT * localV.x, roughnessB * localV.y, localV.z));
-        viewToLocal[0] = (viewToLocal[2].z < 0.9999) ? normalize(cross(real3(0, 0, 1), viewToLocal[2])) : real3(1, 0, 0);
-        viewToLocal[1] = cross(viewToLocal[2], viewToLocal[0]);
-    }
-
-    // Compute a sample point with polar coordinates (r, phi)
-    real r   = sqrt(u.x);
-    real phi = 2.0 * PI * u.y;
-    real t1  = r * cos(phi);
-    real t2  = r * sin(phi);
-    float s  = 0.5 * (1.0 + viewToLocal[2].z);
-    t2 = (1.0 - s) * sqrt(1.0 - t1 * t1) + s * t2;
-
-    // Reproject onto hemisphere
-    real3 localH = t1 * viewToLocal[0] + t2 * viewToLocal[1] + sqrt(max(0.0, 1.0 - t1 * t1 - t2 * t2)) * viewToLocal[2];
-
-    // Transform the normal back to the ellipsoid configuration
-    localH = normalize(real3(roughnessT * localH.x, roughnessB * localH.y, max(0.0, localH.z)));
-
-    NdotH = localH.z;
-    VdotH = saturate(dot(localV, localH));
-
-    // Compute the reflection direction
-    real3 localL = 2.0 * VdotH * localH - localV;
-    NdotL = localL.z;
-
-    L = mul(localL, localToWorld);
-}
-
-void SampleVisibleGGXDir(real2 u,
-                         real3 V,
-                         real3x3 localToWorld,
-                         real roughness,
-                     out real3 L,
-                     out real  NdotL,
-                     out real  NdotH,
-                     out real  VdotH,
-                         bool  VeqN = false)
-{
-    SampleVisibleAnisoGGXDir(u, V, localToWorld, roughness, roughness, L, NdotL, NdotH, VdotH, VeqN);
-}
-
 // ref: http://blog.selfshadow.com/publications/s2012-shading-course/burley/s2012_pbs_disney_brdf_notes_v3.pdf p26
 void SampleAnisoGGXDir(real2 u,
                        real3 V,
@@ -7781,6 +8051,54 @@ void SampleAnisoGGXDir(real2 u,
 
     // Convert sample from half angle to incident angle
     L = 2.0 * saturate(dot(V, H)) * H - V;
+}
+
+// Adapted from: "Sampling the GGX Distribution of Visible Normals", by E. Heitz
+// http://jcgt.org/published/0007/04/01/paper.pdf
+void SampleAnisoGGXVisibleNormal(float2 u,
+                                 float3 V,
+                                 float3x3 localToWorld,
+                                 float roughnessX,
+                                 float roughnessY,
+                             out float3 localV,
+                             out float3 localH,
+                             out float  VdotH)
+{
+    localV = mul(V, transpose(localToWorld));
+
+    // Construct an orthonormal basis around the stretched view direction
+    float3x3 viewToLocal;
+    viewToLocal[2] = normalize(float3(roughnessX * localV.x, roughnessY * localV.y, localV.z));
+    viewToLocal[0] = (viewToLocal[2].z < 0.9999) ? normalize(cross(float3(0, 0, 1), viewToLocal[2])) : float3(1, 0, 0);
+    viewToLocal[1] = cross(viewToLocal[2], viewToLocal[0]);
+
+    // Compute a sample point with polar coordinates (r, phi)
+    float r   = sqrt(u.x);
+    float phi = 2.0 * PI * u.y;
+    float t1  = r * cos(phi);
+    float t2  = r * sin(phi);
+    float s  = 0.5 * (1.0 + viewToLocal[2].z);
+    t2 = (1.0 - s) * sqrt(1.0 - t1 * t1) + s * t2;
+
+    // Reproject onto hemisphere
+    localH = t1 * viewToLocal[0] + t2 * viewToLocal[1] + sqrt(max(0.0, 1.0 - t1 * t1 - t2 * t2)) * viewToLocal[2];
+
+    // Transform the normal back to the ellipsoid configuration
+    localH = normalize(float3(roughnessX * localH.x, roughnessY * localH.y, max(0.0, localH.z)));
+
+    VdotH = saturate(dot(localV, localH));
+}
+
+// GGX vsible normal sampling, isotropic variant
+void SampleGGXVisibleNormal(float2 u,
+                            float3 V,
+                            float3x3 localToWorld,
+                            float roughness,
+                        out float3 localV,
+                        out float3 localH,
+                        out float  VdotH)
+{
+    SampleAnisoGGXVisibleNormal(u, V, localToWorld, roughness, roughness, localV, localH, VdotH);
 }
 
 // weightOverPdf return the weight (without the diffuseAlbedo term) over pdf. diffuseAlbedo term must be apply by the caller.
@@ -8297,20 +8615,24 @@ float InfluenceFadeNormalWeight(float3 normal, float3 centerToPos)
 
 #endif // UNITY_IMAGE_BASED_LIGHTING_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/ImageBasedLighting.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/ImageBasedLighting.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Core.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Core.hlsl
 
 
 #ifndef UNIVERSAL_PIPELINE_CORE_INCLUDED
 #define UNIVERSAL_PIPELINE_CORE_INCLUDED
 
+// VT is not supported in URP (for now) this ensures any shaders using the VT
+// node work by falling to regular texture sampling.
+#define FORCE_VIRTUAL_TEXTURING_OFF 1
+
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Packing.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Packing.hlsl
 
 
 #ifndef UNITY_PACKING_INCLUDED
@@ -8330,7 +8652,7 @@ real3 UnpackNormalMaxComponent(real3 n)
     return normalize(n * 2.0 - 1.0);
 }
 
-// Ref: http://www.vis.uni-stuttgart.de/~engelhts/paper/vmvOctaMaps.pdf
+// Ref: http://www.vis.uni-stuttgart.de/~engelhts/paper/vmvOctaMaps.pdf "Octahedron Environment Maps"
 // Encode with Oct, this function work with any size of output
 // return real between [-1, 1]
 real2 PackNormalOctRectEncode(real3 n)
@@ -8362,7 +8684,7 @@ real3 UnpackNormalOctRectEncode(real2 f)
     return normalize(p);
 }
 
-// Ref: http://jcgt.org/published/0003/02/01/paper.pdf
+// Ref: http://jcgt.org/published/0003/02/01/paper.pdf "A Survey of Efficient Representations for Independent Unit Vectors"
 // Encode with Oct, this function work with any size of output
 // return float between [-1, 1]
 float2 PackNormalOctQuadEncode(float3 n)
@@ -8492,8 +8814,16 @@ real3 UnpackNormalAG(real4 packedNormal, real scale = 1.0)
 {
     real3 normal;
     normal.xy = packedNormal.ag * 2.0 - 1.0;
+    normal.z = max(1.0e-16, sqrt(1.0 - saturate(dot(normal.xy, normal.xy))));
+
+    // must scale after reconstruction of normal.z which also
+    // mirrors UnpackNormalRGB(). This does imply normal is not returned
+    // as a unit length vector but doesn't need it since it will get normalized after TBN transformation.
+    // If we ever need to blend contributions with built-in shaders for URP
+    // then we should consider using UnpackDerivativeNormalAG() instead like
+    // HDRP does since derivatives do not use renormalization and unlike tangent space
+    // normals allow you to blend, accumulate and scale contributions correctly.
     normal.xy *= scale;
-    normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
     return normal;
 }
 
@@ -8507,7 +8837,9 @@ real3 UnpackNormalmapRGorAG(real4 packedNormal, real scale = 1.0)
 
 real3 UnpackNormal(real4 packedNormal)
 {
-#if defined(UNITY_NO_DXT5nm)
+#if defined(UNITY_ASTC_NORMALMAP_ENCODING)
+    return UnpackNormalAG(packedNormal, 1.0);
+#elif defined(UNITY_NO_DXT5nm)
     return UnpackNormalRGBNoScale(packedNormal);
 #else
     // Compiler will optimize the scale away
@@ -8517,7 +8849,9 @@ real3 UnpackNormal(real4 packedNormal)
 
 real3 UnpackNormalScale(real4 packedNormal, real bumpScale)
 {
-#if defined(UNITY_NO_DXT5nm)
+#if defined(UNITY_ASTC_NORMALMAP_ENCODING)
+    return UnpackNormalAG(packedNormal, bumpScale);
+#elif defined(UNITY_NO_DXT5nm)
     return UnpackNormalRGB(packedNormal, bumpScale);
 #else
     return UnpackNormalmapRGorAG(packedNormal, bumpScale);
@@ -8585,6 +8919,15 @@ float3 UnpackFromR11G11B10f(uint rgb)
 }
 
 #endif // SHADER_API_GLES
+
+//-----------------------------------------------------------------------------
+// Color packing
+//-----------------------------------------------------------------------------
+
+float4 UnpackFromR8G8B8A8(uint rgba)
+{
+    return float4(rgba & 255, (rgba >> 8) & 255, (rgba >> 16) & 255, (rgba >> 24) & 255) * (1.0 / 255);
+}
 
 //-----------------------------------------------------------------------------
 // Quaternion packing
@@ -8842,7 +9185,7 @@ float3 PackFloat2To888(float2 f)
 // Unpack 2 float of 12bit packed into a 888
 float2 Unpack888ToFloat2(float3 x)
 {
-    uint3 i = (uint3)(x * 255.0);
+    uint3 i = (uint3)(x * 255.5); // +0.5 to fix precision error on iOS
     // 8 bit in lo, 4 bit in hi
     uint hi = i.z >> 4;
     uint lo = i.z & 15;
@@ -8852,46 +9195,74 @@ float2 Unpack888ToFloat2(float3 x)
 }
 #endif // SHADER_API_GLES
 
+// Pack 2 float values from the [0, 1] range, to an 8 bits float from the [0, 1] range
+float PackFloat2To8(float2 f)
+{
+    float x_expanded = f.x * 15.0;                        // f.x encoded over 4 bits, can have 2^4 = 16 distinct values mapped to [0, 1, ..., 15]
+    float y_expanded = f.y * 15.0;                        // f.y encoded over 4 bits, can have 2^4 = 16 distinct values mapped to [0, 1, ..., 15]
+    float x_y_expanded = x_expanded * 16.0 + y_expanded;  // f.x encoded over higher bits, f.y encoded over the lower bits - x_y values in range [0, 1, ..., 255]
+    return x_y_expanded / 255.0;
+
+    // above 4 lines equivalent to:
+    //return (16.0 * f.x + f.y) / 17.0;
+}
+
+// Unpack 2 float values from the [0, 1] range, packed in an 8 bits float from the [0, 1] range
+float2 Unpack8ToFloat2(float f)
+{
+    float x_y_expanded = 255.0 * f;
+    float x_expanded = floor(x_y_expanded / 16.0);
+    float y_expanded = x_y_expanded - 16.0 * x_expanded;
+    float x = x_expanded / 15.0;
+    float y = y_expanded / 15.0;
+    return float2(x, y);
+}
+
 #endif // UNITY_PACKING_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Packing.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Packing.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Version.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Version.hlsl
 
 
-#define SHADER_LIBRARY_VERSION_MAJOR 7
-#define SHADER_LIBRARY_VERSION_MINOR 3
+// The old version number system below is deprecated whith Graphic Packages that have move as core package of Unity.
+// User should rely on the Macro UNITY_VERSION now to detect which version of Unity is coupled to the current set of pipeline shader
+// Example of usage #if UNITY_VERSION >= 202120 to check if the version is above or equal 2021.2
+#define SHADER_LIBRARY_VERSION_MAJOR 11
+#define SHADER_LIBRARY_VERSION_MINOR 0
 
 #define VERSION_GREATER_EQUAL(major, minor) ((SHADER_LIBRARY_VERSION_MAJOR > major) || ((SHADER_LIBRARY_VERSION_MAJOR == major) && (SHADER_LIBRARY_VERSION_MINOR >= minor)))
 #define VERSION_LOWER(major, minor) ((SHADER_LIBRARY_VERSION_MAJOR < major) || ((SHADER_LIBRARY_VERSION_MAJOR == major) && (SHADER_LIBRARY_VERSION_MINOR < minor)))
 #define VERSION_EQUAL(major, minor) ((SHADER_LIBRARY_VERSION_MAJOR == major) && (SHADER_LIBRARY_VERSION_MINOR == minor))
 
-
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Version.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Version.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Input.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Input.hlsl
 
 
 #ifndef UNIVERSAL_INPUT_INCLUDED
 #define UNIVERSAL_INPUT_INCLUDED
 
-#define MAX_VISIBLE_LIGHTS_SSBO 256
 #define MAX_VISIBLE_LIGHTS_UBO  32
+#define MAX_VISIBLE_LIGHTS_SSBO 256
+
+// Keep in sync with RenderingUtils.useStructuredBuffer
+#define USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA 0
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/ShaderTypes.cs.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/ShaderTypes.cs.hlsl
 
 
 //
-// This file was automatically generated. Please don't edit by hand.
+// This file was automatically generated. Please don't edit by hand. Execute Editor command [ Edit / Render Pipeline / Generate Shader Includes ] instead
 //
 
 #ifndef SHADERTYPES_CS_HLSL
@@ -8907,39 +9278,72 @@ struct LightData
     float4 occlusionProbeChannels;
 };
 
-// Generated from UnityEngine.Rendering.Universal.ShaderInput+ShadowData
-// PackingRules = Exact
-struct ShadowData
-{
-    float4x4 worldToShadowMatrix;
-    float4 shadowParams;
-};
-
 
 #endif
 
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/ShaderTypes.cs.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/ShaderTypes.cs.hlsl
+//================================================================================================================================
+
+
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Deprecated.hlsl
+
+
+#ifndef UNIVERSAL_DEPRECATED_INCLUDED
+#define UNIVERSAL_DEPRECATED_INCLUDED
+
+// Stereo-related bits
+#define SCREENSPACE_TEXTURE         TEXTURE2D_X
+#define SCREENSPACE_TEXTURE_FLOAT   TEXTURE2D_X_FLOAT
+#define SCREENSPACE_TEXTURE_HALF    TEXTURE2D_X_HALF
+
+// Typo-fixes, re-route to new name for backwards compatiblity (if there are external dependencies).
+#define kDieletricSpec kDielectricSpec
+#define DirectBDRF     DirectBRDF
+
+// Deprecated: not using consistent naming convention
+#if defined(USING_STEREO_MATRICES)
+#define unity_StereoMatrixIP unity_StereoMatrixInvP
+#define unity_StereoMatrixIVP unity_StereoMatrixInvVP
+#endif
+
+// Previously used when rendering with DrawObjectsPass.
+// Global object render pass data containing various settings.
+// x,y,z are currently unused
+// w is used for knowing whether the object is opaque(1) or alpha blended(0)
+half4 _DrawObjectPassData;
+
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+// _AdditionalShadowsIndices was deprecated - To get the first shadow slice index for a light, use GetAdditionalLightShadowParams(lightIndex).w [see Shadows.hlsl]
+#define _AdditionalShadowsIndices _AdditionalShadowParams_SSBO
+// _AdditionalShadowsBuffer was deprecated - To access a shadow slice's matrix, use _AdditionalLightsWorldToShadow_SSBO[shadowSliceIndex] - To access other shadow parameters, use GetAdditionalLightShadowParams(int lightIndex) [see Shadows.hlsl]
+#define _AdditionalShadowsBuffer _AdditionalLightsWorldToShadow_SSBO
+#endif
+
+// Deprecated: even when USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA is defined we do not this structure anymore, because worldToShadowMatrix and shadowParams must be stored in arrays of different sizes
+// To get the first shadow slice index for a light, use GetAdditionalLightShadowParams(lightIndex).w [see Shadows.hlsl]
+// To access other shadow parameters, use GetAdditionalLightShadowParams(int lightIndex)[see Shadows.hlsl]
+struct ShadowData
+{
+    float4x4 worldToShadowMatrix; // per-shadow-slice
+    float4 shadowParams;          // per-casting-light
+};
+
+#endif // UNIVERSAL_DEPRECATED_INCLUDED
+
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Deprecated.hlsl
 //================================================================================================================================
 
 
 
 
-// There are some performance issues by using SSBO in mobile.
-// Also some GPUs don't supports SSBO in vertex shader.
-#if !defined(SHADER_API_MOBILE) && (defined(SHADER_API_METAL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_PS4) || defined(SHADER_API_XBOXONE))
-    #define USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA 0
-    #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHTS_SSBO
-// We don't use SSBO in D3D because we can't figure out without adding shader variants if platforms is D3D10.
-// We don't use SSBO on Nintendo Switch as UBO path is faster.
-// However here we use same limits as SSBO path. 
-#elif defined(SHADER_API_D3D11) || defined(SHADER_API_SWITCH)
-    #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHTS_SSBO
-    #define USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA 0
-// We use less limits for mobile as some mobile GPUs have small SP cache for constants
-// Using more than 32 might cause spilling to main memory.
+#if defined(SHADER_API_MOBILE) && (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30))
+    #define MAX_VISIBLE_LIGHTS 16
+#elif defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround for bug on Nintendo Switch where SHADER_API_GLCORE is mistakenly defined
+    #define MAX_VISIBLE_LIGHTS 32
 #else
-    #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHTS_UBO
-    #define USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA 0
+    #define MAX_VISIBLE_LIGHTS 256
 #endif
 
 struct InputData
@@ -8951,6 +9355,8 @@ struct InputData
     half    fogCoord;
     half3   vertexLighting;
     half3   bakedGI;
+    float2  normalizedScreenSpaceUV;
+    half4   shadowMask;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8960,22 +9366,35 @@ struct InputData
 half4 _GlossyEnvironmentColor;
 half4 _SubtractiveShadowColor;
 
-float4x4 _InvCameraViewProj;
+#define _InvCameraViewProj unity_MatrixInvVP
 float4 _ScaledScreenParams;
 
 float4 _MainLightPosition;
 half4 _MainLightColor;
+half4 _MainLightOcclusionProbes;
+
+// xyz are currently unused
+// w: directLightStrength
+half4 _AmbientOcclusionParam;
 
 half4 _AdditionalLightsCount;
+
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
 StructuredBuffer<LightData> _AdditionalLightsBuffer;
 StructuredBuffer<int> _AdditionalLightsIndices;
 #else
+// GLES3 causes a performance regression in some devices when using CBUFFER.
+#ifndef SHADER_API_GLES3
+CBUFFER_START(AdditionalLights)
+#endif
 float4 _AdditionalLightsPosition[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsColor[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsAttenuation[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsSpotDir[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsOcclusionProbes[MAX_VISIBLE_LIGHTS];
+#ifndef SHADER_API_GLES3
+CBUFFER_END
+#endif
 #endif
 
 #define UNITY_MATRIX_M     unity_ObjectToWorld
@@ -8983,16 +9402,19 @@ half4 _AdditionalLightsOcclusionProbes[MAX_VISIBLE_LIGHTS];
 #define UNITY_MATRIX_V     unity_MatrixV
 #define UNITY_MATRIX_I_V   unity_MatrixInvV
 #define UNITY_MATRIX_P     OptimizeProjectionMatrix(glstate_matrix_projection)
-#define UNITY_MATRIX_I_P   ERROR_UNITY_MATRIX_I_P_IS_NOT_DEFINED
+#define UNITY_MATRIX_I_P   unity_MatrixInvP
 #define UNITY_MATRIX_VP    unity_MatrixVP
-#define UNITY_MATRIX_I_VP  _InvCameraViewProj
+#define UNITY_MATRIX_I_VP  unity_MatrixInvVP
 #define UNITY_MATRIX_MV    mul(UNITY_MATRIX_V, UNITY_MATRIX_M)
 #define UNITY_MATRIX_T_MV  transpose(UNITY_MATRIX_MV)
 #define UNITY_MATRIX_IT_MV transpose(mul(UNITY_MATRIX_I_M, UNITY_MATRIX_I_V))
 #define UNITY_MATRIX_MVP   mul(UNITY_MATRIX_VP, UNITY_MATRIX_M)
 
+// UnityInput.hlsl must be included before UnityInstancing.hlsl, so constant buffer
+// declarations don't fail because of instancing macros.
+// UniversalDOTSInstancing.hlsl must be included after UnityInstancing.hlsl
 //================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/UnityInput.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/UnityInput.hlsl
 
 
 // UNITY_SHADER_NO_UPGRADE
@@ -9013,16 +9435,20 @@ half4 _AdditionalLightsOcclusionProbes[MAX_VISIBLE_LIGHTS];
 #endif
 
 #if defined(USING_STEREO_MATRICES)
-#define glstate_matrix_projection unity_StereoMatrixP[unity_StereoEyeIndex]
-#define unity_MatrixV unity_StereoMatrixV[unity_StereoEyeIndex]
-#define unity_MatrixInvV unity_StereoMatrixInvV[unity_StereoEyeIndex]
-#define unity_MatrixVP unity_StereoMatrixVP[unity_StereoEyeIndex]
+// Current pass transforms.
+#define glstate_matrix_projection     unity_StereoMatrixP[unity_StereoEyeIndex] // goes through GL.GetGPUProjectionMatrix()
+#define unity_MatrixV                 unity_StereoMatrixV[unity_StereoEyeIndex]
+#define unity_MatrixInvV              unity_StereoMatrixInvV[unity_StereoEyeIndex]
+#define unity_MatrixInvP              unity_StereoMatrixInvP[unity_StereoEyeIndex]
+#define unity_MatrixVP                unity_StereoMatrixVP[unity_StereoEyeIndex]
+#define unity_MatrixInvVP             unity_StereoMatrixInvVP[unity_StereoEyeIndex]
 
-#define unity_CameraProjection unity_StereoCameraProjection[unity_StereoEyeIndex]
-#define unity_CameraInvProjection unity_StereoCameraInvProjection[unity_StereoEyeIndex]
-#define unity_WorldToCamera unity_StereoWorldToCamera[unity_StereoEyeIndex]
-#define unity_CameraToWorld unity_StereoCameraToWorld[unity_StereoEyeIndex]
-#define _WorldSpaceCameraPos unity_StereoWorldSpaceCameraPos[unity_StereoEyeIndex]
+// Camera transform (but the same as pass transform for XR).
+#define unity_CameraProjection        unity_StereoCameraProjection[unity_StereoEyeIndex] // Does not go through GL.GetGPUProjectionMatrix()
+#define unity_CameraInvProjection     unity_StereoCameraInvProjection[unity_StereoEyeIndex]
+#define unity_WorldToCamera           unity_StereoMatrixV[unity_StereoEyeIndex] // Should be unity_StereoWorldToCamera but no use-case in XR pass
+#define unity_CameraToWorld           unity_StereoMatrixInvV[unity_StereoEyeIndex] // Should be unity_StereoCameraToWorld but no use-case in XR pass
+#define _WorldSpaceCameraPos          unity_StereoWorldSpaceCameraPos[unity_StereoEyeIndex]
 #endif
 
 #define UNITY_LIGHTMODEL_AMBIENT (glstate_lightmodel_ambient * 2)
@@ -9070,6 +9496,13 @@ float4 _ZBufferParams;
 // w = 1.0 if camera is ortho, 0.0 if perspective
 float4 unity_OrthoParams;
 
+// scaleBias.x = flipSign
+// scaleBias.y = scale
+// scaleBias.z = bias
+// scaleBias.w = unused
+uniform float4 _ScaleBias;
+uniform float4 _ScaleBiasRt;
+
 float4 unity_CameraWorldClipPlanes[6];
 
 #if !defined(USING_STEREO_MATRICES)
@@ -9105,6 +9538,7 @@ real4 unity_SpecCube0_HDR;
 
 // Lightmap block feature
 float4 unity_LightmapST;
+float4 unity_LightmapIndex;
 float4 unity_DynamicLightmapST;
 
 // SH block feature
@@ -9117,42 +9551,34 @@ real4 unity_SHBb;
 real4 unity_SHC;
 CBUFFER_END
 
-#if defined(UNITY_STEREO_MULTIVIEW_ENABLED) || ((defined(UNITY_SINGLE_PASS_STEREO) || defined(UNITY_STEREO_INSTANCING_ENABLED)) && (defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3) || defined(SHADER_API_METAL) || defined(SHADER_API_VULKAN)))
-    #define GLOBAL_CBUFFER_START(name)    cbuffer name {
-    #define GLOBAL_CBUFFER_END            }
-#else
-    #define GLOBAL_CBUFFER_START(name)    CBUFFER_START(name)
-    #define GLOBAL_CBUFFER_END            CBUFFER_END
-#endif
-
 #if defined(USING_STEREO_MATRICES)
-GLOBAL_CBUFFER_START(UnityStereoGlobals)
+CBUFFER_START(UnityStereoViewBuffer)
 float4x4 unity_StereoMatrixP[2];
+float4x4 unity_StereoMatrixInvP[2];
 float4x4 unity_StereoMatrixV[2];
 float4x4 unity_StereoMatrixInvV[2];
 float4x4 unity_StereoMatrixVP[2];
+float4x4 unity_StereoMatrixInvVP[2];
 
 float4x4 unity_StereoCameraProjection[2];
 float4x4 unity_StereoCameraInvProjection[2];
-float4x4 unity_StereoWorldToCamera[2];
-float4x4 unity_StereoCameraToWorld[2];
 
-float3 unity_StereoWorldSpaceCameraPos[2];
-float4 unity_StereoScaleOffset[2];
-GLOBAL_CBUFFER_END
+float3   unity_StereoWorldSpaceCameraPos[2];
+float4   unity_StereoScaleOffset[2];
+CBUFFER_END
 #endif
 
 #if defined(USING_STEREO_MATRICES) && defined(UNITY_STEREO_MULTIVIEW_ENABLED)
-GLOBAL_CBUFFER_START(UnityStereoEyeIndices)
+CBUFFER_START(UnityStereoEyeIndices)
     float4 unity_StereoEyeIndices[2];
-GLOBAL_CBUFFER_END
+CBUFFER_END
 #endif
 
 #if defined(UNITY_STEREO_MULTIVIEW_ENABLED) && defined(SHADER_STAGE_VERTEX)
 // OVR_multiview
 // In order to convey this info over the DX compiler, we wrap it into a cbuffer.
 #if !defined(UNITY_DECLARE_MULTIVIEW)
-#define UNITY_DECLARE_MULTIVIEW(number_of_views) GLOBAL_CBUFFER_START(OVR_multiview) uint gl_ViewID; uint numViews_##number_of_views; GLOBAL_CBUFFER_END
+#define UNITY_DECLARE_MULTIVIEW(number_of_views) CBUFFER_START(OVR_multiview) uint gl_ViewID; uint numViews_##number_of_views; CBUFFER_END
 #define UNITY_VIEWID gl_ViewID
 #endif
 #endif
@@ -9163,9 +9589,9 @@ UNITY_DECLARE_MULTIVIEW(2);
 #elif defined(UNITY_STEREO_INSTANCING_ENABLED) || defined(UNITY_STEREO_MULTIVIEW_ENABLED)
 static uint unity_StereoEyeIndex;
 #elif defined(UNITY_SINGLE_PASS_STEREO)
-GLOBAL_CBUFFER_START(UnityStereoEyeIndex)
+CBUFFER_START(UnityStereoEyeIndex)
 int unity_StereoEyeIndex;
-GLOBAL_CBUFFER_END
+CBUFFER_END
 #endif
 
 float4x4 glstate_matrix_transpose_modelview0;
@@ -9184,7 +9610,9 @@ real4  unity_FogColor;
 float4x4 glstate_matrix_projection;
 float4x4 unity_MatrixV;
 float4x4 unity_MatrixInvV;
+float4x4 unity_MatrixInvP;
 float4x4 unity_MatrixVP;
+float4x4 unity_MatrixInvVP;
 float4 unity_StereoScaleOffset;
 int unity_StereoEyeIndex;
 #endif
@@ -9200,11 +9628,17 @@ SAMPLER(samplerunity_SpecCube0);
 // Main lightmap
 TEXTURE2D(unity_Lightmap);
 SAMPLER(samplerunity_Lightmap);
+TEXTURE2D_ARRAY(unity_Lightmaps);
+SAMPLER(samplerunity_Lightmaps);
+
 // Dual or directional lightmap (always used with unity_Lightmap, so can share sampler)
 TEXTURE2D(unity_LightmapInd);
+TEXTURE2D_ARRAY(unity_LightmapsInd);
 
-// We can have shadowMask only if we have lightmap, so no sampler
 TEXTURE2D(unity_ShadowMask);
+SAMPLER(samplerunity_ShadowMask);
+TEXTURE2D_ARRAY(unity_ShadowMasks);
+SAMPLER(samplerunity_ShadowMasks);
 
 // ----------------------------------------------------------------------------
 
@@ -9240,19 +9674,19 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
 
 #endif // UNIVERSAL_SHADER_VARIABLES_INCLUDED
 
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/UnityInput.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/UnityInput.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/UnityInstancing.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/UnityInstancing.hlsl
 
 
 #ifndef UNITY_INSTANCING_INCLUDED
 #define UNITY_INSTANCING_INCLUDED
 
-#if SHADER_TARGET >= 35 && (defined(SHADER_API_D3D11) || defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_PSSL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_METAL))
+#if SHADER_TARGET >= 35 && (defined(SHADER_API_D3D11) || defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_GAMECORE) || defined(SHADER_API_PSSL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_METAL))
     #define UNITY_SUPPORT_INSTANCING
 #endif
 
@@ -9285,14 +9719,21 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
 #if defined(UNITY_SUPPORT_INSTANCING) && defined(PROCEDURAL_INSTANCING_ON)
     #define UNITY_PROCEDURAL_INSTANCING_ENABLED
 #endif
+#if defined(UNITY_SUPPORT_INSTANCING) && defined(DOTS_INSTANCING_ON)
+    #define UNITY_DOTS_INSTANCING_ENABLED
+#endif
 #if defined(UNITY_SUPPORT_STEREO_INSTANCING) && defined(STEREO_INSTANCING_ON)
     #define UNITY_STEREO_INSTANCING_ENABLED
 #endif
 
-#if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
+#if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_DOTS_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
     #define UNITY_ANY_INSTANCING_ENABLED 1
 #else
     #define UNITY_ANY_INSTANCING_ENABLED 0
+#endif
+
+#if defined(DOTS_INSTANCING_ON) && (SHADER_TARGET < 45)
+#error The DOTS_INSTANCING_ON keyword requires shader model 4.5 or greater ("#pragma target 4.5" or greater).
 #endif
 
 #if defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE) || defined(SHADER_API_METAL) || defined(SHADER_API_VULKAN)
@@ -9308,7 +9749,7 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
 // basic instancing setups
 // - UNITY_VERTEX_INPUT_INSTANCE_ID     Declare instance ID field in vertex shader input / output struct.
 // - UNITY_GET_INSTANCE_ID              (Internal) Get the instance ID from input struct.
-#if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
+#if UNITY_ANY_INSTANCING_ENABLED
 
     // A global instance ID variable that functions can directly access.
     static uint unity_InstanceID;
@@ -9358,12 +9799,12 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
         #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO                          uint stereoTargetEyeIndexAsBlendIdx0 : BLENDINDICES0;
         #define DEFAULT_UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output)       output.stereoTargetEyeIndexAsBlendIdx0 = unity_StereoEyeIndex;
         #define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output)  output.stereoTargetEyeIndexAsBlendIdx0 = input.stereoTargetEyeIndexAsBlendIdx0;
-        #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)     unity_StereoEyeIndex = input.stereoTargetEyeIndexAsBlendIdx0;        
+        #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)     unity_StereoEyeIndex = input.stereoTargetEyeIndexAsBlendIdx0;
     #else
         #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO                          uint stereoTargetEyeIndexAsRTArrayIdx : SV_RenderTargetArrayIndex; uint stereoTargetEyeIndexAsBlendIdx0 : BLENDINDICES0;
         #define DEFAULT_UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output)       output.stereoTargetEyeIndexAsRTArrayIdx = unity_StereoEyeIndex; output.stereoTargetEyeIndexAsBlendIdx0 = unity_StereoEyeIndex;
         #define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output)  output.stereoTargetEyeIndexAsBlendIdx0 = input.stereoTargetEyeIndexAsBlendIdx0;
-        #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)     unity_StereoEyeIndex = input.stereoTargetEyeIndexAsBlendIdx0;                
+        #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)     unity_StereoEyeIndex = input.stereoTargetEyeIndexAsBlendIdx0;
     #endif
 #else
     #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO                          uint stereoTargetEyeIndexAsRTArrayIdx : SV_RenderTargetArrayIndex;
@@ -9409,7 +9850,7 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
 //                                  Also procedural function is called to setup instance data.
 // - UNITY_TRANSFER_INSTANCE_ID     Copy instance ID from input struct to output struct. Used in vertex shader.
 
-#if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
+#if UNITY_ANY_INSTANCING_ENABLED
     void UnitySetupInstanceID(uint inputInstanceID)
     {
         #ifdef UNITY_STEREO_INSTANCING_ENABLED
@@ -9460,7 +9901,7 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
 
 ////////////////////////////////////////////////////////
 // instanced property arrays
-#if defined(UNITY_INSTANCING_ENABLED)
+#if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_DOTS_INSTANCING_ENABLED)
 
     #ifdef UNITY_FORCE_MAX_INSTANCE_COUNT
         #define UNITY_INSTANCED_ARRAY_SIZE  UNITY_FORCE_MAX_INSTANCE_COUNT
@@ -9476,10 +9917,279 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
         #endif
     #endif
 
+#if defined(UNITY_DOTS_INSTANCING_ENABLED)
+    #define UNITY_INSTANCING_BUFFER_START(buf)      UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(UnityInstancing_##buf)
+    #define UNITY_INSTANCING_BUFFER_END(arr)        UNITY_INSTANCING_CBUFFER_SCOPE_END
+    #define UNITY_DEFINE_INSTANCED_PROP(type, var)  type var;
+    #define UNITY_ACCESS_INSTANCED_PROP(arr, var)   var
+
+//================================================================================================================================
+// WARNING: File not found: #include "com.unity.render-pipelines.core@11.0.0/ShaderLibrary/UnityDOTSInstancing.hlsl"
+//================================================================================================================================
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/UnityDOTSInstancing.hlsl
+
+
+#ifndef UNITY_DOTS_INSTANCING_INCLUDED
+#define UNITY_DOTS_INSTANCING_INCLUDED
+
+#ifdef UNITY_DOTS_INSTANCING_ENABLED
+
+/*
+Here's a bit of python code to generate these repetitive typespecs without
+a lot of C macro magic
+
+def print_dots_instancing_typespecs(elem_type, id_char, elem_size):
+    print(f"#define UNITY_DOTS_INSTANCING_TYPESPEC_{elem_type} {id_char}{elem_size}")
+    for y in range(1, 5):
+        for x in range(1, 5):
+            rows = "" if y == 1 else f"x{y}"
+            size = elem_size * x * y
+            print(f"#define UNITY_DOTS_INSTANCING_TYPESPEC_{elem_type}{x}{rows} {id_char}{size}")
+
+for t, c, sz in (
+        ('float', 'F', 4),
+        ('int',   'I', 4),
+        ('uint',  'U', 4),
+        ('half',  'H', 2)
+        ):
+    print_dots_instancing_typespecs(t, c, sz)
+*/
+
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float F4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float1 F4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float2 F8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float3 F12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float4 F16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float1x2 F8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float2x2 F16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float3x2 F24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float4x2 F32
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float1x3 F12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float2x3 F24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float3x3 F36
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float4x3 F48
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float1x4 F16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float2x4 F32
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float3x4 F48
+#define UNITY_DOTS_INSTANCING_TYPESPEC_float4x4 F64
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int I4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int1 I4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int2 I8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int3 I12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int4 I16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int1x2 I8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int2x2 I16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int3x2 I24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int4x2 I32
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int1x3 I12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int2x3 I24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int3x3 I36
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int4x3 I48
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int1x4 I16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int2x4 I32
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int3x4 I48
+#define UNITY_DOTS_INSTANCING_TYPESPEC_int4x4 I64
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint U4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint1 U4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint2 U8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint3 U12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint4 U16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint1x2 U8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint2x2 U16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint3x2 U24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint4x2 U32
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint1x3 U12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint2x3 U24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint3x3 U36
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint4x3 U48
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint1x4 U16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint2x4 U32
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint3x4 U48
+#define UNITY_DOTS_INSTANCING_TYPESPEC_uint4x4 U64
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half H2
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half1 H2
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half2 H4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half3 H6
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half4 H8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half1x2 H4
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half2x2 H8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half3x2 H12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half4x2 H16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half1x3 H6
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half2x3 H12
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half3x3 H18
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half4x3 H24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half1x4 H8
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half2x4 H16
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half3x4 H24
+#define UNITY_DOTS_INSTANCING_TYPESPEC_half4x4 H32
+
+#define UNITY_DOTS_INSTANCING_CONCAT2(a, b) a ## b
+#define UNITY_DOTS_INSTANCING_CONCAT4(a, b, c, d) a ## b ## c ## d
+#define UNITY_DOTS_INSTANCING_CONCAT_WITHOUT_METADATA(metadata_prefix, typespec, metadata_underscore_var) UNITY_DOTS_INSTANCING_CONCAT4(metadata_prefix, typespec, _, metadata_underscore_var)
+#define UNITY_DOTS_INSTANCING_CONCAT_WITH_METADATA(metadata_prefix, typespec, name) UNITY_DOTS_INSTANCING_CONCAT4(metadata_prefix, typespec, _Metadata_, name)
+
+// Metadata constants for properties have the following name format:
+// unity_DOTSInstancing_<Type><Size>_Metadata_<Name>
+// where
+// <Type> is a single character element type specifier (e.g. F for float4x4)
+//          F = float, I = int, U = uint, H = half
+// <Size> is the total size of the property in bytes (e.g. 64 for float4x4)
+// <Name> is the name of the property
+#define UNITY_DOTS_INSTANCED_METADATA_NAME(type, name) UNITY_DOTS_INSTANCING_CONCAT_WITH_METADATA(unity_DOTSInstancing_, UNITY_DOTS_INSTANCING_CONCAT2(UNITY_DOTS_INSTANCING_TYPESPEC_, type), name)
+#define UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(type, metadata_underscore_var) UNITY_DOTS_INSTANCING_CONCAT_WITHOUT_METADATA(unity_DOTSInstancing_, UNITY_DOTS_INSTANCING_CONCAT2(UNITY_DOTS_INSTANCING_TYPESPEC_, type), metadata_underscore_var)
+
+#define UNITY_DOTS_INSTANCING_START(name) cbuffer UnityDOTSInstancing_##name {
+#define UNITY_DOTS_INSTANCING_END(name)   }
+#define UNITY_DOTS_INSTANCED_PROP(type, name) uint UNITY_DOTS_INSTANCED_METADATA_NAME(type, name);
+
+// There is a separate FROM_MACRO variant to be used in macros of the form
+// #define <MACRO_NAME> UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(float4, Metadata_<MACRO_NAME>)
+// These kinds of macros can be used to have shader code load constants from DOTS instancing
+// as if they were normal constants.
+// The reason for having the FROM_MACRO variant is that the fxc shader preprocessor is buggy,
+// and refuses to expand macros correctly if the macro body contains the macro itself.
+// The correct behavior would be for the macro name to appear in the expansion as is (i.e. no recursion),
+// but fxc's preprocessor completely breaks down in this situation.
+
+#define UNITY_ACCESS_DOTS_INSTANCED_PROP(type, var) LoadDOTSInstancedData_##type(UNITY_DOTS_INSTANCED_METADATA_NAME(type, var))
+#define UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(type, metadata_underscore_var) LoadDOTSInstancedData_##type(UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(type, metadata_underscore_var))
+#define UNITY_ACCESS_DOTS_AND_TRADITIONAL_INSTANCED_PROP(type, arr, var) LoadDOTSInstancedData_##type(UNITY_DOTS_INSTANCED_METADATA_NAME(type, var))
+
+// TODO: Shader feature level to compute only
+ByteAddressBuffer unity_DOTSInstanceData;
+
+
+// The data has to be wrapped inside a struct, otherwise the instancing code path
+// on some platforms does not trigger.
+struct DOTSVisibleData
+{
+    uint4 VisibleData;
+};
+
+// The name of this cbuffer has to start with "UnityInstancing" and a struct so it's
+// detected as an "instancing cbuffer" by some platforms that use string matching
+// to detect this.
+CBUFFER_START(UnityInstancingDOTS_InstanceVisibility)
+    DOTSVisibleData unity_DOTSVisibleInstances[UNITY_INSTANCED_ARRAY_SIZE];
+CBUFFER_END
+
+uint GetDOTSInstanceIndex()
+{
+    return unity_DOTSVisibleInstances[unity_InstanceID].VisibleData.x;
+}
+
+uint ComputeDOTSInstanceDataAddress(uint metadata, uint stride)
+{
+    uint isOverridden = metadata & 0x80000000;
+    uint baseAddress  = metadata & 0x7fffffff;
+    uint offset       = isOverridden
+        ? (GetDOTSInstanceIndex() * stride)
+        : 0;
+    return baseAddress + offset;
+}
+
+#define DEFINE_DOTS_LOAD_INSTANCE_SCALAR(type, conv, sizeof_type) \
+type LoadDOTSInstancedData_##type(uint metadata) \
+{ \
+    uint address = ComputeDOTSInstanceDataAddress(metadata, sizeof_type); \
+    return conv(unity_DOTSInstanceData.Load(address)); \
+}
+
+#define DEFINE_DOTS_LOAD_INSTANCE_VECTOR(type, width, conv, sizeof_type) \
+type##width LoadDOTSInstancedData_##type##width(uint metadata) \
+{ \
+    uint address = ComputeDOTSInstanceDataAddress(metadata, sizeof_type * width); \
+    return conv(unity_DOTSInstanceData.Load##width(address)); \
+}
+
+DEFINE_DOTS_LOAD_INSTANCE_SCALAR(float, asfloat, 4)
+DEFINE_DOTS_LOAD_INSTANCE_SCALAR(int,   int,     4)
+DEFINE_DOTS_LOAD_INSTANCE_SCALAR(uint,  uint,    4)
+DEFINE_DOTS_LOAD_INSTANCE_SCALAR(half,  half,    2)
+
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(float, 2, asfloat, 4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(float, 3, asfloat, 4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(float, 4, asfloat, 4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(int,   2, int2,    4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(int,   3, int3,    4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(int,   4, int4,    4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(uint,  2, uint2,   4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(uint,  3, uint3,   4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(uint,  4, uint4,   4)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(half,  2, half2,   2)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(half,  3, half3,   2)
+DEFINE_DOTS_LOAD_INSTANCE_VECTOR(half,  4, half4,   2)
+
+// TODO: Other matrix sizes
+float4x4 LoadDOTSInstancedData_float4x4(uint metadata)
+{
+    uint address = ComputeDOTSInstanceDataAddress(metadata, 4 * 16);
+    float4 p1 = asfloat(unity_DOTSInstanceData.Load4(address + 0 * 16));
+    float4 p2 = asfloat(unity_DOTSInstanceData.Load4(address + 1 * 16));
+    float4 p3 = asfloat(unity_DOTSInstanceData.Load4(address + 2 * 16));
+    float4 p4 = asfloat(unity_DOTSInstanceData.Load4(address + 3 * 16));
+    return float4x4(
+        p1.x, p2.x, p3.x, p4.x,
+        p1.y, p2.y, p3.y, p4.y,
+        p1.z, p2.z, p3.z, p4.z,
+        p1.w, p2.w, p3.w, p4.w);
+}
+float4x4 LoadDOTSInstancedData(float4x4 dummy, uint metadata) { return LoadDOTSInstancedData_float4x4(metadata); }
+
+float4x4 LoadDOTSInstancedData_float4x4_from_float3x4(uint metadata)
+{
+    uint address = ComputeDOTSInstanceDataAddress(metadata, 3 * 16);
+    float4 p1 = asfloat(unity_DOTSInstanceData.Load4(address + 0 * 16));
+    float4 p2 = asfloat(unity_DOTSInstanceData.Load4(address + 1 * 16));
+    float4 p3 = asfloat(unity_DOTSInstanceData.Load4(address + 2 * 16));
+
+    return float4x4(
+        p1.x, p1.w, p2.z, p3.y,
+        p1.y, p2.x, p2.w, p3.z,
+        p1.z, p2.y, p3.x, p3.w,
+        0.0,  0.0,  0.0,  1.0
+    );
+}
+
+float2x4 LoadDOTSInstancedData_float2x4(uint metadata)
+{
+    uint address = ComputeDOTSInstanceDataAddress(metadata, 4 * 8);
+    return float2x4(
+        asfloat(unity_DOTSInstanceData.Load4(address + 0 * 8)),
+        asfloat(unity_DOTSInstanceData.Load4(address + 1 * 8)));
+}
+float2x4 LoadDOTSInstancedData(float2x4 dummy, uint metadata) { return LoadDOTSInstancedData_float2x4(metadata); }
+
+#undef DEFINE_DOTS_LOAD_INSTANCE_SCALAR
+#undef DEFINE_DOTS_LOAD_INSTANCE_VECTOR
+
+#endif // UNITY_DOTS_INSTANCING_ENABLED
+
+#endif // UNITY_DOTS_INSTANCING_INCLUDED
+
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/UnityDOTSInstancing.hlsl
+//================================================================================================================================
+
+
+
+
+#else
     #define UNITY_INSTANCING_BUFFER_START(buf)      UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(UnityInstancing_##buf) struct {
     #define UNITY_INSTANCING_BUFFER_END(arr)        } arr##Array[UNITY_INSTANCED_ARRAY_SIZE]; UNITY_INSTANCING_CBUFFER_SCOPE_END
     #define UNITY_DEFINE_INSTANCED_PROP(type, var)  type var;
     #define UNITY_ACCESS_INSTANCED_PROP(arr, var)   arr##Array[unity_InstanceID].var
+
+    #define UNITY_DOTS_INSTANCING_START(name)
+    #define UNITY_DOTS_INSTANCING_END(name)
+    #define UNITY_DOTS_INSTANCED_PROP(type, name)
+
+    #define UNITY_ACCESS_DOTS_INSTANCED_PROP(type, var) var
+    #define UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(type, metadata_underscore_var) This_macro_cannot_be_called_without_UNITY_DOTS_INSTANCING_ENABLED
+    #define UNITY_ACCESS_DOTS_AND_TRADITIONAL_INSTANCED_PROP(type, arr, var) UNITY_ACCESS_INSTANCED_PROP(arr, var)
+#endif
 
     // Put worldToObject array to a separate CB if UNITY_ASSUME_UNIFORM_SCALING is defined. Most of the time it will not be used.
     #ifdef UNITY_ASSUME_UNIFORM_SCALING
@@ -9514,6 +10224,7 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
         #endif
     #endif
 
+    #if !defined(UNITY_DOTS_INSTANCING_ENABLED)
     UNITY_INSTANCING_BUFFER_START(PerDraw0)
         #ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
             UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_ObjectToWorldArray)
@@ -9529,8 +10240,10 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
             UNITY_DEFINE_INSTANCED_PROP(float, unity_RenderingLayerArray)
             #define unity_RenderingLayer UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_RenderingLayerArray).xxxx
         #endif
-        #if defined(SHADER_GRAPH_GENERATED)
-                DOTS_CUSTOM_ADDITIONAL_MATERIAL_VARS
+
+        // TODO: Hybrid V1 compatibility, remove once Hybrid V1 is removed
+        #if defined(UNITY_HYBRID_V1_INSTANCING_ENABLED) && defined(HYBRID_V1_CUSTOM_ADDITIONAL_MATERIAL_VARS)
+            HYBRID_V1_CUSTOM_ADDITIONAL_MATERIAL_VARS
         #endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins0)
 
@@ -9551,6 +10264,7 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
     UNITY_INSTANCING_BUFFER_START(PerDraw2)
         #ifdef UNITY_USE_LIGHTMAPST_ARRAY
             UNITY_DEFINE_INSTANCED_PROP(float4, unity_LightmapSTArray)
+            UNITY_DEFINE_INSTANCED_PROP(float4, unity_LightmapIndexArray)
             #define unity_LightmapST UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_LightmapSTArray)
         #endif
         #ifdef UNITY_USE_DYNAMICLIGHTMAPST_ARRAY
@@ -9578,19 +10292,42 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
             #define unity_ProbesOcclusion UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_ProbesOcclusionArray)
         #endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins2)
+    #endif
+
+    // TODO: What about UNITY_DONT_INSTANCE_OBJECT_MATRICES for DOTS?
+    #if defined(UNITY_DOTS_INSTANCING_ENABLED)
+        #undef UNITY_MATRIX_M
+        #undef UNITY_MATRIX_I_M
+        #ifdef MODIFY_MATRIX_FOR_CAMERA_RELATIVE_RENDERING
+            #define UNITY_MATRIX_M      ApplyCameraTranslationToMatrix(LoadDOTSInstancedData_float4x4_from_float3x4(UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(float3x4, Metadata_unity_ObjectToWorld)))
+            #define UNITY_MATRIX_I_M    ApplyCameraTranslationToInverseMatrix(LoadDOTSInstancedData_float4x4_from_float3x4(UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(float3x4, Metadata_unity_WorldToObject)))
+        #else
+            #define UNITY_MATRIX_M      LoadDOTSInstancedData_float4x4_from_float3x4(UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(float3x4, Metadata_unity_ObjectToWorld))
+            #define UNITY_MATRIX_I_M    LoadDOTSInstancedData_float4x4_from_float3x4(UNITY_DOTS_INSTANCED_METADATA_NAME_FROM_MACRO(float3x4, Metadata_unity_WorldToObject))
+        #endif
+    #else
 
     #ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
         #undef UNITY_MATRIX_M
         #undef UNITY_MATRIX_I_M
-        #define MERGE_UNITY_BUILTINS_INDEX(X) unity_Builtins##X
-        #define CALL_MERGE_UNITY_BUILTINS_INDEX(X)  MERGE_UNITY_BUILTINS_INDEX(X)
+
+        // Use #if instead of preprocessor concatenation to avoid really hard to debug
+        // preprocessing issues in some cases.
+        #if UNITY_WORLDTOOBJECTARRAY_CB == 0
+            #define UNITY_BUILTINS_WITH_WORLDTOOBJECTARRAY unity_Builtins0
+        #else
+            #define UNITY_BUILTINS_WITH_WORLDTOOBJECTARRAY unity_Builtins1
+        #endif
+
         #ifdef MODIFY_MATRIX_FOR_CAMERA_RELATIVE_RENDERING
             #define UNITY_MATRIX_M      ApplyCameraTranslationToMatrix(UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_ObjectToWorldArray))
-            #define UNITY_MATRIX_I_M    ApplyCameraTranslationToInverseMatrix(UNITY_ACCESS_INSTANCED_PROP(CALL_MERGE_UNITY_BUILTINS_INDEX(UNITY_WORLDTOOBJECTARRAY_CB), unity_WorldToObjectArray))
+            #define UNITY_MATRIX_I_M    ApplyCameraTranslationToInverseMatrix(UNITY_ACCESS_INSTANCED_PROP(UNITY_BUILTINS_WITH_WORLDTOOBJECTARRAY, unity_WorldToObjectArray))
         #else
             #define UNITY_MATRIX_M      UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_ObjectToWorldArray)
-            #define UNITY_MATRIX_I_M    UNITY_ACCESS_INSTANCED_PROP(CALL_MERGE_UNITY_BUILTINS_INDEX(UNITY_WORLDTOOBJECTARRAY_CB), unity_WorldToObjectArray)
+            #define UNITY_MATRIX_I_M    UNITY_ACCESS_INSTANCED_PROP(UNITY_BUILTINS_WITH_WORLDTOOBJECTARRAY, unity_WorldToObjectArray)
         #endif
+    #endif
+
     #endif
 
 #else // UNITY_INSTANCING_ENABLED
@@ -9612,17 +10349,79 @@ float4x4 OptimizeProjectionMatrix(float4x4 M)
 
 #endif // UNITY_INSTANCING_INCLUDED
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/UnityInstancing.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/UnityInstancing.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/SpaceTransforms.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/UniversalDOTSInstancing.hlsl
+
+
+#ifndef UNIVERSAL_DOTS_INSTANCING_INCLUDED
+#define UNIVERSAL_DOTS_INSTANCING_INCLUDED
+
+#ifdef UNITY_DOTS_INSTANCING_ENABLED
+
+#undef unity_ObjectToWorld
+#undef unity_WorldToObject
+// TODO: This might not work correctly in all cases, double check!
+UNITY_DOTS_INSTANCING_START(BuiltinPropertyMetadata)
+    UNITY_DOTS_INSTANCED_PROP(float3x4, unity_ObjectToWorld)
+    UNITY_DOTS_INSTANCED_PROP(float3x4, unity_WorldToObject)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_LODFade)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_WorldTransformParams)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_LightData)
+    UNITY_DOTS_INSTANCED_PROP(float2x4, unity_LightIndices)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_ProbesOcclusion)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SpecCube0_HDR)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_LightmapST)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_LightmapIndex)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_DynamicLightmapST)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHAr)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHAg)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHAb)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHBr)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHBg)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHBb)
+    UNITY_DOTS_INSTANCED_PROP(float4,   unity_SHC)
+UNITY_DOTS_INSTANCING_END(BuiltinPropertyMetadata)
+
+// Note: Macros for unity_ObjectToWorld and unity_WorldToObject are declared in UnityInstancing.hlsl
+// because of some special handling
+#define unity_LODFade               UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_LODFade)
+#define unity_WorldTransformParams  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_WorldTransformParams)
+#define unity_LightData             UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_LightData)
+#define unity_LightIndices          UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float2x4, Metadata_unity_LightIndices)
+#define unity_ProbesOcclusion       UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_ProbesOcclusion)
+#define unity_SpecCube0_HDR         UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SpecCube0_HDR)
+#define unity_LightmapST            UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_LightmapST)
+#define unity_LightmapIndex         UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_LightmapIndex)
+#define unity_DynamicLightmapST     UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_DynamicLightmapST)
+#define unity_SHAr                  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHAr)
+#define unity_SHAg                  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHAg)
+#define unity_SHAb                  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHAb)
+#define unity_SHBr                  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHBr)
+#define unity_SHBg                  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHBg)
+#define unity_SHBb                  UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHBb)
+#define unity_SHC                   UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float4,   Metadata_unity_SHC)
+#endif
+
+#endif
+
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/UniversalDOTSInstancing.hlsl
+//================================================================================================================================
+
+
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/SpaceTransforms.hlsl
 
 
 #ifndef UNITY_SPACE_TRANSFORMS_INCLUDED
 #define UNITY_SPACE_TRANSFORMS_INCLUDED
+
+// Caution: For HDRP, adding a function in this file requires adding the appropriate #define in PickingSpaceTransforms.hlsl
 
 // Return the PreTranslated ObjectToWorld Matrix (i.e matrix with _WorldSpaceCameraPos apply to it if we use camera relative rendering)
 float4x4 GetObjectToWorldMatrix()
@@ -9656,7 +10455,7 @@ float4x4 GetViewToHClipMatrix()
 float3 GetAbsolutePositionWS(float3 positionRWS)
 {
 #if (SHADEROPTIONS_CAMERA_RELATIVE_RENDERING != 0)
-    positionRWS += _WorldSpaceCameraPos;
+    positionRWS += _WorldSpaceCameraPos.xyz;
 #endif
     return positionRWS;
 }
@@ -9665,24 +10464,35 @@ float3 GetAbsolutePositionWS(float3 positionRWS)
 float3 GetCameraRelativePositionWS(float3 positionWS)
 {
 #if (SHADEROPTIONS_CAMERA_RELATIVE_RENDERING != 0)
-    positionWS -= _WorldSpaceCameraPos;
+    positionWS -= _WorldSpaceCameraPos.xyz;
 #endif
     return positionWS;
 }
 
 real GetOddNegativeScale()
 {
-    return unity_WorldTransformParams.w;
+    // FIXME: We should be able to just return unity_WorldTransformParams.w, but it is not
+    // properly set at the moment, when doing ray-tracing; once this has been fixed in cpp,
+    // we can revert back to the former implementation.
+    return unity_WorldTransformParams.w >= 0.0 ? 1.0 : -1.0;
 }
 
 float3 TransformObjectToWorld(float3 positionOS)
 {
+    #if defined(SHADER_STAGE_RAY_TRACING)
+    return mul(ObjectToWorld3x4(), float4(positionOS, 1.0)).xyz;
+    #else
     return mul(GetObjectToWorldMatrix(), float4(positionOS, 1.0)).xyz;
+    #endif
 }
 
 float3 TransformWorldToObject(float3 positionWS)
 {
+    #if defined(SHADER_STAGE_RAY_TRACING)
+    return mul(WorldToObject3x4(), float4(positionWS, 1.0)).xyz;
+    #else
     return mul(GetWorldToObjectMatrix(), float4(positionWS, 1.0)).xyz;
+    #endif
 }
 
 float3 TransformWorldToView(float3 positionWS)
@@ -9709,48 +10519,81 @@ float4 TransformWViewToHClip(float3 positionVS)
     return mul(GetViewToHClipMatrix(), float4(positionVS, 1.0));
 }
 
-real3 TransformObjectToWorldDir(real3 dirOS)
+// Normalize to support uniform scaling
+float3 TransformObjectToWorldDir(float3 dirOS, bool doNormalize = true)
 {
-    // Normalize to support uniform scaling
-    return SafeNormalize(mul((real3x3)GetObjectToWorldMatrix(), dirOS));
+    #ifndef SHADER_STAGE_RAY_TRACING
+    float3 dirWS = mul((float3x3)GetObjectToWorldMatrix(), dirOS);
+    #else
+    float3 dirWS = mul((float3x3)ObjectToWorld3x4(), dirOS);
+    #endif
+    if (doNormalize)
+        return SafeNormalize(dirWS);
+
+    return dirWS;
 }
 
-real3 TransformWorldToObjectDir(real3 dirWS)
+// Normalize to support uniform scaling
+float3 TransformWorldToObjectDir(float3 dirWS, bool doNormalize = true)
 {
-    // Normalize to support uniform scaling
-    return normalize(mul((real3x3)GetWorldToObjectMatrix(), dirWS));
+    #ifndef SHADER_STAGE_RAY_TRACING
+    float3 dirOS = mul((float3x3)GetWorldToObjectMatrix(), dirWS);
+    #else
+    float3 dirOS = mul((float3x3)WorldToObject3x4(), dirWS);
+    #endif
+    if (doNormalize)
+        return normalize(dirOS);
+
+    return dirOS;
 }
 
-real3 TransformWorldToViewDir(real3 dirWS)
+// Tranforms vector from world space to view space
+real3 TransformWorldToViewDir(real3 dirWS, bool doNormalize = false)
 {
-    return mul((real3x3)GetWorldToViewMatrix(), dirWS).xyz;
+    float3 dirVS = mul((real3x3)GetWorldToViewMatrix(), dirWS).xyz;
+    if (doNormalize)
+        return normalize(dirVS);
+
+    return dirVS;
 }
 
 // Tranforms vector from world space to homogenous space
-real3 TransformWorldToHClipDir(real3 directionWS)
+real3 TransformWorldToHClipDir(real3 directionWS, bool doNormalize = false)
 {
-    return mul((real3x3)GetWorldToHClipMatrix(), directionWS);
+    float3 dirHCS = mul((real3x3)GetWorldToHClipMatrix(), directionWS).xyz;
+    if (doNormalize)
+        return normalize(dirHCS);
+
+    return dirHCS;
 }
 
 // Transforms normal from object to world space
-float3 TransformObjectToWorldNormal(float3 normalOS)
+float3 TransformObjectToWorldNormal(float3 normalOS, bool doNormalize = true)
 {
 #ifdef UNITY_ASSUME_UNIFORM_SCALING
-    return TransformObjectToWorldDir(normalOS);
+    return TransformObjectToWorldDir(normalOS, doNormalize);
 #else
     // Normal need to be multiply by inverse transpose
-    return SafeNormalize(mul(normalOS, (float3x3)GetWorldToObjectMatrix()));
+    float3 normalWS = mul(normalOS, (float3x3)GetWorldToObjectMatrix());
+    if (doNormalize)
+        return SafeNormalize(normalWS);
+
+    return normalWS;
 #endif
 }
 
 // Transforms normal from world to object space
-float3 TransformWorldToObjectNormal(float3 normalWS)
+float3 TransformWorldToObjectNormal(float3 normalWS, bool doNormalize = true)
 {
 #ifdef UNITY_ASSUME_UNIFORM_SCALING
-    return TransformWorldToObjectDir(normalWS);
+    return TransformWorldToObjectDir(normalWS, doNormalize);
 #else
     // Normal need to be multiply by inverse transpose
-    return SafeNormalize(mul(normalWS, (float3x3)GetObjectToWorldMatrix()));
+    float3 normalOS = mul(normalWS, (float3x3)GetObjectToWorldMatrix());
+    if (doNormalize)
+        return SafeNormalize(normalOS);
+
+    return normalOS;
 #endif
 }
 
@@ -9769,46 +10612,53 @@ real3 TransformTangentToWorld(real3 dirTS, real3x3 tangentToWorld)
     return mul(dirTS, tangentToWorld);
 }
 
+// This function does the exact inverse of TransformTangentToWorld() and is
+// also decribed within comments in mikktspace.h and it follows implicitly
+// from the scalar triple product (google it).
 real3 TransformWorldToTangent(real3 dirWS, real3x3 tangentToWorld)
 {
     // Note matrix is in row major convention with left multiplication as it is build on the fly
     float3 row0 = tangentToWorld[0];
-	float3 row1 = tangentToWorld[1];
-	float3 row2 = tangentToWorld[2];
+    float3 row1 = tangentToWorld[1];
+    float3 row2 = tangentToWorld[2];
 
-	// these are the columns of the inverse matrix but scaled by the determinant
-	float3 col0 = cross(row1, row2);
-	float3 col1 = cross(row2, row0);
-	float3 col2 = cross(row0, row1);
+    // these are the columns of the inverse matrix but scaled by the determinant
+    float3 col0 = cross(row1, row2);
+    float3 col1 = cross(row2, row0);
+    float3 col2 = cross(row0, row1);
 
-	float determinant = dot(row0, col0);
-	float sgn = determinant<0.0 ? (-1.0) : 1.0;
+    float determinant = dot(row0, col0);
+    float sgn = determinant<0.0 ? (-1.0) : 1.0;
 
-	// inverse transposed but scaled by determinant
-	real3x3 matTBN_I_T = real3x3(col0, col1, col2);
+    // inverse transposed but scaled by determinant
+    // Will remove transpose part by using matrix as the first arg in the mul() below
+    // this makes it the exact inverse of what TransformTangentToWorld() does.
+    real3x3 matTBN_I_T = real3x3(col0, col1, col2);
 
-	// remove transpose part by using matrix as the first arg in mul()
-	// this makes it the exact inverse of what TransformTangentToWorld() does.
-	return SafeNormalize( sgn * mul(matTBN_I_T, dirWS) );
+    return SafeNormalize( sgn * mul(matTBN_I_T, dirWS) );
 }
 
 real3 TransformTangentToObject(real3 dirTS, real3x3 tangentToWorld)
 {
     // Note matrix is in row major convention with left multiplication as it is build on the fly
-	real3 normalWS = TransformTangentToWorld(dirTS, tangentToWorld);
-	return TransformWorldToObjectNormal(normalWS);
+    real3 normalWS = TransformTangentToWorld(dirTS, tangentToWorld);
+    return TransformWorldToObjectNormal(normalWS);
 }
 
 real3 TransformObjectToTangent(real3 dirOS, real3x3 tangentToWorld)
 {
     // Note matrix is in row major convention with left multiplication as it is build on the fly
-	float3 normalWS = TransformObjectToWorldNormal(dirOS);
-	return TransformWorldToTangent(normalWS, tangentToWorld);
+
+    // don't normalize, as normalWS will be normalized after TransformWorldToTangent
+    float3 normalWS = TransformObjectToWorldNormal(dirOS, false);
+
+    // transform from world to tangent
+    return TransformWorldToTangent(normalWS, tangentToWorld);
 }
 
 #endif
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/SpaceTransforms.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/SpaceTransforms.hlsl
 //================================================================================================================================
 
 
@@ -9816,39 +10666,98 @@ real3 TransformObjectToTangent(real3 dirOS, real3x3 tangentToWorld)
 
 #endif
 
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Input.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Input.hlsl
 //================================================================================================================================
 
 
 
 
 #if !defined(SHADER_HINT_NICE_QUALITY)
-#if defined(SHADER_API_MOBILE) || defined(SHADER_API_SWITCH)
-#define SHADER_HINT_NICE_QUALITY 0
-#else
-#define SHADER_HINT_NICE_QUALITY 1
-#endif
+    #if defined(SHADER_API_MOBILE) || defined(SHADER_API_SWITCH)
+        #define SHADER_HINT_NICE_QUALITY 0
+    #else
+        #define SHADER_HINT_NICE_QUALITY 1
+    #endif
 #endif
 
-// Shader Quality Tiers in Universal. 
+// Shader Quality Tiers in Universal.
 // SRP doesn't use Graphics Settings Quality Tiers.
 // We should expose shader quality tiers in the pipeline asset.
 // Meanwhile, it's forced to be:
 // High Quality: Non-mobile platforms or shader explicit defined SHADER_HINT_NICE_QUALITY
 // Medium: Mobile aside from GLES2
-// Low: GLES2 
+// Low: GLES2
 #if SHADER_HINT_NICE_QUALITY
-#define SHADER_QUALITY_HIGH
+    #define SHADER_QUALITY_HIGH
 #elif defined(SHADER_API_GLES)
-#define SHADER_QUALITY_LOW
+    #define SHADER_QUALITY_LOW
 #else
-#define SHADER_QUALITY_MEDIUM
+    #define SHADER_QUALITY_MEDIUM
 #endif
 
 #ifndef BUMP_SCALE_NOT_SUPPORTED
-#define BUMP_SCALE_NOT_SUPPORTED !SHADER_HINT_NICE_QUALITY
+    #define BUMP_SCALE_NOT_SUPPORTED !SHADER_HINT_NICE_QUALITY
 #endif
 
+
+#if UNITY_REVERSED_Z
+    // TODO: workaround. There's a bug where SHADER_API_GL_CORE gets erroneously defined on switch.
+    #if (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3)
+        //GL with reversed z => z clip range is [near, -far] -> should remap in theory but dont do it in practice to save some perf (range is close enough)
+        #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(-(coord), 0)
+    #else
+        //D3d with reversed Z => z clip range is [near, 0] -> remapping to [0, far]
+        //max is required to protect ourselves from near plane not being correct/meaningfull in case of oblique matrices.
+        #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(((1.0-(coord)/_ProjectionParams.y)*_ProjectionParams.z),0)
+    #endif
+#elif UNITY_UV_STARTS_AT_TOP
+    //D3d without reversed z => z clip range is [0, far] -> nothing to do
+    #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
+#else
+    //Opengl => z clip range is [-near, far] -> should remap in theory but dont do it in practice to save some perf (range is close enough)
+    #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
+#endif
+
+// Stereo-related bits
+#if defined(UNITY_STEREO_INSTANCING_ENABLED) || defined(UNITY_STEREO_MULTIVIEW_ENABLED)
+
+    #define SLICE_ARRAY_INDEX   unity_StereoEyeIndex
+
+    #define TEXTURE2D_X(textureName)                                        TEXTURE2D_ARRAY(textureName)
+    #define TEXTURE2D_X_PARAM(textureName, samplerName)                     TEXTURE2D_ARRAY_PARAM(textureName, samplerName)
+    #define TEXTURE2D_X_ARGS(textureName, samplerName)                      TEXTURE2D_ARRAY_ARGS(textureName, samplerName)
+    #define TEXTURE2D_X_HALF(textureName)                                   TEXTURE2D_ARRAY_HALF(textureName)
+    #define TEXTURE2D_X_FLOAT(textureName)                                  TEXTURE2D_ARRAY_FLOAT(textureName)
+
+    #define LOAD_TEXTURE2D_X(textureName, unCoord2)                         LOAD_TEXTURE2D_ARRAY(textureName, unCoord2, SLICE_ARRAY_INDEX)
+    #define LOAD_TEXTURE2D_X_LOD(textureName, unCoord2, lod)                LOAD_TEXTURE2D_ARRAY_LOD(textureName, unCoord2, SLICE_ARRAY_INDEX, lod)
+    #define SAMPLE_TEXTURE2D_X(textureName, samplerName, coord2)            SAMPLE_TEXTURE2D_ARRAY(textureName, samplerName, coord2, SLICE_ARRAY_INDEX)
+    #define SAMPLE_TEXTURE2D_X_LOD(textureName, samplerName, coord2, lod)   SAMPLE_TEXTURE2D_ARRAY_LOD(textureName, samplerName, coord2, SLICE_ARRAY_INDEX, lod)
+    #define GATHER_TEXTURE2D_X(textureName, samplerName, coord2)            GATHER_TEXTURE2D_ARRAY(textureName, samplerName, coord2, SLICE_ARRAY_INDEX)
+    #define GATHER_RED_TEXTURE2D_X(textureName, samplerName, coord2)        GATHER_RED_TEXTURE2D(textureName, samplerName, float3(coord2, SLICE_ARRAY_INDEX))
+    #define GATHER_GREEN_TEXTURE2D_X(textureName, samplerName, coord2)      GATHER_GREEN_TEXTURE2D(textureName, samplerName, float3(coord2, SLICE_ARRAY_INDEX))
+    #define GATHER_BLUE_TEXTURE2D_X(textureName, samplerName, coord2)       GATHER_BLUE_TEXTURE2D(textureName, samplerName, float3(coord2, SLICE_ARRAY_INDEX))
+
+#else
+    #define SLICE_ARRAY_INDEX       0
+
+    #define TEXTURE2D_X(textureName)                                        TEXTURE2D(textureName)
+    #define TEXTURE2D_X_PARAM(textureName, samplerName)                     TEXTURE2D_PARAM(textureName, samplerName)
+    #define TEXTURE2D_X_ARGS(textureName, samplerName)                      TEXTURE2D_ARGS(textureName, samplerName)
+    #define TEXTURE2D_X_HALF(textureName)                                   TEXTURE2D_HALF(textureName)
+    #define TEXTURE2D_X_FLOAT(textureName)                                  TEXTURE2D_FLOAT(textureName)
+
+    #define LOAD_TEXTURE2D_X(textureName, unCoord2)                         LOAD_TEXTURE2D(textureName, unCoord2)
+    #define LOAD_TEXTURE2D_X_LOD(textureName, unCoord2, lod)                LOAD_TEXTURE2D_LOD(textureName, unCoord2, lod)
+    #define SAMPLE_TEXTURE2D_X(textureName, samplerName, coord2)            SAMPLE_TEXTURE2D(textureName, samplerName, coord2)
+    #define SAMPLE_TEXTURE2D_X_LOD(textureName, samplerName, coord2, lod)   SAMPLE_TEXTURE2D_LOD(textureName, samplerName, coord2, lod)
+    #define GATHER_TEXTURE2D_X(textureName, samplerName, coord2)            GATHER_TEXTURE2D(textureName, samplerName, coord2)
+    #define GATHER_RED_TEXTURE2D_X(textureName, samplerName, coord2)        GATHER_RED_TEXTURE2D(textureName, samplerName, coord2)
+    #define GATHER_GREEN_TEXTURE2D_X(textureName, samplerName, coord2)      GATHER_GREEN_TEXTURE2D(textureName, samplerName, coord2)
+    #define GATHER_BLUE_TEXTURE2D_X(textureName, samplerName, coord2)       GATHER_BLUE_TEXTURE2D(textureName, samplerName, coord2)
+#endif
+
+// Structs
 struct VertexPositionInputs
 {
     float3 positionWS; // World space position
@@ -9864,17 +10773,51 @@ struct VertexNormalInputs
     float3 normalWS;
 };
 
+//================================================================================================================================
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/ShaderVariablesFunctions.hlsl
+
+
+#ifndef UNITY_SHADER_VARIABLES_FUNCTIONS_INCLUDED
+#define UNITY_SHADER_VARIABLES_FUNCTIONS_INCLUDED
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/ShaderVariablesFunctions.deprecated.hlsl
+
+
+#ifndef UNITY_SHADER_VARIABLES_FUNCTIONS_DEPRECATED_INCLUDED
+#define UNITY_SHADER_VARIABLES_FUNCTIONS_DEPRECATED_INCLUDED
+
+
+// Deprecated: A confusingly named and duplicate function that scales clipspace to unity NDC range. (-w < x(-y) < w --> 0 < xy < w)
+// Use GetVertexPositionInputs().positionNDC instead for vertex shader
+// Or a similar function in Common.hlsl, ComputeNormalizedDeviceCoordinatesWithZ()
+float4 ComputeScreenPos(float4 positionCS)
+{
+    float4 o = positionCS * 0.5f;
+    o.xy = float2(o.x, o.y * _ProjectionParams.x) + o.w;
+    o.zw = positionCS.zw;
+    return o;
+}
+
+#endif // UNITY_SHADER_VARIABLES_FUNCTIONS_DEPRECATED_INCLUDED
+
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/ShaderVariablesFunctions.deprecated.hlsl
+//================================================================================================================================
+
+
+
+
 VertexPositionInputs GetVertexPositionInputs(float3 positionOS)
 {
     VertexPositionInputs input;
     input.positionWS = TransformObjectToWorld(positionOS);
     input.positionVS = TransformWorldToView(input.positionWS);
     input.positionCS = TransformWorldToHClip(input.positionWS);
-    
+
     float4 ndc = input.positionCS * 0.5f;
     input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
     input.positionNDC.zw = input.positionCS.zw;
-        
+
     return input;
 }
 
@@ -9899,120 +10842,184 @@ VertexNormalInputs GetVertexNormalInputs(float3 normalOS, float4 tangentOS)
     return tbn;
 }
 
-#if UNITY_REVERSED_Z
-    #if SHADER_API_OPENGL || SHADER_API_GLES || SHADER_API_GLES3
-        //GL with reversed z => z clip range is [near, -far] -> should remap in theory but dont do it in practice to save some perf (range is close enough)
-        #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(-(coord), 0)
-    #else
-        //D3d with reversed Z => z clip range is [near, 0] -> remapping to [0, far]
-        //max is required to protect ourselves from near plane not being correct/meaningfull in case of oblique matrices.
-        #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(((1.0-(coord)/_ProjectionParams.y)*_ProjectionParams.z),0)
-    #endif
-#elif UNITY_UV_STARTS_AT_TOP
-    //D3d without reversed z => z clip range is [0, far] -> nothing to do
-    #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
-#else
-    //Opengl => z clip range is [-near, far] -> should remap in theory but dont do it in practice to save some perf (range is close enough)
-    #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
-#endif
-
-float3 GetCameraPositionWS()
-{
-    return _WorldSpaceCameraPos;
-}
-
 float4 GetScaledScreenParams()
 {
     return _ScaledScreenParams;
 }
 
+// Returns 'true' if the current view performs a perspective projection.
+bool IsPerspectiveProjection()
+{
+    return (unity_OrthoParams.w == 0);
+}
+
+float3 GetCameraPositionWS()
+{
+    // Currently we do not support Camera Relative Rendering so
+    // we simply return the _WorldSpaceCameraPos until then
+    return _WorldSpaceCameraPos;
+
+    // We will replace the code above with this one once
+    // we start supporting Camera Relative Rendering
+    //#if (SHADEROPTIONS_CAMERA_RELATIVE_RENDERING != 0)
+    //    return float3(0, 0, 0);
+    //#else
+    //    return _WorldSpaceCameraPos;
+    //#endif
+}
+
+// Could be e.g. the position of a primary camera or a shadow-casting light.
+float3 GetCurrentViewPosition()
+{
+    // Currently we do not support Camera Relative Rendering so
+    // we simply return the _WorldSpaceCameraPos until then
+    return GetCameraPositionWS();
+
+    // We will replace the code above with this one once
+    // we start supporting Camera Relative Rendering
+    //#if defined(SHADERPASS) && (SHADERPASS != SHADERPASS_SHADOWS)
+    //    return GetCameraPositionWS();
+    //#else
+    //    // This is a generic solution.
+    //    // However, for the primary camera, using '_WorldSpaceCameraPos' is better for cache locality,
+    //    // and in case we enable camera-relative rendering, we can statically set the position is 0.
+    //    return UNITY_MATRIX_I_V._14_24_34;
+    //#endif
+}
+
+// Returns the forward (central) direction of the current view in the world space.
+float3 GetViewForwardDir()
+{
+    float4x4 viewMat = GetWorldToViewMatrix();
+    return -viewMat[2].xyz;
+}
+
+// Computes the world space view direction (pointing towards the viewer).
+float3 GetWorldSpaceViewDir(float3 positionWS)
+{
+    if (IsPerspectiveProjection())
+    {
+        // Perspective
+        return GetCurrentViewPosition() - positionWS;
+    }
+    else
+    {
+        // Orthographic
+        return -GetViewForwardDir();
+    }
+}
+
+float3 GetWorldSpaceNormalizeViewDir(float3 positionWS)
+{
+    if (IsPerspectiveProjection())
+    {
+        // Perspective
+        float3 V = GetCurrentViewPosition() - positionWS;
+        return normalize(V);
+    }
+    else
+    {
+        // Orthographic
+        return -GetViewForwardDir();
+    }
+}
+
+// UNITY_MATRIX_V defines a right-handed view space with the Z axis pointing towards the viewer.
+// This function reverses the direction of the Z axis (so that it points forward),
+// making the view space coordinate system left-handed.
+void GetLeftHandedViewSpaceMatrices(out float4x4 viewMatrix, out float4x4 projMatrix)
+{
+    viewMatrix = UNITY_MATRIX_V;
+    viewMatrix._31_32_33_34 = -viewMatrix._31_32_33_34;
+
+    projMatrix = UNITY_MATRIX_P;
+    projMatrix._13_23_33_43 = -projMatrix._13_23_33_43;
+}
+
 void AlphaDiscard(real alpha, real cutoff, real offset = 0.0h)
 {
-#ifdef _ALPHATEST_ON
-    clip(alpha - cutoff + offset);
-#endif
+    #ifdef _ALPHATEST_ON
+        clip(alpha - cutoff + offset);
+    #endif
+}
+
+half OutputAlpha(half outputAlpha, half surfaceType = 0.0)
+{
+    return surfaceType == 1 ? outputAlpha : 1.0;
 }
 
 // A word on normalization of normals:
 // For better quality normals should be normalized before and after
-// interpolation. 
-// 1) In vertex, skinning or blend shapes might vary significantly the lenght of normal. 
+// interpolation.
+// 1) In vertex, skinning or blend shapes might vary significantly the lenght of normal.
 // 2) In fragment, because even outputting unit-length normals interpolation can make it non-unit.
-// 3) In fragment when using normal map, because mikktspace sets up non orthonormal basis. 
-// However we will try to balance performance vs quality here as also let users configure that as 
-// shader quality tiers. 
-// Low Quality Tier: Normalize either per-vertex or per-pixel depending if normalmap is sampled.
-// Medium Quality Tier: Always normalize per-vertex. Normalize per-pixel only if using normal map
-// High Quality Tier: Normalize in both vertex and pixel shaders.
+// 3) In fragment when using normal map, because mikktspace sets up non orthonormal basis.
+// However we will try to balance performance vs quality here as also let users configure that as
+// shader quality tiers.
+// Low Quality Tier: Don't normalize per-vertex.
+// Medium Quality Tier: Always normalize per-vertex.
+// High Quality Tier: Always normalize per-vertex.
+//
+// Always normalize per-pixel.
+// Too many bug like lighting quality issues otherwise.
 real3 NormalizeNormalPerVertex(real3 normalWS)
 {
-#if defined(SHADER_QUALITY_LOW) && defined(_NORMALMAP)
-    return normalWS;
-#else
-    return normalize(normalWS);
-#endif
+    #if defined(SHADER_QUALITY_LOW) && defined(_NORMALMAP)
+        return normalWS;
+    #else
+        return normalize(normalWS);
+    #endif
 }
 
 real3 NormalizeNormalPerPixel(real3 normalWS)
-{ 
-#if defined(SHADER_QUALITY_HIGH) || defined(_NORMALMAP)
+{
     return normalize(normalWS);
-#else
-    return normalWS;
-#endif
 }
 
-// TODO: A similar function should be already available in SRP lib on master. Use that instead
-float4 ComputeScreenPos(float4 positionCS)
-{
-    float4 o = positionCS * 0.5f;
-    o.xy = float2(o.x, o.y * _ProjectionParams.x) + o.w;
-    o.zw = positionCS.zw;
-    return o;
-}
+
 
 real ComputeFogFactor(float z)
 {
     float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
 
-#if defined(FOG_LINEAR)
-    // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
-    float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-    return real(fogFactor);
-#elif defined(FOG_EXP) || defined(FOG_EXP2)
-    // factor = exp(-(density*z)^2)
-    // -density * z computed at vertex
-    return real(unity_FogParams.x * clipZ_01);
-#else
-    return 0.0h;
-#endif
+    #if defined(FOG_LINEAR)
+        // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
+        float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
+        return real(fogFactor);
+    #elif defined(FOG_EXP) || defined(FOG_EXP2)
+        // factor = exp(-(density*z)^2)
+        // -density * z computed at vertex
+        return real(unity_FogParams.x * clipZ_01);
+    #else
+        return 0.0h;
+    #endif
 }
 
 real ComputeFogIntensity(real fogFactor)
 {
     real fogIntensity = 0.0h;
-#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-#if defined(FOG_EXP)
-    // factor = exp(-density*z)
-    // fogFactor = density*z compute at vertex
-    fogIntensity = saturate(exp2(-fogFactor));
-#elif defined(FOG_EXP2)
-    // factor = exp(-(density*z)^2)
-    // fogFactor = density*z compute at vertex
-    fogIntensity = saturate(exp2(-fogFactor * fogFactor));
-#elif defined(FOG_LINEAR)
-    fogIntensity = fogFactor;
-#endif
-#endif
+    #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+        #if defined(FOG_EXP)
+            // factor = exp(-density*z)
+            // fogFactor = density*z compute at vertex
+            fogIntensity = saturate(exp2(-fogFactor));
+        #elif defined(FOG_EXP2)
+            // factor = exp(-(density*z)^2)
+            // fogFactor = density*z compute at vertex
+            fogIntensity = saturate(exp2(-fogFactor * fogFactor));
+        #elif defined(FOG_LINEAR)
+            fogIntensity = fogFactor;
+        #endif
+    #endif
     return fogIntensity;
 }
 
 half3 MixFogColor(real3 fragColor, real3 fogColor, real fogFactor)
 {
-#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    real fogIntensity = ComputeFogIntensity(fogFactor);
-    fragColor = lerp(fogColor, fragColor, fogIntensity);
-#endif
+    #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+        real fogIntensity = ComputeFogIntensity(fogFactor);
+        fragColor = lerp(fogColor, fragColor, fogIntensity);
+    #endif
     return fragColor;
 }
 
@@ -10021,81 +11028,58 @@ half3 MixFog(real3 fragColor, real fogFactor)
     return MixFogColor(fragColor, unity_FogColor.rgb, fogFactor);
 }
 
-// Stereo-related bits
-#if defined(UNITY_STEREO_INSTANCING_ENABLED) || defined(UNITY_STEREO_MULTIVIEW_ENABLED)
+void TransformScreenUV(inout float2 uv, float screenHeight)
+{
+    #if UNITY_UV_STARTS_AT_TOP
+    uv.y = screenHeight - (uv.y * _ScaleBiasRt.x + _ScaleBiasRt.y * screenHeight);
+    #endif
+}
 
-    #define SLICE_ARRAY_INDEX   unity_StereoEyeIndex
+void TransformScreenUV(inout float2 uv)
+{
+    #if UNITY_UV_STARTS_AT_TOP
+    TransformScreenUV(uv, GetScaledScreenParams().y);
+    #endif
+}
 
-    #define TEXTURE2D_X                 TEXTURE2D_ARRAY
-    #define TEXTURE2D_X_PARAM           TEXTURE2D_ARRAY_PARAM
-    #define TEXTURE2D_X_ARGS            TEXTURE2D_ARRAY_ARGS
-    #define TEXTURE2D_X_HALF            TEXTURE2D_ARRAY_HALF
-    #define TEXTURE2D_X_FLOAT           TEXTURE2D_ARRAY_FLOAT
+void TransformNormalizedScreenUV(inout float2 uv)
+{
+    #if UNITY_UV_STARTS_AT_TOP
+    TransformScreenUV(uv, 1.0);
+    #endif
+}
 
-    #define LOAD_TEXTURE2D_X(textureName, unCoord2)                         LOAD_TEXTURE2D_ARRAY(textureName, unCoord2, SLICE_ARRAY_INDEX)
-    #define LOAD_TEXTURE2D_X_LOD(textureName, unCoord2, lod)                LOAD_TEXTURE2D_ARRAY_LOD(textureName, unCoord2, SLICE_ARRAY_INDEX, lod)    
-    #define SAMPLE_TEXTURE2D_X(textureName, samplerName, coord2)            SAMPLE_TEXTURE2D_ARRAY(textureName, samplerName, coord2, SLICE_ARRAY_INDEX)
-    #define SAMPLE_TEXTURE2D_X_LOD(textureName, samplerName, coord2, lod)   SAMPLE_TEXTURE2D_ARRAY_LOD(textureName, samplerName, coord2, SLICE_ARRAY_INDEX, lod)
-    #define GATHER_TEXTURE2D_X(textureName, samplerName, coord2)            GATHER_TEXTURE2D_ARRAY(textureName, samplerName, coord2, SLICE_ARRAY_INDEX)
-    #define GATHER_RED_TEXTURE2D_X(textureName, samplerName, coord2)        GATHER_RED_TEXTURE2D(textureName, samplerName, float3(coord2, SLICE_ARRAY_INDEX))
-    #define GATHER_GREEN_TEXTURE2D_X(textureName, samplerName, coord2)      GATHER_GREEN_TEXTURE2D(textureName, samplerName, float3(coord2, SLICE_ARRAY_INDEX))
-    #define GATHER_BLUE_TEXTURE2D_X(textureName, samplerName, coord2)       GATHER_BLUE_TEXTURE2D(textureName, samplerName, float3(coord2, SLICE_ARRAY_INDEX))
+float2 GetNormalizedScreenSpaceUV(float2 positionCS)
+{
+    float2 normalizedScreenSpaceUV = positionCS.xy * rcp(GetScaledScreenParams().xy);
+    TransformNormalizedScreenUV(normalizedScreenSpaceUV);
+    return normalizedScreenSpaceUV;
+}
 
-#else
-
-    #define SLICE_ARRAY_INDEX       0
-
-    #define TEXTURE2D_X                 TEXTURE2D
-    #define TEXTURE2D_X_PARAM           TEXTURE2D_PARAM
-    #define TEXTURE2D_X_ARGS            TEXTURE2D_ARGS
-    #define TEXTURE2D_X_HALF            TEXTURE2D_HALF
-    #define TEXTURE2D_X_FLOAT           TEXTURE2D_FLOAT
-
-    #define LOAD_TEXTURE2D_X            LOAD_TEXTURE2D
-    #define LOAD_TEXTURE2D_X_LOD        LOAD_TEXTURE2D_LOD
-    #define SAMPLE_TEXTURE2D_X          SAMPLE_TEXTURE2D
-    #define SAMPLE_TEXTURE2D_X_LOD      SAMPLE_TEXTURE2D_LOD
-    #define GATHER_TEXTURE2D_X          GATHER_TEXTURE2D
-    #define GATHER_RED_TEXTURE2D_X      GATHER_RED_TEXTURE2D
-    #define GATHER_GREEN_TEXTURE2D_X    GATHER_GREEN_TEXTURE2D
-    #define GATHER_BLUE_TEXTURE2D_X     GATHER_BLUE_TEXTURE2D
-
-#endif
+float2 GetNormalizedScreenSpaceUV(float4 positionCS)
+{
+    return GetNormalizedScreenSpaceUV(positionCS.xy);
+}
 
 #if defined(UNITY_SINGLE_PASS_STEREO)
-float2 TransformStereoScreenSpaceTex(float2 uv, float w)
-{
-    // TODO: RVS support can be added here, if Universal decides to support it
-    float4 scaleOffset = unity_StereoScaleOffset[unity_StereoEyeIndex];
-    return uv.xy * scaleOffset.xy + scaleOffset.zw * w;
-}
+    float2 TransformStereoScreenSpaceTex(float2 uv, float w)
+    {
+        // TODO: RVS support can be added here, if Universal decides to support it
+        float4 scaleOffset = unity_StereoScaleOffset[unity_StereoEyeIndex];
+        return uv.xy * scaleOffset.xy + scaleOffset.zw * w;
+    }
 
-float2 UnityStereoTransformScreenSpaceTex(float2 uv)
-{
-    return TransformStereoScreenSpaceTex(saturate(uv), 1.0);
-}
-
+    float2 UnityStereoTransformScreenSpaceTex(float2 uv)
+    {
+        return TransformStereoScreenSpaceTex(saturate(uv), 1.0);
+    }
 #else
-
-#define UnityStereoTransformScreenSpaceTex(uv) uv
-
+    #define UnityStereoTransformScreenSpaceTex(uv) uv
 #endif // defined(UNITY_SINGLE_PASS_STEREO)
 
-//================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Deprecated.hlsl
+#endif // UNITY_SHADER_VARIABLES_FUNCTIONS_INCLUDED
 
-
-#ifndef UNIVERSAL_DEPRECATED_INCLUDED
-#define UNIVERSAL_DEPRECATED_INCLUDED
-
-// Stereo-related bits
-#define SCREENSPACE_TEXTURE         TEXTURE2D_X
-#define SCREENSPACE_TEXTURE_FLOAT   TEXTURE2D_X_FLOAT
-#define SCREENSPACE_TEXTURE_HALF    TEXTURE2D_X_HALF
-
-#endif // UNIVERSAL_DEPRECATED_INCLUDED
-
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Deprecated.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/ShaderVariablesFunctions.hlsl
 //================================================================================================================================
 
 
@@ -10103,22 +11087,53 @@ float2 UnityStereoTransformScreenSpaceTex(float2 uv)
 
 #endif
 
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Core.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Core.hlsl
 //================================================================================================================================
 
 
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Shadows.hlsl
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/SurfaceData.hlsl
+
+
+#ifndef UNIVERSAL_SURFACE_DATA_INCLUDED
+#define UNIVERSAL_SURFACE_DATA_INCLUDED
+
+// Must match Universal ShaderGraph master node
+struct SurfaceData
+{
+    half3 albedo;
+    half3 specular;
+    half  metallic;
+    half  smoothness;
+    half3 normalTS;
+    half3 emission;
+    half  occlusion;
+    half  alpha;
+    half  clearCoatMask;
+    half  clearCoatSmoothness;
+};
+
+#endif
+
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/SurfaceData.hlsl
+//================================================================================================================================
+
+
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Shadows.hlsl
 
 
 #ifndef UNIVERSAL_SHADOWS_INCLUDED
 #define UNIVERSAL_SHADOWS_INCLUDED
 
 //================================================================================================================================
-// File start: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Shadow/ShadowSamplingTent.hlsl
+// File start: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Shadow/ShadowSamplingTent.hlsl
 
 
+#ifndef SHADOW_SAMPLING_TENT_INCLUDED
+#define SHADOW_SAMPLING_TENT_INCLUDED
 // ------------------------------------------------------------------
 //  PCF Filtering Tent Functions
 // ------------------------------------------------------------------
@@ -10363,8 +11378,9 @@ void SampleShadow_ComputeSamples_Tent_7x7(real4 shadowMapTexture_TexelSize, real
     fetchesWeights[14] = fetchesWeightsU.z * fetchesWeightsV.w;
     fetchesWeights[15] = fetchesWeightsU.w * fetchesWeightsV.w;
 }
+#endif
 
-// File end: com.unity.render-pipelines.core@7.3.1/ShaderLibrary/Shadow/ShadowSamplingTent.hlsl
+// File end: com.unity.render-pipelines.core@11.0.0/ShaderLibrary/Shadow/ShadowSamplingTent.hlsl
 //================================================================================================================================
 
 
@@ -10374,11 +11390,10 @@ void SampleShadow_ComputeSamples_Tent_7x7(real4 shadowMapTexture_TexelSize, real
 //================================================================================================================================
 
 
-#define SHADOWS_SCREEN 0
 #define MAX_SHADOW_CASCADES 4
 
 #if !defined(_RECEIVE_SHADOWS_OFF)
-    #if defined(_MAIN_LIGHT_SHADOWS)
+    #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE) || defined(_MAIN_LIGHT_SHADOWS_SCREEN)
         #define MAIN_LIGHT_CALCULATE_SHADOWS
 
         #if !defined(_MAIN_LIGHT_SHADOWS_CASCADE)
@@ -10391,8 +11406,28 @@ void SampleShadow_ComputeSamples_Tent_7x7(real4 shadowMapTexture_TexelSize, real
     #endif
 #endif
 
-#if defined(_ADDITIONAL_LIGHTS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE)
-    #define REQUIRES_WORLD_SPACE_POS_INTERPOLATOR
+#if defined(UNITY_DOTS_INSTANCING_ENABLED)
+#define SHADOWMASK_NAME unity_ShadowMasks
+#define SHADOWMASK_SAMPLER_NAME samplerunity_ShadowMasks
+#define SHADOWMASK_SAMPLE_EXTRA_ARGS , unity_LightmapIndex.x
+#else
+#define SHADOWMASK_NAME unity_ShadowMask
+#define SHADOWMASK_SAMPLER_NAME samplerunity_ShadowMask
+#define SHADOWMASK_SAMPLE_EXTRA_ARGS
+#endif
+
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+    #define SAMPLE_SHADOWMASK(uv) SAMPLE_TEXTURE2D_LIGHTMAP(SHADOWMASK_NAME, SHADOWMASK_SAMPLER_NAME, uv SHADOWMASK_SAMPLE_EXTRA_ARGS);
+#elif !defined (LIGHTMAP_ON)
+    #define SAMPLE_SHADOWMASK(uv) unity_ProbesOcclusion;
+#else
+    #define SAMPLE_SHADOWMASK(uv) half4(1, 1, 1, 1);
+#endif
+
+#define REQUIRES_WORLD_SPACE_POS_INTERPOLATOR
+
+#if defined(LIGHTMAP_ON) || defined(LIGHTMAP_SHADOW_MIXING) || defined(SHADOWS_SHADOWMASK)
+#define CALCULATE_BAKED_SHADOWS
 #endif
 
 SCREENSPACE_TEXTURE(_ScreenSpaceShadowmapTexture);
@@ -10404,6 +11439,10 @@ SAMPLER_CMP(sampler_MainLightShadowmapTexture);
 TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture);
 SAMPLER_CMP(sampler_AdditionalLightsShadowmapTexture);
 
+// GLES3 causes a performance regression in some devices when using CBUFFER.
+#ifndef SHADER_API_GLES3
+CBUFFER_START(MainLightShadows)
+#endif
 // Last cascade is initialized with a no-op matrix. It always transforms
 // shadow coord to half3(0, 0, NEAR_PLANE). We use this trick to avoid
 // branching since ComputeCascadeIndex can return cascade index = MAX_SHADOW_CASCADES
@@ -10417,21 +11456,57 @@ half4       _MainLightShadowOffset0;
 half4       _MainLightShadowOffset1;
 half4       _MainLightShadowOffset2;
 half4       _MainLightShadowOffset3;
-half4       _MainLightShadowParams;  // (x: shadowStrength, y: 1.0 if soft shadows, 0.0 otherwise)
+half4       _MainLightShadowParams;  // (x: shadowStrength, y: 1.0 if soft shadows, 0.0 otherwise, z: oneOverFadeDist, w: minusStartFade) - xy are used by MainLight only, yz are used by MainLight AND AdditionalLights
 float4      _MainLightShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+#ifndef SHADER_API_GLES3
+CBUFFER_END
+#endif
 
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
-StructuredBuffer<ShadowData> _AdditionalShadowsBuffer;
-StructuredBuffer<int> _AdditionalShadowsIndices;
-#else
-float4x4    _AdditionalLightsWorldToShadow[MAX_VISIBLE_LIGHTS];
-half4       _AdditionalShadowParams[MAX_VISIBLE_LIGHTS];
-#endif
+
+StructuredBuffer<float4>   _AdditionalShadowParams_SSBO;        // Per-light data - TODO: test if splitting _AdditionalShadowParams_SSBO[lightIndex].w into a separate StructuredBuffer<int> buffer is faster
+StructuredBuffer<float4x4> _AdditionalLightsWorldToShadow_SSBO; // Per-shadow-slice-data - A shadow casting light can have 6 shadow slices (if it's a point light)
+
 half4       _AdditionalShadowOffset0;
 half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
 float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+
+#else
+
+
+#if defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround for bug on Nintendo Switch where SHADER_API_GLCORE is mistakenly defined
+// Point lights can use 6 shadow slices, but on some mobile GPUs performance decrease drastically with uniform blocks bigger than 8kb. This number ensures size of buffer AdditionalLightShadows stays reasonable.
+// It also avoids shader compilation errors on SHADER_API_GLES30 devices where max number of uniforms per shader GL_MAX_FRAGMENT_UNIFORM_VECTORS is low (224)
+// Keep in sync with MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO in AdditionalLightsShadowCasterPass.cs
+#define MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO (MAX_VISIBLE_LIGHTS)
+#else
+// Point lights can use 6 shadow slices, but on some platforms max uniform block size is 64kb. This number ensures size of buffer AdditionalLightShadows does not exceed this 64kb limit.
+// Keep in sync with MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO in AdditionalLightsShadowCasterPass.cs
+#define MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO 545
+#endif
+
+// GLES3 causes a performance regression in some devices when using CBUFFER.
+#ifndef SHADER_API_GLES3
+CBUFFER_START(AdditionalLightShadows)
+#endif
+
+half4       _AdditionalShadowParams[MAX_VISIBLE_LIGHTS];                              // Per-light data
+float4x4    _AdditionalLightsWorldToShadow[MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO];  // Per-shadow-slice-data
+
+half4       _AdditionalShadowOffset0;
+half4       _AdditionalShadowOffset1;
+half4       _AdditionalShadowOffset2;
+half4       _AdditionalShadowOffset3;
+float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+
+#ifndef SHADER_API_GLES3
+CBUFFER_END
+#endif
+
+#endif
+
 
 float4 _ShadowBias; // x: depth bias, y: normal bias
 
@@ -10449,22 +11524,32 @@ struct ShadowSamplingData
 ShadowSamplingData GetMainLightShadowSamplingData()
 {
     ShadowSamplingData shadowSamplingData;
+
+    // shadowOffsets are used in SampleShadowmapFiltered #if defined(SHADER_API_MOBILE) || defined(SHADER_API_SWITCH)
     shadowSamplingData.shadowOffset0 = _MainLightShadowOffset0;
     shadowSamplingData.shadowOffset1 = _MainLightShadowOffset1;
     shadowSamplingData.shadowOffset2 = _MainLightShadowOffset2;
     shadowSamplingData.shadowOffset3 = _MainLightShadowOffset3;
+
+    // shadowmapSize is used in SampleShadowmapFiltered for other platforms
     shadowSamplingData.shadowmapSize = _MainLightShadowmapSize;
+
     return shadowSamplingData;
 }
 
 ShadowSamplingData GetAdditionalLightShadowSamplingData()
 {
     ShadowSamplingData shadowSamplingData;
+
+    // shadowOffsets are used in SampleShadowmapFiltered #if defined(SHADER_API_MOBILE) || defined(SHADER_API_SWITCH)
     shadowSamplingData.shadowOffset0 = _AdditionalShadowOffset0;
     shadowSamplingData.shadowOffset1 = _AdditionalShadowOffset1;
     shadowSamplingData.shadowOffset2 = _AdditionalShadowOffset2;
     shadowSamplingData.shadowOffset3 = _AdditionalShadowOffset3;
+
+    // shadowmapSize is used in SampleShadowmapFiltered for other platforms
     shadowSamplingData.shadowmapSize = _AdditionalShadowmapSize;
+
     return shadowSamplingData;
 }
 
@@ -10480,10 +11565,12 @@ half4 GetMainLightShadowParams()
 // ShadowParams
 // x: ShadowStrength
 // y: 1.0 if shadow is soft, 0.0 otherwise
+// z: 1.0 if cast by a point light (6 shadow slices), 0.0 if cast by a spot light (1 shadow slice)
+// w: first shadow slice index for this light, there can be 6 in case of point lights. (-1 for non-shadow-casting-lights)
 half4 GetAdditionalLightShadowParams(int lightIndex)
 {
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
-    return _AdditionalShadowsBuffer[lightIndex].shadowParams;
+    return _AdditionalShadowParams_SSBO[lightIndex];
 #else
     return _AdditionalShadowParams[lightIndex];
 #endif
@@ -10545,13 +11632,17 @@ real SampleShadowmap(TEXTURE2D_SHADOW_PARAM(ShadowMap, sampler_ShadowMap), float
     real attenuation;
     real shadowStrength = shadowParams.x;
 
-    // TODO: We could branch on if this light has soft shadows (shadowParams.y) to save perf on some platforms.
 #ifdef _SHADOWS_SOFT
-    attenuation = SampleShadowmapFiltered(TEXTURE2D_SHADOW_ARGS(ShadowMap, sampler_ShadowMap), shadowCoord, samplingData);
-#else
-    // 1-tap hardware comparison
-    attenuation = SAMPLE_TEXTURE2D_SHADOW(ShadowMap, sampler_ShadowMap, shadowCoord.xyz);
+    if(shadowParams.y != 0)
+    {
+        attenuation = SampleShadowmapFiltered(TEXTURE2D_SHADOW_ARGS(ShadowMap, sampler_ShadowMap), shadowCoord, samplingData);
+    }
+    else
 #endif
+    {
+        // 1-tap hardware comparison
+        attenuation = SAMPLE_TEXTURE2D_SHADOW(ShadowMap, sampler_ShadowMap, shadowCoord.xyz);
+    }
 
     attenuation = LerpWhiteTo(attenuation, shadowStrength);
 
@@ -10582,21 +11673,27 @@ float4 TransformWorldToShadowCoord(float3 positionWS)
     half cascadeIndex = 0;
 #endif
 
-    return mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
+    float4 shadowCoord = mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
+
+    return float4(shadowCoord.xyz, cascadeIndex);
 }
 
 half MainLightRealtimeShadow(float4 shadowCoord)
 {
 #if !defined(MAIN_LIGHT_CALCULATE_SHADOWS)
     return 1.0h;
-#endif
-
+#elif defined(_MAIN_LIGHT_SHADOWS_SCREEN)
+    return SampleScreenSpaceShadowmap(shadowCoord);
+#else
     ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
     half4 shadowParams = GetMainLightShadowParams();
     return SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture), shadowCoord, shadowSamplingData, shadowParams, false);
+#endif
 }
 
-half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS)
+// returns 0.0 if position is in light's shadow
+// returns 1.0 if position is in light
+half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS, half3 lightDirection)
 {
 #if !defined(ADDITIONAL_LIGHT_CALCULATE_SHADOWS)
     return 1.0h;
@@ -10604,27 +11701,113 @@ half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS)
 
     ShadowSamplingData shadowSamplingData = GetAdditionalLightShadowSamplingData();
 
-#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
-    lightIndex = _AdditionalShadowsIndices[lightIndex];
+    half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
 
-    // We have to branch here as otherwise we would sample buffer with lightIndex == -1.
-    // However this should be ok for platforms that store light in SSBO.
+    int shadowSliceIndex = shadowParams.w;
+
     UNITY_BRANCH
-    if (lightIndex < 0)
+    if (shadowSliceIndex < 0)
         return 1.0;
 
-    float4 shadowCoord = mul(_AdditionalShadowsBuffer[lightIndex].worldToShadowMatrix, float4(positionWS, 1.0));
+    half isPointLight = shadowParams.z;
+
+    UNITY_BRANCH
+    if (isPointLight)
+    {
+        // This is a point light, we have to find out which shadow slice to sample from
+        float cubemapFaceId = CubeMapFaceID(-lightDirection);
+        shadowSliceIndex += cubemapFaceId;
+    }
+
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow_SSBO[shadowSliceIndex], float4(positionWS, 1.0));
 #else
-    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow[lightIndex], float4(positionWS, 1.0));
+    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow[shadowSliceIndex], float4(positionWS, 1.0));
 #endif
 
-    half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
     return SampleShadowmap(TEXTURE2D_ARGS(_AdditionalLightsShadowmapTexture, sampler_AdditionalLightsShadowmapTexture), shadowCoord, shadowSamplingData, shadowParams, true);
+}
+
+half GetShadowFade(float3 positionWS)
+{
+    float3 camToPixel = positionWS - _WorldSpaceCameraPos;
+    float distanceCamToPixel2 = dot(camToPixel, camToPixel);
+
+    half fade = saturate(distanceCamToPixel2 * _MainLightShadowParams.z + _MainLightShadowParams.w);
+    return fade * fade;
+}
+
+half MixRealtimeAndBakedShadows(half realtimeShadow, half bakedShadow, half shadowFade)
+{
+#if defined(LIGHTMAP_SHADOW_MIXING)
+    return min(lerp(realtimeShadow, 1, shadowFade), bakedShadow);
+#else
+    return lerp(realtimeShadow, bakedShadow, shadowFade);
+#endif
+}
+
+half BakedShadow(half4 shadowMask, half4 occlusionProbeChannels)
+{
+    // Here occlusionProbeChannels used as mask selector to select shadows in shadowMask
+    // If occlusionProbeChannels all components are zero we use default baked shadow value 1.0
+    // This code is optimized for mobile platforms:
+    // half bakedShadow = any(occlusionProbeChannels) ? dot(shadowMask, occlusionProbeChannels) : 1.0h;
+    half bakedShadow = 1.0h + dot(shadowMask - 1.0h, occlusionProbeChannels);
+    return bakedShadow;
+}
+
+half MainLightShadow(float4 shadowCoord, float3 positionWS, half4 shadowMask, half4 occlusionProbeChannels)
+{
+    half realtimeShadow = MainLightRealtimeShadow(shadowCoord);
+
+#ifdef CALCULATE_BAKED_SHADOWS
+    half bakedShadow = BakedShadow(shadowMask, occlusionProbeChannels);
+#else
+    half bakedShadow = 1.0h;
+#endif
+
+#ifdef MAIN_LIGHT_CALCULATE_SHADOWS
+    half shadowFade = GetShadowFade(positionWS);
+#else
+    half shadowFade = 1.0h;
+#endif
+
+#if defined(_MAIN_LIGHT_SHADOWS_CASCADE) && defined(CALCULATE_BAKED_SHADOWS)
+    // shadowCoord.w represents shadow cascade index
+    // in case we are out of shadow cascade we need to set shadow fade to 1.0 for correct blending
+    // it is needed when realtime shadows gets cut to early during fade and causes disconnect between baked shadow
+    shadowFade = shadowCoord.w == 4 ? 1.0h : shadowFade;
+#endif
+
+    return MixRealtimeAndBakedShadows(realtimeShadow, bakedShadow, shadowFade);
+}
+
+half AdditionalLightShadow(int lightIndex, float3 positionWS, half3 lightDirection, half4 shadowMask, half4 occlusionProbeChannels)
+{
+    half realtimeShadow = AdditionalLightRealtimeShadow(lightIndex, positionWS, lightDirection);
+
+#ifdef CALCULATE_BAKED_SHADOWS
+    half bakedShadow = BakedShadow(shadowMask, occlusionProbeChannels);
+#else
+    half bakedShadow = 1.0h;
+#endif
+
+#ifdef ADDITIONAL_LIGHT_CALCULATE_SHADOWS
+    half shadowFade = GetShadowFade(positionWS);
+#else
+    half shadowFade = 1.0h;
+#endif
+
+    return MixRealtimeAndBakedShadows(realtimeShadow, bakedShadow, shadowFade);
 }
 
 float4 GetShadowCoord(VertexPositionInputs vertexInput)
 {
+#if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
+    return ComputeScreenPos(vertexInput.positionCS);
+#else
     return TransformWorldToShadowCoord(vertexInput.positionWS);
+#endif
 }
 
 float3 ApplyShadowBias(float3 positionWS, float3 normalWS, float3 lightDirection)
@@ -10645,6 +11828,13 @@ float3 ApplyShadowBias(float3 positionWS, float3 normalWS, float3 lightDirection
 // Renamed -> _MainLightShadowParams
 #define _MainLightShadowData _MainLightShadowParams
 
+// Deprecated: Use GetShadowFade instead.
+float ApplyShadowFade(float shadowAttenuation, float3 positionWS)
+{
+    float fade = GetShadowFade(positionWS);
+    return shadowAttenuation + (1 - shadowAttenuation) * fade * fade;
+}
+
 // Deprecated: Use GetMainLightShadowParams instead.
 half GetMainLightShadowStrength()
 {
@@ -10655,7 +11845,7 @@ half GetMainLightShadowStrength()
 half GetAdditionalLightShadowStrenth(int lightIndex)
 {
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
-    return _AdditionalShadowsBuffer[lightIndex].shadowParams.x;
+    return _AdditionalShadowParams_SSBO[lightIndex].x;
 #else
     return _AdditionalShadowParams[lightIndex].x;
 #endif
@@ -10668,9 +11858,15 @@ real SampleShadowmap(float4 shadowCoord, TEXTURE2D_SHADOW_PARAM(ShadowMap, sampl
     return SampleShadowmap(TEXTURE2D_SHADOW_ARGS(ShadowMap, sampler_ShadowMap), shadowCoord, samplingData, shadowParams, isPerspectiveProjection);
 }
 
+// Deprecated: Use AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS, half3 lightDirection) in Shadows.hlsl instead, as it supports Point Light shadows
+half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS)
+{
+    return AdditionalLightRealtimeShadow(lightIndex, positionWS, half3(1, 0, 0));
+}
+
 #endif
 
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Shadows.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Shadows.hlsl
 //================================================================================================================================
 
 
@@ -10690,7 +11886,6 @@ real SampleShadowmap(float4 shadowCoord, TEXTURE2D_SHADOW_PARAM(ShadowMap, sampl
         // Otherwise evaluate SH fully per-pixel
 #endif
 
-
 #ifdef LIGHTMAP_ON
     #define DECLARE_LIGHTMAP_OR_SH(lmName, shName, index) float2 lmName : TEXCOORD##index
     #define OUTPUT_LIGHTMAP_UV(lightmapUV, lightmapScaleOffset, OUT) OUT.xy = lightmapUV.xy * lightmapScaleOffset.xy + lightmapScaleOffset.zw;
@@ -10700,6 +11895,12 @@ real SampleShadowmap(float4 shadowCoord, TEXTURE2D_SHADOW_PARAM(ShadowMap, sampl
     #define OUTPUT_LIGHTMAP_UV(lightmapUV, lightmapScaleOffset, OUT)
     #define OUTPUT_SH(normalWS, OUT) OUT.xyz = SampleSHVertex(normalWS)
 #endif
+
+// Renamed -> LIGHTMAP_SHADOW_MIXING
+#if !defined(_MIXED_LIGHTING_SUBTRACTIVE) && defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK)
+    #define _MIXED_LIGHTING_SUBTRACTIVE
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                          Light Helpers                                    //
@@ -10768,12 +11969,7 @@ Light GetMainLight()
 {
     Light light;
     light.direction = _MainLightPosition.xyz;
-    // unity_LightData.z is 1 when not culled by the culling mask, otherwise 0.
-    light.distanceAttenuation = unity_LightData.z;
-#if defined(LIGHTMAP_ON) || defined(_MIXED_LIGHTING_SUBTRACTIVE)
-    // unity_ProbesOcclusion.x is the mixed light probe occlusion data
-    light.distanceAttenuation *= unity_ProbesOcclusion.x;
-#endif
+    light.distanceAttenuation = unity_LightData.z; // unity_LightData.z is 1 when not culled by the culling mask, otherwise 0.
     light.shadowAttenuation = 1.0;
     light.color = _MainLightColor.rgb;
 
@@ -10787,6 +11983,13 @@ Light GetMainLight(float4 shadowCoord)
     return light;
 }
 
+Light GetMainLight(float4 shadowCoord, float3 positionWS, half4 shadowMask)
+{
+    Light light = GetMainLight();
+    light.shadowAttenuation = MainLightShadow(shadowCoord, positionWS, shadowMask, _MainLightOcclusionProbes);
+    return light;
+}
+
 // Fills a light struct given a perObjectLightIndex
 Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
 {
@@ -10796,13 +11999,11 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
     half3 color = _AdditionalLightsBuffer[perObjectLightIndex].color.rgb;
     half4 distanceAndSpotAttenuation = _AdditionalLightsBuffer[perObjectLightIndex].attenuation;
     half4 spotDirection = _AdditionalLightsBuffer[perObjectLightIndex].spotDirection;
-    half4 lightOcclusionProbeInfo = _AdditionalLightsBuffer[perObjectLightIndex].occlusionProbeChannels;
 #else
     float4 lightPositionWS = _AdditionalLightsPosition[perObjectLightIndex];
     half3 color = _AdditionalLightsColor[perObjectLightIndex].rgb;
     half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[perObjectLightIndex];
     half4 spotDirection = _AdditionalLightsSpotDir[perObjectLightIndex];
-    half4 lightOcclusionProbeInfo = _AdditionalLightsOcclusionProbes[perObjectLightIndex];
 #endif
 
     // Directional lights store direction in lightPosition.xyz and have .w set to 0.0.
@@ -10816,24 +12017,8 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
     Light light;
     light.direction = lightDirection;
     light.distanceAttenuation = attenuation;
-    light.shadowAttenuation = AdditionalLightRealtimeShadow(perObjectLightIndex, positionWS);
+    light.shadowAttenuation = 1.0; // This value can later be overridden in GetAdditionalLight(uint i, float3 positionWS, half4 shadowMask)
     light.color = color;
-
-    // In case we're using light probes, we can sample the attenuation from the `unity_ProbesOcclusion`
-#if defined(LIGHTMAP_ON) || defined(_MIXED_LIGHTING_SUBTRACTIVE)
-    // First find the probe channel from the light.
-    // Then sample `unity_ProbesOcclusion` for the baked occlusion.
-    // If the light is not baked, the channel is -1, and we need to apply no occlusion.
-
-    // probeChannel is the index in 'unity_ProbesOcclusion' that holds the proper occlusion value.
-    int probeChannel = lightOcclusionProbeInfo.x;
-
-    // lightProbeContribution is set to 0 if we are indeed using a probe, otherwise set to 1.
-    half lightProbeContribution = lightOcclusionProbeInfo.y;
-
-    half probeOcclusionValue = unity_ProbesOcclusion[probeChannel];
-    light.distanceAttenuation *= max(probeOcclusionValue, lightProbeContribution);
-#endif
 
     return light;
 }
@@ -10873,7 +12058,7 @@ int GetPerObjectLightIndex(uint index)
 #elif !defined(SHADER_API_GLES)
     // since index is uint shader compiler will implement
     // div & mod as bitfield ops (shift and mask).
-    
+
     // TODO: Can we index a float4? Currently compiler is
     // replacing unity_LightIndicesX[i] with a dp4 with identity matrix.
     // u_xlat16_40 = dot(unity_LightIndices[int(u_xlatu13)], ImmCB_0_0_0[u_xlati1]);
@@ -10898,6 +12083,21 @@ Light GetAdditionalLight(uint i, float3 positionWS)
     return GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);
 }
 
+Light GetAdditionalLight(uint i, float3 positionWS, half4 shadowMask)
+{
+    int perObjectLightIndex = GetPerObjectLightIndex(i);
+    Light light = GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);
+
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    half4 occlusionProbeChannels = _AdditionalLightsBuffer[perObjectLightIndex].occlusionProbeChannels;
+#else
+    half4 occlusionProbeChannels = _AdditionalLightsOcclusionProbes[perObjectLightIndex];
+#endif
+    light.shadowAttenuation = AdditionalLightShadow(perObjectLightIndex, positionWS, light.direction, shadowMask, occlusionProbeChannels);
+
+    return light;
+}
+
 int GetAdditionalLightsCount()
 {
     // TODO: we need to expose in SRP api an ability for the pipeline cap the amount of lights
@@ -10910,12 +12110,13 @@ int GetAdditionalLightsCount()
 //                         BRDF Functions                                    //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define kDieletricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
+#define kDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
 
 struct BRDFData
 {
     half3 diffuse;
     half3 specular;
+    half reflectivity;
     half perceptualRoughness;
     half roughness;
     half roughness2;
@@ -10940,61 +12141,118 @@ half OneMinusReflectivityMetallic(half metallic)
 {
     // We'll need oneMinusReflectivity, so
     //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
-    // store (1-dielectricSpec) in kDieletricSpec.a, then
+    // store (1-dielectricSpec) in kDielectricSpec.a, then
     //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
     //                  = alpha - metallic * alpha
-    half oneMinusDielectricSpec = kDieletricSpec.a;
+    half oneMinusDielectricSpec = kDielectricSpec.a;
     return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
 
-inline void InitializeBRDFData(half3 albedo, half metallic, half3 specular, half smoothness, half alpha, out BRDFData outBRDFData)
+inline void InitializeBRDFDataDirect(half3 diffuse, half3 specular, half reflectivity, half oneMinusReflectivity, half smoothness, inout half alpha, out BRDFData outBRDFData)
+{
+    outBRDFData.diffuse = diffuse;
+    outBRDFData.specular = specular;
+    outBRDFData.reflectivity = reflectivity;
+
+    outBRDFData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+    outBRDFData.roughness           = max(PerceptualRoughnessToRoughness(outBRDFData.perceptualRoughness), HALF_MIN_SQRT);
+    outBRDFData.roughness2          = max(outBRDFData.roughness * outBRDFData.roughness, HALF_MIN);
+    outBRDFData.grazingTerm         = saturate(smoothness + reflectivity);
+    outBRDFData.normalizationTerm   = outBRDFData.roughness * 4.0h + 2.0h;
+    outBRDFData.roughness2MinusOne  = outBRDFData.roughness2 - 1.0h;
+
+#ifdef _ALPHAPREMULTIPLY_ON
+    outBRDFData.diffuse *= alpha;
+    alpha = alpha * oneMinusReflectivity + reflectivity; // NOTE: alpha modified and propagated up.
+#endif
+}
+
+inline void InitializeBRDFData(half3 albedo, half metallic, half3 specular, half smoothness, inout half alpha, out BRDFData outBRDFData)
 {
 #ifdef _SPECULAR_SETUP
     half reflectivity = ReflectivitySpecular(specular);
     half oneMinusReflectivity = 1.0 - reflectivity;
-
-    outBRDFData.diffuse = albedo * (half3(1.0h, 1.0h, 1.0h) - specular);
-    outBRDFData.specular = specular;
+    half3 brdfDiffuse = albedo * (half3(1.0h, 1.0h, 1.0h) - specular);
+    half3 brdfSpecular = specular;
 #else
-
     half oneMinusReflectivity = OneMinusReflectivityMetallic(metallic);
     half reflectivity = 1.0 - oneMinusReflectivity;
-
-    outBRDFData.diffuse = albedo * oneMinusReflectivity;
-    outBRDFData.specular = lerp(kDieletricSpec.rgb, albedo, metallic);
+    half3 brdfDiffuse = albedo * oneMinusReflectivity;
+    half3 brdfSpecular = lerp(kDieletricSpec.rgb, albedo, metallic);
 #endif
 
-    outBRDFData.grazingTerm = saturate(smoothness + reflectivity);
-    outBRDFData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
-    outBRDFData.roughness = max(PerceptualRoughnessToRoughness(outBRDFData.perceptualRoughness), HALF_MIN);
-    outBRDFData.roughness2 = outBRDFData.roughness * outBRDFData.roughness;
+    InitializeBRDFDataDirect(brdfDiffuse, brdfSpecular, reflectivity, oneMinusReflectivity, smoothness, alpha, outBRDFData);
+}
 
-    outBRDFData.normalizationTerm = outBRDFData.roughness * 4.0h + 2.0h;
-    outBRDFData.roughness2MinusOne = outBRDFData.roughness2 - 1.0h;
-
-#ifdef _ALPHAPREMULTIPLY_ON
-    outBRDFData.diffuse *= alpha;
-    alpha = alpha * oneMinusReflectivity + reflectivity;
+half3 ConvertF0ForClearCoat15(half3 f0)
+{
+#if defined(SHADER_API_MOBILE)
+    return ConvertF0ForAirInterfaceToF0ForClearCoat15Fast(f0);
+#else
+    return ConvertF0ForAirInterfaceToF0ForClearCoat15(f0);
 #endif
+}
+
+inline void InitializeBRDFDataClearCoat(half clearCoatMask, half clearCoatSmoothness, inout BRDFData baseBRDFData, out BRDFData outBRDFData)
+{
+    // Calculate Roughness of Clear Coat layer
+    outBRDFData.diffuse             = kDielectricSpec.aaa; // 1 - kDielectricSpec
+    outBRDFData.specular            = kDielectricSpec.rgb;
+    outBRDFData.reflectivity        = kDielectricSpec.r;
+
+    outBRDFData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(clearCoatSmoothness);
+    outBRDFData.roughness           = max(PerceptualRoughnessToRoughness(outBRDFData.perceptualRoughness), HALF_MIN_SQRT);
+    outBRDFData.roughness2          = max(outBRDFData.roughness * outBRDFData.roughness, HALF_MIN);
+    outBRDFData.normalizationTerm   = outBRDFData.roughness * 4.0h + 2.0h;
+    outBRDFData.roughness2MinusOne  = outBRDFData.roughness2 - 1.0h;
+    outBRDFData.grazingTerm         = saturate(clearCoatSmoothness + kDielectricSpec.x);
+
+// Relatively small effect, cut it for lower quality
+#if !defined(SHADER_API_MOBILE)
+    // Modify Roughness of base layer using coat IOR
+    half ieta                        = lerp(1.0h, CLEAR_COAT_IETA, clearCoatMask);
+    half coatRoughnessScale          = Sq(ieta);
+    half sigma                       = RoughnessToVariance(PerceptualRoughnessToRoughness(baseBRDFData.perceptualRoughness));
+
+    baseBRDFData.perceptualRoughness = RoughnessToPerceptualRoughness(VarianceToRoughness(sigma * coatRoughnessScale));
+
+    // Recompute base material for new roughness, previous computation should be eliminated by the compiler (as it's unused)
+    baseBRDFData.roughness          = max(PerceptualRoughnessToRoughness(baseBRDFData.perceptualRoughness), HALF_MIN_SQRT);
+    baseBRDFData.roughness2         = max(baseBRDFData.roughness * baseBRDFData.roughness, HALF_MIN);
+    baseBRDFData.normalizationTerm  = baseBRDFData.roughness * 4.0h + 2.0h;
+    baseBRDFData.roughness2MinusOne = baseBRDFData.roughness2 - 1.0h;
+#endif
+
+    // Darken/saturate base layer using coat to surface reflectance (vs. air to surface)
+    baseBRDFData.specular = lerp(baseBRDFData.specular, ConvertF0ForClearCoat15(baseBRDFData.specular), clearCoatMask);
+    // TODO: what about diffuse? at least in specular workflow diffuse should be recalculated as it directly depends on it.
+}
+
+// Computes the specular term for EnvironmentBRDF
+half3 EnvironmentBRDFSpecular(BRDFData brdfData, half fresnelTerm)
+{
+    float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
+    return surfaceReduction * lerp(brdfData.specular, brdfData.grazingTerm, fresnelTerm);
 }
 
 half3 EnvironmentBRDF(BRDFData brdfData, half3 indirectDiffuse, half3 indirectSpecular, half fresnelTerm)
 {
     half3 c = indirectDiffuse * brdfData.diffuse;
-    float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
-    c += surfaceReduction * indirectSpecular * lerp(brdfData.specular, brdfData.grazingTerm, fresnelTerm);
+    c += indirectSpecular * EnvironmentBRDFSpecular(brdfData, fresnelTerm);
     return c;
 }
 
-// Based on Minimalist CookTorrance BRDF
-// Implementation is slightly different from original derivation: http://www.thetenthplanet.de/archives/255
-//
-// * NDF [Modified] GGX
-// * Modified Kelemen and Szirmay-Kalos for Visibility term
-// * Fresnel approximated with 1/LdotH
-half3 DirectBDRF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
+// Environment BRDF without diffuse for clear coat
+half3 EnvironmentBRDFClearCoat(BRDFData brdfData, half clearCoatMask, half3 indirectSpecular, half fresnelTerm)
 {
-#ifndef _SPECULARHIGHLIGHTS_OFF
+    float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
+    return indirectSpecular * EnvironmentBRDFSpecular(brdfData, fresnelTerm) * clearCoatMask;
+}
+
+// Computes the scalar specular term for Minimalist CookTorrance BRDF
+// NOTE: needs to be multiplied with reflectance f0, i.e. specular color to complete
+half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
+{
     float3 halfDir = SafeNormalize(float3(lightDirectionWS) + float3(viewDirectionWS));
 
     float NoH = saturate(dot(normalWS, halfDir));
@@ -11023,8 +12281,39 @@ half3 DirectBDRF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half
     specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
 #endif
 
-    half3 color = specularTerm * brdfData.specular + brdfData.diffuse;
-    return color;
+return specularTerm;
+}
+
+// Based on Minimalist CookTorrance BRDF
+// Implementation is slightly different from original derivation: http://www.thetenthplanet.de/archives/255
+//
+// * NDF [Modified] GGX
+// * Modified Kelemen and Szirmay-Kalos for Visibility term
+// * Fresnel approximated with 1/LdotH
+half3 DirectBDRF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS, bool specularHighlightsOff)
+{
+    // Can still do compile-time optimisation.
+    // If no compile-time optimized, extra overhead if branch taken is around +2.5% on Switch, -10% if not taken.
+    [branch] if (!specularHighlightsOff)
+    {
+        half specularTerm = DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
+        half3 color = brdfData.diffuse + specularTerm * brdfData.specular;
+        return color;
+    }
+    else
+        return brdfData.diffuse;
+}
+
+// Based on Minimalist CookTorrance BRDF
+// Implementation is slightly different from original derivation: http://www.thetenthplanet.de/archives/255
+//
+// * NDF [Modified] GGX
+// * Modified Kelemen and Szirmay-Kalos for Visibility term
+// * Fresnel approximated with 1/LdotH
+half3 DirectBRDF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
+{
+#ifndef _SPECULARHIGHLIGHTS_OFF
+    return brdfData.diffuse + DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS) * brdfData.specular;
 #else
     return brdfData.diffuse;
 #endif
@@ -11033,6 +12322,30 @@ half3 DirectBDRF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half
 ///////////////////////////////////////////////////////////////////////////////
 //                      Global Illumination                                  //
 ///////////////////////////////////////////////////////////////////////////////
+
+// Ambient occlusion
+TEXTURE2D_X(_ScreenSpaceOcclusionTexture);
+SAMPLER(sampler_ScreenSpaceOcclusionTexture);
+
+struct AmbientOcclusionFactor
+{
+    half indirectAmbientOcclusion;
+    half directAmbientOcclusion;
+};
+
+half SampleAmbientOcclusion(float2 normalizedScreenSpaceUV)
+{
+    float2 uv = UnityStereoTransformScreenSpaceTex(normalizedScreenSpaceUV);
+    return SAMPLE_TEXTURE2D_X(_ScreenSpaceOcclusionTexture, sampler_ScreenSpaceOcclusionTexture, uv).x;
+}
+
+AmbientOcclusionFactor GetScreenSpaceAmbientOcclusion(float2 normalizedScreenSpaceUV)
+{
+    AmbientOcclusionFactor aoFactor;
+    aoFactor.indirectAmbientOcclusion = SampleAmbientOcclusion(normalizedScreenSpaceUV);
+    aoFactor.directAmbientOcclusion = lerp(1.0, aoFactor.indirectAmbientOcclusion, _AmbientOcclusionParam.w);
+    return aoFactor;
+}
 
 // Samples SH L0, L1 and L2 terms
 half3 SampleSH(half3 normalWS)
@@ -11056,7 +12369,7 @@ half3 SampleSH(half3 normalWS)
 half3 SampleSHVertex(half3 normalWS)
 {
 #if defined(EVALUATE_SH_VERTEX)
-    return max(half3(0, 0, 0), SampleSH(normalWS));
+    return SampleSH(normalWS);
 #elif defined(EVALUATE_SH_MIXED)
     // no max since this is only L2 contribution
     return SHEvalLinearL2(normalWS, unity_SHBr, unity_SHBg, unity_SHBb, unity_SHC);
@@ -11074,12 +12387,28 @@ half3 SampleSHPixel(half3 L2Term, half3 normalWS)
     return L2Term;
 #elif defined(EVALUATE_SH_MIXED)
     half3 L0L1Term = SHEvalLinearL0L1(normalWS, unity_SHAr, unity_SHAg, unity_SHAb);
-    return max(half3(0, 0, 0), L2Term + L0L1Term);
+    half3 res = L2Term + L0L1Term;
+#ifdef UNITY_COLORSPACE_GAMMA
+    res = LinearToSRGB(res);
+#endif
+    return max(half3(0, 0, 0), res);
 #endif
 
     // Default: Evaluate SH fully per-pixel
     return SampleSH(normalWS);
 }
+
+#if defined(UNITY_DOTS_INSTANCING_ENABLED)
+#define LIGHTMAP_NAME unity_Lightmaps
+#define LIGHTMAP_INDIRECTION_NAME unity_LightmapsInd
+#define LIGHTMAP_SAMPLER_NAME samplerunity_Lightmaps
+#define LIGHTMAP_SAMPLE_EXTRA_ARGS lightmapUV, unity_LightmapIndex.x
+#else
+#define LIGHTMAP_NAME unity_Lightmap
+#define LIGHTMAP_INDIRECTION_NAME unity_LightmapInd
+#define LIGHTMAP_SAMPLER_NAME samplerunity_Lightmap
+#define LIGHTMAP_SAMPLE_EXTRA_ARGS lightmapUV
+#endif
 
 // Sample baked lightmap. Non-Direction and Directional if available.
 // Realtime GI is not supported.
@@ -11098,12 +12427,12 @@ half3 SampleLightmap(float2 lightmapUV, half3 normalWS)
     // the compiler will optimize the transform away.
     half4 transformCoords = half4(1, 1, 0, 0);
 
-#ifdef DIRLIGHTMAP_COMBINED
-    return SampleDirectionalLightmap(TEXTURE2D_ARGS(unity_Lightmap, samplerunity_Lightmap),
-        TEXTURE2D_ARGS(unity_LightmapInd, samplerunity_Lightmap),
-        lightmapUV, transformCoords, normalWS, encodedLightmap, decodeInstructions);
+#if defined(LIGHTMAP_ON) && defined(DIRLIGHTMAP_COMBINED)
+    return SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_NAME, LIGHTMAP_SAMPLER_NAME),
+        TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_INDIRECTION_NAME, LIGHTMAP_SAMPLER_NAME),
+        LIGHTMAP_SAMPLE_EXTRA_ARGS, transformCoords, normalWS, encodedLightmap, decodeInstructions);
 #elif defined(LIGHTMAP_ON)
-    return SampleSingleLightmap(TEXTURE2D_ARGS(unity_Lightmap, samplerunity_Lightmap), lightmapUV, transformCoords, encodedLightmap, decodeInstructions);
+    return SampleSingleLightmap(TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_NAME, LIGHTMAP_SAMPLER_NAME), LIGHTMAP_SAMPLE_EXTRA_ARGS, transformCoords, encodedLightmap, decodeInstructions);
 #else
     return half3(0.0, 0.0, 0.0);
 #endif
@@ -11112,7 +12441,7 @@ half3 SampleLightmap(float2 lightmapUV, half3 normalWS)
 // We either sample GI from baked lightmap or from probes.
 // If lightmap: sampleData.xy = lightmapUV
 // If probe: sampleData.xyz = L2 SH terms
-#ifdef LIGHTMAP_ON
+#if defined(LIGHTMAP_ON)
 #define SAMPLE_GI(lmName, shName, normalWSName) SampleLightmap(lmName, normalWSName)
 #else
 #define SAMPLE_GI(lmName, shName, normalWSName) SampleSHPixel(shName, normalWSName)
@@ -11124,10 +12453,11 @@ half3 GlossyEnvironmentReflection(half3 reflectVector, half perceptualRoughness,
     half mip = PerceptualRoughnessToMipmapLevel(perceptualRoughness);
     half4 encodedIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflectVector, mip);
 
-#if !defined(UNITY_USE_NATIVE_HDR)
-    half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
+//TODO:DOTS - we need to port probes to live in c# so we can manage this manually.
+#if defined(UNITY_USE_NATIVE_HDR) || defined(UNITY_DOTS_INSTANCING_ENABLED)
+    half3 irradiance = encodedIrradiance.rgb;
 #else
-    half3 irradiance = encodedIrradiance.rbg;
+    half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
 #endif
 
     return irradiance * occlusion;
@@ -11164,22 +12494,52 @@ half3 SubtractDirectMainLightFromLightmap(Light mainLight, half3 normalWS, half3
     return min(bakedGI, realtimeShadow);
 }
 
-half3 GlobalIllumination(BRDFData brdfData, half3 bakedGI, half occlusion, half3 normalWS, half3 viewDirectionWS)
+half3 GlobalIllumination(BRDFData brdfData, BRDFData brdfDataClearCoat, float clearCoatMask,
+    half3 bakedGI, half occlusion,
+    half3 normalWS, half3 viewDirectionWS)
 {
     half3 reflectVector = reflect(-viewDirectionWS, normalWS);
-    half fresnelTerm = Pow4(1.0 - saturate(dot(normalWS, viewDirectionWS)));
+    half NoV = saturate(dot(normalWS, viewDirectionWS));
+    half fresnelTerm = Pow4(1.0 - NoV);
 
     half3 indirectDiffuse = bakedGI * occlusion;
     half3 indirectSpecular = GlossyEnvironmentReflection(reflectVector, brdfData.perceptualRoughness, occlusion);
 
-    return EnvironmentBRDF(brdfData, indirectDiffuse, indirectSpecular, fresnelTerm);
+    half3 color = EnvironmentBRDF(brdfData, indirectDiffuse, indirectSpecular, fresnelTerm);
+
+#if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
+    half3 coatIndirectSpecular = GlossyEnvironmentReflection(reflectVector, brdfDataClearCoat.perceptualRoughness, occlusion);
+    // TODO: "grazing term" causes problems on full roughness
+    half3 coatColor = EnvironmentBRDFClearCoat(brdfDataClearCoat, clearCoatMask, coatIndirectSpecular, fresnelTerm);
+
+    // Blend with base layer using khronos glTF recommended way using NoV
+    // Smooth surface & "ambiguous" lighting
+    // NOTE: fresnelTerm (above) is pow4 instead of pow5, but should be ok as blend weight.
+    half coatFresnel = kDielectricSpec.x + kDielectricSpec.a * fresnelTerm;
+    return color * (1.0 - coatFresnel * clearCoatMask) + coatColor;
+#else
+    return color;
+#endif
 }
 
-void MixRealtimeAndBakedGI(inout Light light, half3 normalWS, inout half3 bakedGI, half4 shadowMask)
+// Backwards compatiblity
+half3 GlobalIllumination(BRDFData brdfData, half3 bakedGI, half occlusion, half3 normalWS, half3 viewDirectionWS)
 {
-#if defined(_MIXED_LIGHTING_SUBTRACTIVE) && defined(LIGHTMAP_ON)
+    const BRDFData noClearCoat = (BRDFData)0;
+    return GlobalIllumination(brdfData, noClearCoat, 0.0, bakedGI, occlusion, normalWS, viewDirectionWS);
+}
+
+void MixRealtimeAndBakedGI(inout Light light, half3 normalWS, inout half3 bakedGI)
+{
+#if defined(LIGHTMAP_ON) && defined(_MIXED_LIGHTING_SUBTRACTIVE)
     bakedGI = SubtractDirectMainLightFromLightmap(light, normalWS, bakedGI);
 #endif
+}
+
+// Backwards compatiblity
+void MixRealtimeAndBakedGI(inout Light light, half3 normalWS, inout half3 bakedGI, half4 shadowMask)
+{
+    MixRealtimeAndBakedGI(light, normalWS, bakedGI);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11200,16 +12560,82 @@ half3 LightingSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 vie
     return lightColor * specularReflection;
 }
 
-half3 LightingPhysicallyBased(BRDFData brdfData, half3 lightColor, half3 lightDirectionWS, half lightAttenuation, half3 normalWS, half3 viewDirectionWS)
+half3 LightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat,
+    half3 lightColor, half3 lightDirectionWS, half lightAttenuation,
+    half3 normalWS, half3 viewDirectionWS,
+    half clearCoatMask, bool specularHighlightsOff)
 {
     half NdotL = saturate(dot(normalWS, lightDirectionWS));
     half3 radiance = lightColor * (lightAttenuation * NdotL);
-    return DirectBDRF(brdfData, normalWS, lightDirectionWS, viewDirectionWS) * radiance;
+
+    half3 brdf = brdfData.diffuse;
+#ifndef _SPECULARHIGHLIGHTS_OFF
+    [branch] if (!specularHighlightsOff)
+    {
+        brdf += brdfData.specular * DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
+
+#if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
+        // Clear coat evaluates the specular a second timw and has some common terms with the base specular.
+        // We rely on the compiler to merge these and compute them only once.
+        half brdfCoat = kDielectricSpec.r * DirectBRDFSpecular(brdfDataClearCoat, normalWS, lightDirectionWS, viewDirectionWS);
+
+            // Mix clear coat and base layer using khronos glTF recommended formula
+            // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/README.md
+            // Use NoV for direct too instead of LoH as an optimization (NoV is light invariant).
+            half NoV = saturate(dot(normalWS, viewDirectionWS));
+            // Use slightly simpler fresnelTerm (Pow4 vs Pow5) as a small optimization.
+            // It is matching fresnel used in the GI/Env, so should produce a consistent clear coat blend (env vs. direct)
+            half coatFresnel = kDielectricSpec.x + kDielectricSpec.a * Pow4(1.0 - NoV);
+
+        brdf = brdf * (1.0 - clearCoatMask * coatFresnel) + brdfCoat * clearCoatMask;
+#endif // _CLEARCOAT
+    }
+#endif // _SPECULARHIGHLIGHTS_OFF
+
+    return brdf * radiance;
 }
 
+half3 LightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat, Light light, half3 normalWS, half3 viewDirectionWS, half clearCoatMask, bool specularHighlightsOff)
+{
+    return LightingPhysicallyBased(brdfData, brdfDataClearCoat, light.color, light.direction, light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS, clearCoatMask, specularHighlightsOff);
+}
+
+// Backwards compatibility
 half3 LightingPhysicallyBased(BRDFData brdfData, Light light, half3 normalWS, half3 viewDirectionWS)
 {
-    return LightingPhysicallyBased(brdfData, light.color, light.direction, light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS);
+    #ifdef _SPECULARHIGHLIGHTS_OFF
+    bool specularHighlightsOff = true;
+#else
+    bool specularHighlightsOff = false;
+#endif
+    const BRDFData noClearCoat = (BRDFData)0;
+    return LightingPhysicallyBased(brdfData, noClearCoat, light, normalWS, viewDirectionWS, 0.0, specularHighlightsOff);
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, half3 lightColor, half3 lightDirectionWS, half lightAttenuation, half3 normalWS, half3 viewDirectionWS)
+{
+    Light light;
+    light.color = lightColor;
+    light.direction = lightDirectionWS;
+    light.distanceAttenuation = lightAttenuation;
+    light.shadowAttenuation   = 1;
+    return LightingPhysicallyBased(brdfData, light, normalWS, viewDirectionWS);
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, Light light, half3 normalWS, half3 viewDirectionWS, bool specularHighlightsOff)
+{
+    const BRDFData noClearCoat = (BRDFData)0;
+    return LightingPhysicallyBased(brdfData, noClearCoat, light, normalWS, viewDirectionWS, 0.0, specularHighlightsOff);
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, half3 lightColor, half3 lightDirectionWS, half lightAttenuation, half3 normalWS, half3 viewDirectionWS, bool specularHighlightsOff)
+{
+    Light light;
+    light.color = lightColor;
+    light.direction = lightDirectionWS;
+    light.distanceAttenuation = lightAttenuation;
+    light.shadowAttenuation   = 1;
+    return LightingPhysicallyBased(brdfData, light, viewDirectionWS, specularHighlightsOff, specularHighlightsOff);
 }
 
 half3 VertexLighting(float3 positionWS, half3 normalWS)
@@ -11233,24 +12659,63 @@ half3 VertexLighting(float3 positionWS, half3 normalWS)
 //                      Fragment Functions                                   //
 //       Used by ShaderGraph and others builtin renderers                    //
 ///////////////////////////////////////////////////////////////////////////////
-half4 UniversalFragmentPBR(InputData inputData, half3 albedo, half metallic, half3 specular,
-    half smoothness, half occlusion, half3 emission, half alpha)
+half4 UniversalFragmentPBR(InputData inputData, SurfaceData surfaceData)
 {
-    BRDFData brdfData;
-    InitializeBRDFData(albedo, metallic, specular, smoothness, alpha, brdfData);
-    
-    Light mainLight = GetMainLight(inputData.shadowCoord);
-    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, half4(0, 0, 0, 0));
+#ifdef _SPECULARHIGHLIGHTS_OFF
+    bool specularHighlightsOff = true;
+#else
+    bool specularHighlightsOff = false;
+#endif
 
-    half3 color = GlobalIllumination(brdfData, inputData.bakedGI, occlusion, inputData.normalWS, inputData.viewDirectionWS);
-    color += LightingPhysicallyBased(brdfData, mainLight, inputData.normalWS, inputData.viewDirectionWS);
+    BRDFData brdfData;
+
+    // NOTE: can modify alpha
+    InitializeBRDFData(surfaceData.albedo, surfaceData.metallic, surfaceData.specular, surfaceData.smoothness, surfaceData.alpha, brdfData);
+
+    BRDFData brdfDataClearCoat = (BRDFData)0;
+#if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
+    // base brdfData is modified here, rely on the compiler to eliminate dead computation by InitializeBRDFData()
+    InitializeBRDFDataClearCoat(surfaceData.clearCoatMask, surfaceData.clearCoatSmoothness, brdfData, brdfDataClearCoat);
+#endif
+
+    // To ensure backward compatibility we have to avoid using shadowMask input, as it is not present in older shaders
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+    half4 shadowMask = inputData.shadowMask;
+#elif !defined (LIGHTMAP_ON)
+    half4 shadowMask = unity_ProbesOcclusion;
+#else
+    half4 shadowMask = half4(1, 1, 1, 1);
+#endif
+
+    Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask);
+
+    #if defined(_SCREEN_SPACE_OCCLUSION)
+        AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
+        mainLight.color *= aoFactor.directAmbientOcclusion;
+        surfaceData.occlusion = min(surfaceData.occlusion, aoFactor.indirectAmbientOcclusion);
+    #endif
+
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
+    half3 color = GlobalIllumination(brdfData, brdfDataClearCoat, surfaceData.clearCoatMask,
+                                     inputData.bakedGI, surfaceData.occlusion,
+                                     inputData.normalWS, inputData.viewDirectionWS);
+    color += LightingPhysicallyBased(brdfData, brdfDataClearCoat,
+                                     mainLight,
+                                     inputData.normalWS, inputData.viewDirectionWS,
+                                     surfaceData.clearCoatMask, specularHighlightsOff);
 
 #ifdef _ADDITIONAL_LIGHTS
     uint pixelLightCount = GetAdditionalLightsCount();
     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
     {
-        Light light = GetAdditionalLight(lightIndex, inputData.positionWS);
-        color += LightingPhysicallyBased(brdfData, light, inputData.normalWS, inputData.viewDirectionWS);
+        Light light = GetAdditionalLight(lightIndex, inputData.positionWS, shadowMask);
+        #if defined(_SCREEN_SPACE_OCCLUSION)
+            light.color *= aoFactor.directAmbientOcclusion;
+        #endif
+        color += LightingPhysicallyBased(brdfData, brdfDataClearCoat,
+                                         light,
+                                         inputData.normalWS, inputData.viewDirectionWS,
+                                         surfaceData.clearCoatMask, specularHighlightsOff);
     }
 #endif
 
@@ -11258,14 +12723,47 @@ half4 UniversalFragmentPBR(InputData inputData, half3 albedo, half metallic, hal
     color += inputData.vertexLighting * brdfData.diffuse;
 #endif
 
-    color += emission;
-    return half4(color, alpha);
+    color += surfaceData.emission;
+
+    return half4(color, surfaceData.alpha);
+}
+
+half4 UniversalFragmentPBR(InputData inputData, half3 albedo, half metallic, half3 specular,
+    half smoothness, half occlusion, half3 emission, half alpha)
+{
+    SurfaceData s;
+    s.albedo              = albedo;
+    s.metallic            = metallic;
+    s.specular            = specular;
+    s.smoothness          = smoothness;
+    s.occlusion           = occlusion;
+    s.emission            = emission;
+    s.alpha               = alpha;
+    s.clearCoatMask       = 0.0;
+    s.clearCoatSmoothness = 1.0;
+    return UniversalFragmentPBR(inputData, s);
 }
 
 half4 UniversalFragmentBlinnPhong(InputData inputData, half3 diffuse, half4 specularGloss, half smoothness, half3 emission, half alpha)
 {
-    Light mainLight = GetMainLight(inputData.shadowCoord);
-    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, half4(0, 0, 0, 0));
+    // To ensure backward compatibility we have to avoid using shadowMask input, as it is not present in older shaders
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+    half4 shadowMask = inputData.shadowMask;
+#elif !defined (LIGHTMAP_ON)
+    half4 shadowMask = unity_ProbesOcclusion;
+#else
+    half4 shadowMask = half4(1, 1, 1, 1);
+#endif
+
+    Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask);
+
+    #if defined(_SCREEN_SPACE_OCCLUSION)
+        AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
+        mainLight.color *= aoFactor.directAmbientOcclusion;
+        inputData.bakedGI *= aoFactor.indirectAmbientOcclusion;
+    #endif
+
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
 
     half3 attenuatedLightColor = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
     half3 diffuseColor = inputData.bakedGI + LightingLambert(attenuatedLightColor, mainLight.direction, inputData.normalWS);
@@ -11275,7 +12773,10 @@ half4 UniversalFragmentBlinnPhong(InputData inputData, half3 diffuse, half4 spec
     uint pixelLightCount = GetAdditionalLightsCount();
     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
     {
-        Light light = GetAdditionalLight(lightIndex, inputData.positionWS);
+        Light light = GetAdditionalLight(lightIndex, inputData.positionWS, shadowMask);
+        #if defined(_SCREEN_SPACE_OCCLUSION)
+            light.color *= aoFactor.directAmbientOcclusion;
+        #endif
         half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
         diffuseColor += LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
         specularColor += LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, specularGloss, smoothness);
@@ -11308,7 +12809,1034 @@ half4 LightweightFragmentBlinnPhong(InputData inputData, half3 diffuse, half4 sp
 }
 #endif
 
-// File end: com.unity.render-pipelines.universal@7.3.1/ShaderLibrary/Lighting.hlsl
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Lighting.hlsl
+//================================================================================================================================
+
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/MetaInput.hlsl
+
+
+#ifndef UNIVERSAL_META_PASS_INCLUDED
+#define UNIVERSAL_META_PASS_INCLUDED
+
+//================================================================================================================================
+// File start: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Lighting.hlsl
+
+
+#ifndef UNIVERSAL_LIGHTING_INCLUDED
+#define UNIVERSAL_LIGHTING_INCLUDED
+
+
+// If lightmap is not defined than we evaluate GI (ambient + probes) from SH
+// We might do it fully or partially in vertex to save shader ALU
+#if !defined(LIGHTMAP_ON)
+// TODO: Controls things like these by exposing SHADER_QUALITY levels (low, medium, high)
+    #if defined(SHADER_API_GLES) || !defined(_NORMALMAP)
+        // Evaluates SH fully in vertex
+        #define EVALUATE_SH_VERTEX
+    #elif !SHADER_HINT_NICE_QUALITY
+        // Evaluates L2 SH in vertex and L0L1 in pixel
+        #define EVALUATE_SH_MIXED
+    #endif
+        // Otherwise evaluate SH fully per-pixel
+#endif
+
+#ifdef LIGHTMAP_ON
+    #define DECLARE_LIGHTMAP_OR_SH(lmName, shName, index) float2 lmName : TEXCOORD##index
+    #define OUTPUT_LIGHTMAP_UV(lightmapUV, lightmapScaleOffset, OUT) OUT.xy = lightmapUV.xy * lightmapScaleOffset.xy + lightmapScaleOffset.zw;
+    #define OUTPUT_SH(normalWS, OUT)
+#else
+    #define DECLARE_LIGHTMAP_OR_SH(lmName, shName, index) half3 shName : TEXCOORD##index
+    #define OUTPUT_LIGHTMAP_UV(lightmapUV, lightmapScaleOffset, OUT)
+    #define OUTPUT_SH(normalWS, OUT) OUT.xyz = SampleSHVertex(normalWS)
+#endif
+
+// Renamed -> LIGHTMAP_SHADOW_MIXING
+#if !defined(_MIXED_LIGHTING_SUBTRACTIVE) && defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK)
+    #define _MIXED_LIGHTING_SUBTRACTIVE
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//                          Light Helpers                                    //
+///////////////////////////////////////////////////////////////////////////////
+
+// Abstraction over Light shading data.
+struct Light
+{
+    half3   direction;
+    half3   color;
+    half    distanceAttenuation;
+    half    shadowAttenuation;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//                        Attenuation Functions                               /
+///////////////////////////////////////////////////////////////////////////////
+
+// Matches Unity Vanila attenuation
+// Attenuation smoothly decreases to light range.
+float DistanceAttenuation(float distanceSqr, half2 distanceAttenuation)
+{
+    // We use a shared distance attenuation for additional directional and puctual lights
+    // for directional lights attenuation will be 1
+    float lightAtten = rcp(distanceSqr);
+
+#if SHADER_HINT_NICE_QUALITY
+    // Use the smoothing factor also used in the Unity lightmapper.
+    half factor = distanceSqr * distanceAttenuation.x;
+    half smoothFactor = saturate(1.0h - factor * factor);
+    smoothFactor = smoothFactor * smoothFactor;
+#else
+    // We need to smoothly fade attenuation to light range. We start fading linearly at 80% of light range
+    // Therefore:
+    // fadeDistance = (0.8 * 0.8 * lightRangeSq)
+    // smoothFactor = (lightRangeSqr - distanceSqr) / (lightRangeSqr - fadeDistance)
+    // We can rewrite that to fit a MAD by doing
+    // distanceSqr * (1.0 / (fadeDistanceSqr - lightRangeSqr)) + (-lightRangeSqr / (fadeDistanceSqr - lightRangeSqr)
+    // distanceSqr *        distanceAttenuation.y            +             distanceAttenuation.z
+    half smoothFactor = saturate(distanceSqr * distanceAttenuation.x + distanceAttenuation.y);
+#endif
+
+    return lightAtten * smoothFactor;
+}
+
+half AngleAttenuation(half3 spotDirection, half3 lightDirection, half2 spotAttenuation)
+{
+    // Spot Attenuation with a linear falloff can be defined as
+    // (SdotL - cosOuterAngle) / (cosInnerAngle - cosOuterAngle)
+    // This can be rewritten as
+    // invAngleRange = 1.0 / (cosInnerAngle - cosOuterAngle)
+    // SdotL * invAngleRange + (-cosOuterAngle * invAngleRange)
+    // SdotL * spotAttenuation.x + spotAttenuation.y
+
+    // If we precompute the terms in a MAD instruction
+    half SdotL = dot(spotDirection, lightDirection);
+    half atten = saturate(SdotL * spotAttenuation.x + spotAttenuation.y);
+    return atten * atten;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                      Light Abstraction                                    //
+///////////////////////////////////////////////////////////////////////////////
+
+Light GetMainLight()
+{
+    Light light;
+    light.direction = _MainLightPosition.xyz;
+    light.distanceAttenuation = unity_LightData.z; // unity_LightData.z is 1 when not culled by the culling mask, otherwise 0.
+    light.shadowAttenuation = 1.0;
+    light.color = _MainLightColor.rgb;
+
+    return light;
+}
+
+Light GetMainLight(float4 shadowCoord)
+{
+    Light light = GetMainLight();
+    light.shadowAttenuation = MainLightRealtimeShadow(shadowCoord);
+    return light;
+}
+
+Light GetMainLight(float4 shadowCoord, float3 positionWS, half4 shadowMask)
+{
+    Light light = GetMainLight();
+    light.shadowAttenuation = MainLightShadow(shadowCoord, positionWS, shadowMask, _MainLightOcclusionProbes);
+    return light;
+}
+
+// Fills a light struct given a perObjectLightIndex
+Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
+{
+    // Abstraction over Light input constants
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    float4 lightPositionWS = _AdditionalLightsBuffer[perObjectLightIndex].position;
+    half3 color = _AdditionalLightsBuffer[perObjectLightIndex].color.rgb;
+    half4 distanceAndSpotAttenuation = _AdditionalLightsBuffer[perObjectLightIndex].attenuation;
+    half4 spotDirection = _AdditionalLightsBuffer[perObjectLightIndex].spotDirection;
+#else
+    float4 lightPositionWS = _AdditionalLightsPosition[perObjectLightIndex];
+    half3 color = _AdditionalLightsColor[perObjectLightIndex].rgb;
+    half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[perObjectLightIndex];
+    half4 spotDirection = _AdditionalLightsSpotDir[perObjectLightIndex];
+#endif
+
+    // Directional lights store direction in lightPosition.xyz and have .w set to 0.0.
+    // This way the following code will work for both directional and punctual lights.
+    float3 lightVector = lightPositionWS.xyz - positionWS * lightPositionWS.w;
+    float distanceSqr = max(dot(lightVector, lightVector), HALF_MIN);
+
+    half3 lightDirection = half3(lightVector * rsqrt(distanceSqr));
+    half attenuation = DistanceAttenuation(distanceSqr, distanceAndSpotAttenuation.xy) * AngleAttenuation(spotDirection.xyz, lightDirection, distanceAndSpotAttenuation.zw);
+
+    Light light;
+    light.direction = lightDirection;
+    light.distanceAttenuation = attenuation;
+    light.shadowAttenuation = 1.0; // This value can later be overridden in GetAdditionalLight(uint i, float3 positionWS, half4 shadowMask)
+    light.color = color;
+
+    return light;
+}
+
+uint GetPerObjectLightIndexOffset()
+{
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    return unity_LightData.x;
+#else
+    return 0;
+#endif
+}
+
+// Returns a per-object index given a loop index.
+// This abstract the underlying data implementation for storing lights/light indices
+int GetPerObjectLightIndex(uint index)
+{
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Structured Buffer Path                                                                   /
+//                                                                                          /
+// Lights and light indices are stored in StructuredBuffer. We can just index them.         /
+// Currently all non-mobile platforms take this path :(                                     /
+// There are limitation in mobile GPUs to use SSBO (performance / no vertex shader support) /
+/////////////////////////////////////////////////////////////////////////////////////////////
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    uint offset = unity_LightData.x;
+    return _AdditionalLightsIndices[offset + index];
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// UBO path                                                                                 /
+//                                                                                          /
+// We store 8 light indices in float4 unity_LightIndices[2];                                /
+// Due to memory alignment unity doesn't support int[] or float[]                           /
+// Even trying to reinterpret cast the unity_LightIndices to float[] won't work             /
+// it will cast to float4[] and create extra register pressure. :(                          /
+/////////////////////////////////////////////////////////////////////////////////////////////
+#elif !defined(SHADER_API_GLES)
+    // since index is uint shader compiler will implement
+    // div & mod as bitfield ops (shift and mask).
+
+    // TODO: Can we index a float4? Currently compiler is
+    // replacing unity_LightIndicesX[i] with a dp4 with identity matrix.
+    // u_xlat16_40 = dot(unity_LightIndices[int(u_xlatu13)], ImmCB_0_0_0[u_xlati1]);
+    // This increases both arithmetic and register pressure.
+    return unity_LightIndices[index / 4][index % 4];
+#else
+    // Fallback to GLES2. No bitfield magic here :(.
+    // We limit to 4 indices per object and only sample unity_4LightIndices0.
+    // Conditional moves are branch free even on mali-400
+    // small arithmetic cost but no extra register pressure from ImmCB_0_0_0 matrix.
+    half2 lightIndex2 = (index < 2.0h) ? unity_LightIndices[0].xy : unity_LightIndices[0].zw;
+    half i_rem = (index < 2.0h) ? index : index - 2.0h;
+    return (i_rem < 1.0h) ? lightIndex2.x : lightIndex2.y;
+#endif
+}
+
+// Fills a light struct given a loop i index. This will convert the i
+// index to a perObjectLightIndex
+Light GetAdditionalLight(uint i, float3 positionWS)
+{
+    int perObjectLightIndex = GetPerObjectLightIndex(i);
+    return GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);
+}
+
+Light GetAdditionalLight(uint i, float3 positionWS, half4 shadowMask)
+{
+    int perObjectLightIndex = GetPerObjectLightIndex(i);
+    Light light = GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);
+
+#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    half4 occlusionProbeChannels = _AdditionalLightsBuffer[perObjectLightIndex].occlusionProbeChannels;
+#else
+    half4 occlusionProbeChannels = _AdditionalLightsOcclusionProbes[perObjectLightIndex];
+#endif
+    light.shadowAttenuation = AdditionalLightShadow(perObjectLightIndex, positionWS, light.direction, shadowMask, occlusionProbeChannels);
+
+    return light;
+}
+
+int GetAdditionalLightsCount()
+{
+    // TODO: we need to expose in SRP api an ability for the pipeline cap the amount of lights
+    // in the culling. This way we could do the loop branch with an uniform
+    // This would be helpful to support baking exceeding lights in SH as well
+    return min(_AdditionalLightsCount.x, unity_LightData.y);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                         BRDF Functions                                    //
+///////////////////////////////////////////////////////////////////////////////
+
+#define kDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
+
+struct BRDFData
+{
+    half3 diffuse;
+    half3 specular;
+    half reflectivity;
+    half perceptualRoughness;
+    half roughness;
+    half roughness2;
+    half grazingTerm;
+
+    // We save some light invariant BRDF terms so we don't have to recompute
+    // them in the light loop. Take a look at DirectBRDF function for detailed explaination.
+    half normalizationTerm;     // roughness * 4.0 + 2.0
+    half roughness2MinusOne;    // roughness^2 - 1.0
+};
+
+half ReflectivitySpecular(half3 specular)
+{
+#if defined(SHADER_API_GLES)
+    return specular.r; // Red channel - because most metals are either monocrhome or with redish/yellowish tint
+#else
+    return max(max(specular.r, specular.g), specular.b);
+#endif
+}
+
+half OneMinusReflectivityMetallic(half metallic)
+{
+    // We'll need oneMinusReflectivity, so
+    //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
+    // store (1-dielectricSpec) in kDielectricSpec.a, then
+    //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
+    //                  = alpha - metallic * alpha
+    half oneMinusDielectricSpec = kDielectricSpec.a;
+    return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
+}
+
+inline void InitializeBRDFDataDirect(half3 diffuse, half3 specular, half reflectivity, half oneMinusReflectivity, half smoothness, inout half alpha, out BRDFData outBRDFData)
+{
+    outBRDFData.diffuse = diffuse;
+    outBRDFData.specular = specular;
+    outBRDFData.reflectivity = reflectivity;
+
+    outBRDFData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+    outBRDFData.roughness           = max(PerceptualRoughnessToRoughness(outBRDFData.perceptualRoughness), HALF_MIN_SQRT);
+    outBRDFData.roughness2          = max(outBRDFData.roughness * outBRDFData.roughness, HALF_MIN);
+    outBRDFData.grazingTerm         = saturate(smoothness + reflectivity);
+    outBRDFData.normalizationTerm   = outBRDFData.roughness * 4.0h + 2.0h;
+    outBRDFData.roughness2MinusOne  = outBRDFData.roughness2 - 1.0h;
+
+#ifdef _ALPHAPREMULTIPLY_ON
+    outBRDFData.diffuse *= alpha;
+    alpha = alpha * oneMinusReflectivity + reflectivity; // NOTE: alpha modified and propagated up.
+#endif
+}
+
+inline void InitializeBRDFData(half3 albedo, half metallic, half3 specular, half smoothness, inout half alpha, out BRDFData outBRDFData)
+{
+#ifdef _SPECULAR_SETUP
+    half reflectivity = ReflectivitySpecular(specular);
+    half oneMinusReflectivity = 1.0 - reflectivity;
+    half3 brdfDiffuse = albedo * (half3(1.0h, 1.0h, 1.0h) - specular);
+    half3 brdfSpecular = specular;
+#else
+    half oneMinusReflectivity = OneMinusReflectivityMetallic(metallic);
+    half reflectivity = 1.0 - oneMinusReflectivity;
+    half3 brdfDiffuse = albedo * oneMinusReflectivity;
+    half3 brdfSpecular = lerp(kDieletricSpec.rgb, albedo, metallic);
+#endif
+
+    InitializeBRDFDataDirect(brdfDiffuse, brdfSpecular, reflectivity, oneMinusReflectivity, smoothness, alpha, outBRDFData);
+}
+
+half3 ConvertF0ForClearCoat15(half3 f0)
+{
+#if defined(SHADER_API_MOBILE)
+    return ConvertF0ForAirInterfaceToF0ForClearCoat15Fast(f0);
+#else
+    return ConvertF0ForAirInterfaceToF0ForClearCoat15(f0);
+#endif
+}
+
+inline void InitializeBRDFDataClearCoat(half clearCoatMask, half clearCoatSmoothness, inout BRDFData baseBRDFData, out BRDFData outBRDFData)
+{
+    // Calculate Roughness of Clear Coat layer
+    outBRDFData.diffuse             = kDielectricSpec.aaa; // 1 - kDielectricSpec
+    outBRDFData.specular            = kDielectricSpec.rgb;
+    outBRDFData.reflectivity        = kDielectricSpec.r;
+
+    outBRDFData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(clearCoatSmoothness);
+    outBRDFData.roughness           = max(PerceptualRoughnessToRoughness(outBRDFData.perceptualRoughness), HALF_MIN_SQRT);
+    outBRDFData.roughness2          = max(outBRDFData.roughness * outBRDFData.roughness, HALF_MIN);
+    outBRDFData.normalizationTerm   = outBRDFData.roughness * 4.0h + 2.0h;
+    outBRDFData.roughness2MinusOne  = outBRDFData.roughness2 - 1.0h;
+    outBRDFData.grazingTerm         = saturate(clearCoatSmoothness + kDielectricSpec.x);
+
+// Relatively small effect, cut it for lower quality
+#if !defined(SHADER_API_MOBILE)
+    // Modify Roughness of base layer using coat IOR
+    half ieta                        = lerp(1.0h, CLEAR_COAT_IETA, clearCoatMask);
+    half coatRoughnessScale          = Sq(ieta);
+    half sigma                       = RoughnessToVariance(PerceptualRoughnessToRoughness(baseBRDFData.perceptualRoughness));
+
+    baseBRDFData.perceptualRoughness = RoughnessToPerceptualRoughness(VarianceToRoughness(sigma * coatRoughnessScale));
+
+    // Recompute base material for new roughness, previous computation should be eliminated by the compiler (as it's unused)
+    baseBRDFData.roughness          = max(PerceptualRoughnessToRoughness(baseBRDFData.perceptualRoughness), HALF_MIN_SQRT);
+    baseBRDFData.roughness2         = max(baseBRDFData.roughness * baseBRDFData.roughness, HALF_MIN);
+    baseBRDFData.normalizationTerm  = baseBRDFData.roughness * 4.0h + 2.0h;
+    baseBRDFData.roughness2MinusOne = baseBRDFData.roughness2 - 1.0h;
+#endif
+
+    // Darken/saturate base layer using coat to surface reflectance (vs. air to surface)
+    baseBRDFData.specular = lerp(baseBRDFData.specular, ConvertF0ForClearCoat15(baseBRDFData.specular), clearCoatMask);
+    // TODO: what about diffuse? at least in specular workflow diffuse should be recalculated as it directly depends on it.
+}
+
+// Computes the specular term for EnvironmentBRDF
+half3 EnvironmentBRDFSpecular(BRDFData brdfData, half fresnelTerm)
+{
+    float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
+    return surfaceReduction * lerp(brdfData.specular, brdfData.grazingTerm, fresnelTerm);
+}
+
+half3 EnvironmentBRDF(BRDFData brdfData, half3 indirectDiffuse, half3 indirectSpecular, half fresnelTerm)
+{
+    half3 c = indirectDiffuse * brdfData.diffuse;
+    c += indirectSpecular * EnvironmentBRDFSpecular(brdfData, fresnelTerm);
+    return c;
+}
+
+// Environment BRDF without diffuse for clear coat
+half3 EnvironmentBRDFClearCoat(BRDFData brdfData, half clearCoatMask, half3 indirectSpecular, half fresnelTerm)
+{
+    float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
+    return indirectSpecular * EnvironmentBRDFSpecular(brdfData, fresnelTerm) * clearCoatMask;
+}
+
+// Computes the scalar specular term for Minimalist CookTorrance BRDF
+// NOTE: needs to be multiplied with reflectance f0, i.e. specular color to complete
+half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
+{
+    float3 halfDir = SafeNormalize(float3(lightDirectionWS) + float3(viewDirectionWS));
+
+    float NoH = saturate(dot(normalWS, halfDir));
+    half LoH = saturate(dot(lightDirectionWS, halfDir));
+
+    // GGX Distribution multiplied by combined approximation of Visibility and Fresnel
+    // BRDFspec = (D * V * F) / 4.0
+    // D = roughness^2 / ( NoH^2 * (roughness^2 - 1) + 1 )^2
+    // V * F = 1.0 / ( LoH^2 * (roughness + 0.5) )
+    // See "Optimizing PBR for Mobile" from Siggraph 2015 moving mobile graphics course
+    // https://community.arm.com/events/1155
+
+    // Final BRDFspec = roughness^2 / ( NoH^2 * (roughness^2 - 1) + 1 )^2 * (LoH^2 * (roughness + 0.5) * 4.0)
+    // We further optimize a few light invariant terms
+    // brdfData.normalizationTerm = (roughness + 0.5) * 4.0 rewritten as roughness * 4.0 + 2.0 to a fit a MAD.
+    float d = NoH * NoH * brdfData.roughness2MinusOne + 1.00001f;
+
+    half LoH2 = LoH * LoH;
+    half specularTerm = brdfData.roughness2 / ((d * d) * max(0.1h, LoH2) * brdfData.normalizationTerm);
+
+    // On platforms where half actually means something, the denominator has a risk of overflow
+    // clamp below was added specifically to "fix" that, but dx compiler (we convert bytecode to metal/gles)
+    // sees that specularTerm have only non-negative terms, so it skips max(0,..) in clamp (leaving only min(100,...))
+#if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
+    specularTerm = specularTerm - HALF_MIN;
+    specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+#endif
+
+return specularTerm;
+}
+
+// Based on Minimalist CookTorrance BRDF
+// Implementation is slightly different from original derivation: http://www.thetenthplanet.de/archives/255
+//
+// * NDF [Modified] GGX
+// * Modified Kelemen and Szirmay-Kalos for Visibility term
+// * Fresnel approximated with 1/LdotH
+half3 DirectBDRF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS, bool specularHighlightsOff)
+{
+    // Can still do compile-time optimisation.
+    // If no compile-time optimized, extra overhead if branch taken is around +2.5% on Switch, -10% if not taken.
+    [branch] if (!specularHighlightsOff)
+    {
+        half specularTerm = DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
+        half3 color = brdfData.diffuse + specularTerm * brdfData.specular;
+        return color;
+    }
+    else
+        return brdfData.diffuse;
+}
+
+// Based on Minimalist CookTorrance BRDF
+// Implementation is slightly different from original derivation: http://www.thetenthplanet.de/archives/255
+//
+// * NDF [Modified] GGX
+// * Modified Kelemen and Szirmay-Kalos for Visibility term
+// * Fresnel approximated with 1/LdotH
+half3 DirectBRDF(BRDFData brdfData, half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS)
+{
+#ifndef _SPECULARHIGHLIGHTS_OFF
+    return brdfData.diffuse + DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS) * brdfData.specular;
+#else
+    return brdfData.diffuse;
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                      Global Illumination                                  //
+///////////////////////////////////////////////////////////////////////////////
+
+// Ambient occlusion
+TEXTURE2D_X(_ScreenSpaceOcclusionTexture);
+SAMPLER(sampler_ScreenSpaceOcclusionTexture);
+
+struct AmbientOcclusionFactor
+{
+    half indirectAmbientOcclusion;
+    half directAmbientOcclusion;
+};
+
+half SampleAmbientOcclusion(float2 normalizedScreenSpaceUV)
+{
+    float2 uv = UnityStereoTransformScreenSpaceTex(normalizedScreenSpaceUV);
+    return SAMPLE_TEXTURE2D_X(_ScreenSpaceOcclusionTexture, sampler_ScreenSpaceOcclusionTexture, uv).x;
+}
+
+AmbientOcclusionFactor GetScreenSpaceAmbientOcclusion(float2 normalizedScreenSpaceUV)
+{
+    AmbientOcclusionFactor aoFactor;
+    aoFactor.indirectAmbientOcclusion = SampleAmbientOcclusion(normalizedScreenSpaceUV);
+    aoFactor.directAmbientOcclusion = lerp(1.0, aoFactor.indirectAmbientOcclusion, _AmbientOcclusionParam.w);
+    return aoFactor;
+}
+
+// Samples SH L0, L1 and L2 terms
+half3 SampleSH(half3 normalWS)
+{
+    // LPPV is not supported in Ligthweight Pipeline
+    real4 SHCoefficients[7];
+    SHCoefficients[0] = unity_SHAr;
+    SHCoefficients[1] = unity_SHAg;
+    SHCoefficients[2] = unity_SHAb;
+    SHCoefficients[3] = unity_SHBr;
+    SHCoefficients[4] = unity_SHBg;
+    SHCoefficients[5] = unity_SHBb;
+    SHCoefficients[6] = unity_SHC;
+
+    return max(half3(0, 0, 0), SampleSH9(SHCoefficients, normalWS));
+}
+
+// SH Vertex Evaluation. Depending on target SH sampling might be
+// done completely per vertex or mixed with L2 term per vertex and L0, L1
+// per pixel. See SampleSHPixel
+half3 SampleSHVertex(half3 normalWS)
+{
+#if defined(EVALUATE_SH_VERTEX)
+    return SampleSH(normalWS);
+#elif defined(EVALUATE_SH_MIXED)
+    // no max since this is only L2 contribution
+    return SHEvalLinearL2(normalWS, unity_SHBr, unity_SHBg, unity_SHBb, unity_SHC);
+#endif
+
+    // Fully per-pixel. Nothing to compute.
+    return half3(0.0, 0.0, 0.0);
+}
+
+// SH Pixel Evaluation. Depending on target SH sampling might be done
+// mixed or fully in pixel. See SampleSHVertex
+half3 SampleSHPixel(half3 L2Term, half3 normalWS)
+{
+#if defined(EVALUATE_SH_VERTEX)
+    return L2Term;
+#elif defined(EVALUATE_SH_MIXED)
+    half3 L0L1Term = SHEvalLinearL0L1(normalWS, unity_SHAr, unity_SHAg, unity_SHAb);
+    half3 res = L2Term + L0L1Term;
+#ifdef UNITY_COLORSPACE_GAMMA
+    res = LinearToSRGB(res);
+#endif
+    return max(half3(0, 0, 0), res);
+#endif
+
+    // Default: Evaluate SH fully per-pixel
+    return SampleSH(normalWS);
+}
+
+#if defined(UNITY_DOTS_INSTANCING_ENABLED)
+#define LIGHTMAP_NAME unity_Lightmaps
+#define LIGHTMAP_INDIRECTION_NAME unity_LightmapsInd
+#define LIGHTMAP_SAMPLER_NAME samplerunity_Lightmaps
+#define LIGHTMAP_SAMPLE_EXTRA_ARGS lightmapUV, unity_LightmapIndex.x
+#else
+#define LIGHTMAP_NAME unity_Lightmap
+#define LIGHTMAP_INDIRECTION_NAME unity_LightmapInd
+#define LIGHTMAP_SAMPLER_NAME samplerunity_Lightmap
+#define LIGHTMAP_SAMPLE_EXTRA_ARGS lightmapUV
+#endif
+
+// Sample baked lightmap. Non-Direction and Directional if available.
+// Realtime GI is not supported.
+half3 SampleLightmap(float2 lightmapUV, half3 normalWS)
+{
+#ifdef UNITY_LIGHTMAP_FULL_HDR
+    bool encodedLightmap = false;
+#else
+    bool encodedLightmap = true;
+#endif
+
+    half4 decodeInstructions = half4(LIGHTMAP_HDR_MULTIPLIER, LIGHTMAP_HDR_EXPONENT, 0.0h, 0.0h);
+
+    // The shader library sample lightmap functions transform the lightmap uv coords to apply bias and scale.
+    // However, universal pipeline already transformed those coords in vertex. We pass half4(1, 1, 0, 0) and
+    // the compiler will optimize the transform away.
+    half4 transformCoords = half4(1, 1, 0, 0);
+
+#if defined(LIGHTMAP_ON) && defined(DIRLIGHTMAP_COMBINED)
+    return SampleDirectionalLightmap(TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_NAME, LIGHTMAP_SAMPLER_NAME),
+        TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_INDIRECTION_NAME, LIGHTMAP_SAMPLER_NAME),
+        LIGHTMAP_SAMPLE_EXTRA_ARGS, transformCoords, normalWS, encodedLightmap, decodeInstructions);
+#elif defined(LIGHTMAP_ON)
+    return SampleSingleLightmap(TEXTURE2D_LIGHTMAP_ARGS(LIGHTMAP_NAME, LIGHTMAP_SAMPLER_NAME), LIGHTMAP_SAMPLE_EXTRA_ARGS, transformCoords, encodedLightmap, decodeInstructions);
+#else
+    return half3(0.0, 0.0, 0.0);
+#endif
+}
+
+// We either sample GI from baked lightmap or from probes.
+// If lightmap: sampleData.xy = lightmapUV
+// If probe: sampleData.xyz = L2 SH terms
+#if defined(LIGHTMAP_ON)
+#define SAMPLE_GI(lmName, shName, normalWSName) SampleLightmap(lmName, normalWSName)
+#else
+#define SAMPLE_GI(lmName, shName, normalWSName) SampleSHPixel(shName, normalWSName)
+#endif
+
+half3 GlossyEnvironmentReflection(half3 reflectVector, half perceptualRoughness, half occlusion)
+{
+#if !defined(_ENVIRONMENTREFLECTIONS_OFF)
+    half mip = PerceptualRoughnessToMipmapLevel(perceptualRoughness);
+    half4 encodedIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflectVector, mip);
+
+//TODO:DOTS - we need to port probes to live in c# so we can manage this manually.
+#if defined(UNITY_USE_NATIVE_HDR) || defined(UNITY_DOTS_INSTANCING_ENABLED)
+    half3 irradiance = encodedIrradiance.rgb;
+#else
+    half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
+#endif
+
+    return irradiance * occlusion;
+#endif // GLOSSY_REFLECTIONS
+
+    return _GlossyEnvironmentColor.rgb * occlusion;
+}
+
+half3 SubtractDirectMainLightFromLightmap(Light mainLight, half3 normalWS, half3 bakedGI)
+{
+    // Let's try to make realtime shadows work on a surface, which already contains
+    // baked lighting and shadowing from the main sun light.
+    // Summary:
+    // 1) Calculate possible value in the shadow by subtracting estimated light contribution from the places occluded by realtime shadow:
+    //      a) preserves other baked lights and light bounces
+    //      b) eliminates shadows on the geometry facing away from the light
+    // 2) Clamp against user defined ShadowColor.
+    // 3) Pick original lightmap value, if it is the darkest one.
+
+
+    // 1) Gives good estimate of illumination as if light would've been shadowed during the bake.
+    // We only subtract the main direction light. This is accounted in the contribution term below.
+    half shadowStrength = GetMainLightShadowStrength();
+    half contributionTerm = saturate(dot(mainLight.direction, normalWS));
+    half3 lambert = mainLight.color * contributionTerm;
+    half3 estimatedLightContributionMaskedByInverseOfShadow = lambert * (1.0 - mainLight.shadowAttenuation);
+    half3 subtractedLightmap = bakedGI - estimatedLightContributionMaskedByInverseOfShadow;
+
+    // 2) Allows user to define overall ambient of the scene and control situation when realtime shadow becomes too dark.
+    half3 realtimeShadow = max(subtractedLightmap, _SubtractiveShadowColor.xyz);
+    realtimeShadow = lerp(bakedGI, realtimeShadow, shadowStrength);
+
+    // 3) Pick darkest color
+    return min(bakedGI, realtimeShadow);
+}
+
+half3 GlobalIllumination(BRDFData brdfData, BRDFData brdfDataClearCoat, float clearCoatMask,
+    half3 bakedGI, half occlusion,
+    half3 normalWS, half3 viewDirectionWS)
+{
+    half3 reflectVector = reflect(-viewDirectionWS, normalWS);
+    half NoV = saturate(dot(normalWS, viewDirectionWS));
+    half fresnelTerm = Pow4(1.0 - NoV);
+
+    half3 indirectDiffuse = bakedGI * occlusion;
+    half3 indirectSpecular = GlossyEnvironmentReflection(reflectVector, brdfData.perceptualRoughness, occlusion);
+
+    half3 color = EnvironmentBRDF(brdfData, indirectDiffuse, indirectSpecular, fresnelTerm);
+
+#if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
+    half3 coatIndirectSpecular = GlossyEnvironmentReflection(reflectVector, brdfDataClearCoat.perceptualRoughness, occlusion);
+    // TODO: "grazing term" causes problems on full roughness
+    half3 coatColor = EnvironmentBRDFClearCoat(brdfDataClearCoat, clearCoatMask, coatIndirectSpecular, fresnelTerm);
+
+    // Blend with base layer using khronos glTF recommended way using NoV
+    // Smooth surface & "ambiguous" lighting
+    // NOTE: fresnelTerm (above) is pow4 instead of pow5, but should be ok as blend weight.
+    half coatFresnel = kDielectricSpec.x + kDielectricSpec.a * fresnelTerm;
+    return color * (1.0 - coatFresnel * clearCoatMask) + coatColor;
+#else
+    return color;
+#endif
+}
+
+// Backwards compatiblity
+half3 GlobalIllumination(BRDFData brdfData, half3 bakedGI, half occlusion, half3 normalWS, half3 viewDirectionWS)
+{
+    const BRDFData noClearCoat = (BRDFData)0;
+    return GlobalIllumination(brdfData, noClearCoat, 0.0, bakedGI, occlusion, normalWS, viewDirectionWS);
+}
+
+void MixRealtimeAndBakedGI(inout Light light, half3 normalWS, inout half3 bakedGI)
+{
+#if defined(LIGHTMAP_ON) && defined(_MIXED_LIGHTING_SUBTRACTIVE)
+    bakedGI = SubtractDirectMainLightFromLightmap(light, normalWS, bakedGI);
+#endif
+}
+
+// Backwards compatiblity
+void MixRealtimeAndBakedGI(inout Light light, half3 normalWS, inout half3 bakedGI, half4 shadowMask)
+{
+    MixRealtimeAndBakedGI(light, normalWS, bakedGI);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                      Lighting Functions                                   //
+///////////////////////////////////////////////////////////////////////////////
+half3 LightingLambert(half3 lightColor, half3 lightDir, half3 normal)
+{
+    half NdotL = saturate(dot(normal, lightDir));
+    return lightColor * NdotL;
+}
+
+half3 LightingSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 viewDir, half4 specular, half smoothness)
+{
+    float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
+    half NdotH = saturate(dot(normal, halfVec));
+    half modifier = pow(NdotH, smoothness);
+    half3 specularReflection = specular.rgb * modifier;
+    return lightColor * specularReflection;
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat,
+    half3 lightColor, half3 lightDirectionWS, half lightAttenuation,
+    half3 normalWS, half3 viewDirectionWS,
+    half clearCoatMask, bool specularHighlightsOff)
+{
+    half NdotL = saturate(dot(normalWS, lightDirectionWS));
+    half3 radiance = lightColor * (lightAttenuation * NdotL);
+
+    half3 brdf = brdfData.diffuse;
+#ifndef _SPECULARHIGHLIGHTS_OFF
+    [branch] if (!specularHighlightsOff)
+    {
+        brdf += brdfData.specular * DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
+
+#if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
+        // Clear coat evaluates the specular a second timw and has some common terms with the base specular.
+        // We rely on the compiler to merge these and compute them only once.
+        half brdfCoat = kDielectricSpec.r * DirectBRDFSpecular(brdfDataClearCoat, normalWS, lightDirectionWS, viewDirectionWS);
+
+            // Mix clear coat and base layer using khronos glTF recommended formula
+            // https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_materials_clearcoat/README.md
+            // Use NoV for direct too instead of LoH as an optimization (NoV is light invariant).
+            half NoV = saturate(dot(normalWS, viewDirectionWS));
+            // Use slightly simpler fresnelTerm (Pow4 vs Pow5) as a small optimization.
+            // It is matching fresnel used in the GI/Env, so should produce a consistent clear coat blend (env vs. direct)
+            half coatFresnel = kDielectricSpec.x + kDielectricSpec.a * Pow4(1.0 - NoV);
+
+        brdf = brdf * (1.0 - clearCoatMask * coatFresnel) + brdfCoat * clearCoatMask;
+#endif // _CLEARCOAT
+    }
+#endif // _SPECULARHIGHLIGHTS_OFF
+
+    return brdf * radiance;
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, BRDFData brdfDataClearCoat, Light light, half3 normalWS, half3 viewDirectionWS, half clearCoatMask, bool specularHighlightsOff)
+{
+    return LightingPhysicallyBased(brdfData, brdfDataClearCoat, light.color, light.direction, light.distanceAttenuation * light.shadowAttenuation, normalWS, viewDirectionWS, clearCoatMask, specularHighlightsOff);
+}
+
+// Backwards compatibility
+half3 LightingPhysicallyBased(BRDFData brdfData, Light light, half3 normalWS, half3 viewDirectionWS)
+{
+    #ifdef _SPECULARHIGHLIGHTS_OFF
+    bool specularHighlightsOff = true;
+#else
+    bool specularHighlightsOff = false;
+#endif
+    const BRDFData noClearCoat = (BRDFData)0;
+    return LightingPhysicallyBased(brdfData, noClearCoat, light, normalWS, viewDirectionWS, 0.0, specularHighlightsOff);
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, half3 lightColor, half3 lightDirectionWS, half lightAttenuation, half3 normalWS, half3 viewDirectionWS)
+{
+    Light light;
+    light.color = lightColor;
+    light.direction = lightDirectionWS;
+    light.distanceAttenuation = lightAttenuation;
+    light.shadowAttenuation   = 1;
+    return LightingPhysicallyBased(brdfData, light, normalWS, viewDirectionWS);
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, Light light, half3 normalWS, half3 viewDirectionWS, bool specularHighlightsOff)
+{
+    const BRDFData noClearCoat = (BRDFData)0;
+    return LightingPhysicallyBased(brdfData, noClearCoat, light, normalWS, viewDirectionWS, 0.0, specularHighlightsOff);
+}
+
+half3 LightingPhysicallyBased(BRDFData brdfData, half3 lightColor, half3 lightDirectionWS, half lightAttenuation, half3 normalWS, half3 viewDirectionWS, bool specularHighlightsOff)
+{
+    Light light;
+    light.color = lightColor;
+    light.direction = lightDirectionWS;
+    light.distanceAttenuation = lightAttenuation;
+    light.shadowAttenuation   = 1;
+    return LightingPhysicallyBased(brdfData, light, viewDirectionWS, specularHighlightsOff, specularHighlightsOff);
+}
+
+half3 VertexLighting(float3 positionWS, half3 normalWS)
+{
+    half3 vertexLightColor = half3(0.0, 0.0, 0.0);
+
+#ifdef _ADDITIONAL_LIGHTS_VERTEX
+    uint lightsCount = GetAdditionalLightsCount();
+    for (uint lightIndex = 0u; lightIndex < lightsCount; ++lightIndex)
+    {
+        Light light = GetAdditionalLight(lightIndex, positionWS);
+        half3 lightColor = light.color * light.distanceAttenuation;
+        vertexLightColor += LightingLambert(lightColor, light.direction, normalWS);
+    }
+#endif
+
+    return vertexLightColor;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                      Fragment Functions                                   //
+//       Used by ShaderGraph and others builtin renderers                    //
+///////////////////////////////////////////////////////////////////////////////
+half4 UniversalFragmentPBR(InputData inputData, SurfaceData surfaceData)
+{
+#ifdef _SPECULARHIGHLIGHTS_OFF
+    bool specularHighlightsOff = true;
+#else
+    bool specularHighlightsOff = false;
+#endif
+
+    BRDFData brdfData;
+
+    // NOTE: can modify alpha
+    InitializeBRDFData(surfaceData.albedo, surfaceData.metallic, surfaceData.specular, surfaceData.smoothness, surfaceData.alpha, brdfData);
+
+    BRDFData brdfDataClearCoat = (BRDFData)0;
+#if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
+    // base brdfData is modified here, rely on the compiler to eliminate dead computation by InitializeBRDFData()
+    InitializeBRDFDataClearCoat(surfaceData.clearCoatMask, surfaceData.clearCoatSmoothness, brdfData, brdfDataClearCoat);
+#endif
+
+    // To ensure backward compatibility we have to avoid using shadowMask input, as it is not present in older shaders
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+    half4 shadowMask = inputData.shadowMask;
+#elif !defined (LIGHTMAP_ON)
+    half4 shadowMask = unity_ProbesOcclusion;
+#else
+    half4 shadowMask = half4(1, 1, 1, 1);
+#endif
+
+    Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask);
+
+    #if defined(_SCREEN_SPACE_OCCLUSION)
+        AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
+        mainLight.color *= aoFactor.directAmbientOcclusion;
+        surfaceData.occlusion = min(surfaceData.occlusion, aoFactor.indirectAmbientOcclusion);
+    #endif
+
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
+    half3 color = GlobalIllumination(brdfData, brdfDataClearCoat, surfaceData.clearCoatMask,
+                                     inputData.bakedGI, surfaceData.occlusion,
+                                     inputData.normalWS, inputData.viewDirectionWS);
+    color += LightingPhysicallyBased(brdfData, brdfDataClearCoat,
+                                     mainLight,
+                                     inputData.normalWS, inputData.viewDirectionWS,
+                                     surfaceData.clearCoatMask, specularHighlightsOff);
+
+#ifdef _ADDITIONAL_LIGHTS
+    uint pixelLightCount = GetAdditionalLightsCount();
+    for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
+    {
+        Light light = GetAdditionalLight(lightIndex, inputData.positionWS, shadowMask);
+        #if defined(_SCREEN_SPACE_OCCLUSION)
+            light.color *= aoFactor.directAmbientOcclusion;
+        #endif
+        color += LightingPhysicallyBased(brdfData, brdfDataClearCoat,
+                                         light,
+                                         inputData.normalWS, inputData.viewDirectionWS,
+                                         surfaceData.clearCoatMask, specularHighlightsOff);
+    }
+#endif
+
+#ifdef _ADDITIONAL_LIGHTS_VERTEX
+    color += inputData.vertexLighting * brdfData.diffuse;
+#endif
+
+    color += surfaceData.emission;
+
+    return half4(color, surfaceData.alpha);
+}
+
+half4 UniversalFragmentPBR(InputData inputData, half3 albedo, half metallic, half3 specular,
+    half smoothness, half occlusion, half3 emission, half alpha)
+{
+    SurfaceData s;
+    s.albedo              = albedo;
+    s.metallic            = metallic;
+    s.specular            = specular;
+    s.smoothness          = smoothness;
+    s.occlusion           = occlusion;
+    s.emission            = emission;
+    s.alpha               = alpha;
+    s.clearCoatMask       = 0.0;
+    s.clearCoatSmoothness = 1.0;
+    return UniversalFragmentPBR(inputData, s);
+}
+
+half4 UniversalFragmentBlinnPhong(InputData inputData, half3 diffuse, half4 specularGloss, half smoothness, half3 emission, half alpha)
+{
+    // To ensure backward compatibility we have to avoid using shadowMask input, as it is not present in older shaders
+#if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
+    half4 shadowMask = inputData.shadowMask;
+#elif !defined (LIGHTMAP_ON)
+    half4 shadowMask = unity_ProbesOcclusion;
+#else
+    half4 shadowMask = half4(1, 1, 1, 1);
+#endif
+
+    Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask);
+
+    #if defined(_SCREEN_SPACE_OCCLUSION)
+        AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
+        mainLight.color *= aoFactor.directAmbientOcclusion;
+        inputData.bakedGI *= aoFactor.indirectAmbientOcclusion;
+    #endif
+
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
+
+    half3 attenuatedLightColor = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
+    half3 diffuseColor = inputData.bakedGI + LightingLambert(attenuatedLightColor, mainLight.direction, inputData.normalWS);
+    half3 specularColor = LightingSpecular(attenuatedLightColor, mainLight.direction, inputData.normalWS, inputData.viewDirectionWS, specularGloss, smoothness);
+
+#ifdef _ADDITIONAL_LIGHTS
+    uint pixelLightCount = GetAdditionalLightsCount();
+    for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
+    {
+        Light light = GetAdditionalLight(lightIndex, inputData.positionWS, shadowMask);
+        #if defined(_SCREEN_SPACE_OCCLUSION)
+            light.color *= aoFactor.directAmbientOcclusion;
+        #endif
+        half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
+        diffuseColor += LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
+        specularColor += LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, specularGloss, smoothness);
+    }
+#endif
+
+#ifdef _ADDITIONAL_LIGHTS_VERTEX
+    diffuseColor += inputData.vertexLighting;
+#endif
+
+    half3 finalColor = diffuseColor * diffuse + emission;
+
+#if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
+    finalColor += specularColor;
+#endif
+
+    return half4(finalColor, alpha);
+}
+
+//LWRP -> Universal Backwards Compatibility
+half4 LightweightFragmentPBR(InputData inputData, half3 albedo, half metallic, half3 specular,
+    half smoothness, half occlusion, half3 emission, half alpha)
+{
+    return UniversalFragmentPBR(inputData, albedo, metallic, specular, smoothness, occlusion, emission, alpha);
+}
+
+half4 LightweightFragmentBlinnPhong(InputData inputData, half3 diffuse, half4 specularGloss, half smoothness, half3 emission, half alpha)
+{
+    return UniversalFragmentBlinnPhong(inputData, diffuse, specularGloss, smoothness, emission, alpha);
+}
+#endif
+
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/Lighting.hlsl
+//================================================================================================================================
+
+
+
+
+CBUFFER_START(UnityMetaPass)
+// x = use uv1 as raster position
+// y = use uv2 as raster position
+bool4 unity_MetaVertexControl;
+
+// x = return albedo
+// y = return normal
+bool4 unity_MetaFragmentControl;
+CBUFFER_END
+
+float unity_OneOverOutputBoost;
+float unity_MaxOutputValue;
+float unity_UseLinearSpace;
+
+struct MetaInput
+{
+    half3 Albedo;
+    half3 Emission;
+    half3 SpecularColor;
+};
+
+float4 MetaVertexPosition(float4 positionOS, float2 uv1, float2 uv2, float4 uv1ST, float4 uv2ST)
+{
+    if (unity_MetaVertexControl.x)
+    {
+        positionOS.xy = uv1 * uv1ST.xy + uv1ST.zw;
+        // OpenGL right now needs to actually use incoming vertex position,
+        // so use it in a very dummy way
+        positionOS.z = positionOS.z > 0 ? REAL_MIN : 0.0f;
+    }
+    if (unity_MetaVertexControl.y)
+    {
+        positionOS.xy = uv2 * uv2ST.xy + uv2ST.zw;
+        // OpenGL right now needs to actually use incoming vertex position,
+        // so use it in a very dummy way
+        positionOS.z = positionOS.z > 0 ? REAL_MIN : 0.0f;
+    }
+    return TransformWorldToHClip(positionOS.xyz);
+}
+
+half4 MetaFragment(MetaInput input)
+{
+    half4 res = 0;
+    if (unity_MetaFragmentControl.x)
+    {
+        res = half4(input.Albedo, 1.0);
+
+        // Apply Albedo Boost from LightmapSettings.
+        res.rgb = clamp(PositivePow(res.rgb, saturate(unity_OneOverOutputBoost)), 0, unity_MaxOutputValue);
+    }
+    if (unity_MetaFragmentControl.y)
+    {
+        half3 emission;
+        if (unity_UseLinearSpace)
+            emission = input.Emission;
+        else
+            emission = LinearToSRGB(input.Emission);
+
+        res = half4(emission, 1.0);
+    }
+    return res;
+}
+
+#endif
+
+// File end: com.unity.render-pipelines.universal@11.0.0/ShaderLibrary/MetaInput.hlsl
 //================================================================================================================================
 
 
