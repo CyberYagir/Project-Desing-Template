@@ -23,5 +23,10 @@ public class CanvasTemplateText : MonoBehaviour
         tmp_text.text += "Current Points: <color=\"orange\">" + data.main.saves.GetPref(Prefs.Points) + "</color>\n";
         tmp_text.text += "Complited Levels: <color=\"orange\">" + data.main.saves.GetPref(Prefs.CompletedLevels) + "</color>\n";
         tmp_text.text += "Start By Tap: <color=\"orange\">" + data.main.startByTap.ToString() + "</color>";
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            data.main.saves.AddToPref(Prefs.Points, 10);
+        }
     }
 }

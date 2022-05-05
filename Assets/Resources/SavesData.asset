@@ -9,19 +9,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dd8f8dd7c81762428c08189eb3068a3, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b432727138148e8827f019b57cccd0f, type: 3}
   m_Name: SavesData
   m_EditorClassIdentifier: 
-  prefsValues:
-  - name: Level
-    pref: 0
-    savePref: 1
-  - name: CompletedLevels
-    pref: 1
-    savePref: 1
-  - name: StartsCount
-    pref: 3
-    savePref: 1
-  - name: Points
-    pref: 2
-    savePref: 0
+  saveData:
+    prefsValue: 00000000010000000200000003000000
+    prefsData:
+    - type: 1
+      intVal: 0
+      floatVal: 0
+      strVal: 
+      boolVal: 0
+    - type: 1
+      intVal: 4
+      floatVal: 0
+      strVal: 
+      boolVal: 0
+    - type: 1
+      intVal: 0
+      floatVal: 0
+      strVal: 
+      boolVal: 0
+    - type: 1
+      intVal: 4
+      floatVal: 0
+      strVal: 
+      boolVal: 0

@@ -144,7 +144,7 @@ namespace Template.Managers
 #endif
             if (stdData.saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
             if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + GameDataObject.GetData(true).name + "\" is empty"); return; }
-
+            
             stdData.saves.SetLevel((int)stdData.saves.GetPref(Prefs.Level));
             CurrentLevel = Instantiate(stdData.levelList[(int)stdData.saves.GetPref(Prefs.Level)]);
             //Игрок и канвас
@@ -293,5 +293,19 @@ namespace Template.Managers
         }
 
         #endregion
+        
+        
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+            {
+                GameData.main.saves?.Save();
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            GameData.main.saves?.Save();
+        }
     }
 }

@@ -203,21 +203,19 @@ namespace Template.Editor
             }
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
-            SavesDataObject saves = null;
+            SavesDataObjectJson saves = null;
             if (Resources.Load<AbstractSavesDataObject>("SavesData") == null)
             {
-                saves = new SavesDataObject();
+                saves = new SavesDataObjectJson();
                 AssetDatabase.CreateAsset(saves, "Assets/Resources/SavesData.asset");
-                saves = Resources.Load<SavesDataObject>("SavesData");
+                saves = Resources.Load<SavesDataObjectJson>("SavesData");
 
-                var prefs = Enum.GetValues(typeof(Prefs)).Cast<Prefs>().ToList();
-                for (int i = 0; i < prefs.Count; i++)
-                {
-                    saves.prefsValues.Add(new PrefsValue() { pref = (Prefs)i, savePref = PrefType.Int });
-                }
+                
                 EditorUtility.SetDirty(saves);
                 AssetDatabase.SaveAssets();
-                Debug.Log($"Yaroslav: SavesData created! [Prefs added {saves.prefsValues.Count}]");
+                saves.Init();
+                saves.Save();
+                Debug.Log($"Yaroslav: SavesData created! [Prefs added {saves.prefsData.Count}]");
             }
 
             if (Resources.Load<GameDataObject>("GameData") == null)
