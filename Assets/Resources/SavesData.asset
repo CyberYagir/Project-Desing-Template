@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SavesData
   m_EditorClassIdentifier: 
   saveData:
-    prefsValue: 00000000010000000200000003000000
+    prefsValue: 0000000001000000020000000300000004000000
     prefsData:
     - type: 1
       intVal: 0
@@ -31,7 +31,12 @@ MonoBehaviour:
       strVal: 
       boolVal: 0
     - type: 1
-      intVal: 4
+      intVal: 7
+      floatVal: 0
+      strVal: 
+      boolVal: 0
+    - type: 1
+      intVal: 0
       floatVal: 0
       strVal: 
       boolVal: 0

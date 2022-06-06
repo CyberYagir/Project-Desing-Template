@@ -29,10 +29,15 @@ namespace Template.Scriptable
             public Dictionary<Prefs, PrefData> GetDictionary()
             {
                 var dic = new Dictionary<Prefs, PrefData>();
-                for (int i = 0; i < Enum.GetNames(typeof(Prefs)).Length; i++)
+                var length = Enum.GetNames(typeof(Prefs)).Length;
+                for (int i = 0; i < length; i++)
                 {
-                    dic.Add(prefsValue[i], prefsData[i]);
+                    if (i < prefsValue.Count)
+                    {
+                        dic.Add(prefsValue[i], prefsData[i]);
+                    }
                 }
+
                 return dic;
             }
 
