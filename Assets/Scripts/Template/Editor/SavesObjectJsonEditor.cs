@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using DG.DemiEditor;
 using Template.Scriptable;
 using UnityEditor;
@@ -19,6 +20,17 @@ namespace Template.Editor
         public static void OpenSavePath()
         {
             Application.OpenURL(Application.persistentDataPath);
+        }
+        
+        [MenuItem("Template/Delete Saves")]
+        public static void DeleteSavePath()
+        {
+            string _path = Application.persistentDataPath + "/Save.json";
+
+            if (File.Exists(_path))
+            {
+                File.Delete(_path);
+            }
         }
         
         public enum BoolEnum
@@ -58,13 +70,13 @@ namespace Template.Editor
             
             
             Rect scale = GUILayoutUtility.GetLastRect();
-
+            
             EditorGUIUtility.LookLikeInspector();
 
-
+            
             var leftSide = new GUILayoutOption[] {GUILayout.MinHeight(EditorGUIUtility.singleLineHeight)};
-            var middleSide = new GUILayoutOption[] {GUILayout.MinWidth((int) (scale.width * 0.3f))};
-            var rightSide = new GUILayoutOption[]  { };
+            var middleSide = new GUILayoutOption[] {GUILayout.MinWidth(120)};
+            var rightSide = new GUILayoutOption[]  {};
             var buttonSide = new GUILayoutOption[] { };
             
             GUILayout.BeginHorizontal();

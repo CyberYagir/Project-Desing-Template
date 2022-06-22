@@ -29,15 +29,10 @@ namespace Template.Scriptable
             public Dictionary<Prefs, PrefData> GetDictionary()
             {
                 var dic = new Dictionary<Prefs, PrefData>();
-                var length = Enum.GetNames(typeof(Prefs)).Length;
-                for (int i = 0; i < length; i++)
+                for (int i = 0; i < prefsValue.Count; i++)
                 {
-                    if (i < prefsValue.Count)
-                    {
-                        dic.Add(prefsValue[i], prefsData[i]);
-                    }
+                    dic.Add(prefsValue[i], prefsData[i]);
                 }
-
                 return dic;
             }
 
@@ -57,8 +52,9 @@ namespace Template.Scriptable
         public SaveData saveData;
 
         public Dictionary<Prefs, PrefData> prefsData;
+        private List<PrefType> staticPrefsData;
 
-        
+
         private void Awake()
         {
             LoadCheck();
@@ -74,10 +70,16 @@ namespace Template.Scriptable
             SetPath();
             if (File.Exists(Path))
             {
+                staticPrefsData = saveData.prefsData.Select(x=>x.type).ToList();
                 try
                 {
                     saveData = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(Path));
-                }catch (Exception e){ }
+                    Debug.LogError("Load Save");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Parse Json Error");
+                }
                 
                 
                 if (saveData != null && saveData.prefsValue.Count != 0)
@@ -87,8 +89,13 @@ namespace Template.Scriptable
                 }
                 else
                 {
+                    Debug.LogError("Save Data Corrupted");
+                    saveData = new SaveData();
+                    saveData.prefsData = new List<PrefData>();
+                    AddPrefs();
                     Clear();
                 }
+
             }
             else
             {
@@ -113,6 +120,8 @@ namespace Template.Scriptable
 
         public void AddPrefs()
         {
+            
+            Debug.LogError("Add Prefs");
             LoadCheck();
             var prefs = Enum.GetValues(typeof(Prefs)).Length;
             for (int i = 0; i < prefs; i++)
@@ -120,7 +129,11 @@ namespace Template.Scriptable
                 var pref = (Prefs)i;
                 if (!prefsData.ContainsKey(pref))
                 {
-                    prefsData.Add(pref, new PrefData() { type = PrefType.Int});
+                    if (staticPrefsData.Count >= i)
+                    {
+                        staticPrefsData.Add(PrefType.Int);
+                    }
+                    prefsData.Add(pref, new PrefData() { type = staticPrefsData[i]});
                     switch (prefsData[pref].type)
                     {
                         case PrefType.String:
@@ -136,6 +149,13 @@ namespace Template.Scriptable
                             prefsData[pref].boolVal = false;
                             break;
                     }
+                }
+                else if (prefsData[pref] != null && prefsData[pref].type != staticPrefsData[i])
+                {
+                    prefsData[pref].type = staticPrefsData[i];
+                }else if (prefsData[pref] == null)
+                {
+                    prefsData[pref] = new PrefData() {type = staticPrefsData[i]};
                 }
             }
         }
