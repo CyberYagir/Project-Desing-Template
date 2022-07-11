@@ -1,7 +1,9 @@
 using System;
 using Template.Scriptable;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Event = Template.Tweaks.Event;
 
 namespace Template.Managers
 {
@@ -35,7 +37,9 @@ namespace Template.Managers
         /// <i>Свойство:</i> Стадия игры на которой сейчас находится игрок. 
         /// </summary>
         public static GameStage GameStage;
-
+        
+        public DataManagerObject dataManager;
+        
         //Данные
         GameDataObject.GDOMain data;
         public static GameDataObject GameData;
@@ -57,6 +61,12 @@ namespace Template.Managers
 
         public float playedTime = 0;
 
+
+        public Event OnStart = new Event();
+        public Event OnUpdate = new Event();
+        public Event OnFixedUpdate = new Event();
+        public Event OnLateUpdate = new Event();
+        
         #region Mono
         public void Awake()
         {
@@ -70,24 +80,37 @@ namespace Template.Managers
 
             QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
 
-            if (GameData != GameDataObject.GetData())
-            {
-                GameData = GameDataObject.GetData();
-            }
-            data = GameData.main;
+            dataManager.SetSaveDataForAllGameData();
+            GameData = dataManager.GetDataByMode();
+            GameData.Saves.Load();
+            data = GameData.MainData;
             OnLevelStarted(data);
             LoadLevel();
         }
+        
+        
+        
+        
         private void Update()
         {
             if (Instance == null) Instance = this;
+            
+            OnUpdate.Invoke();
+            OnLateUpdate.Invoke();
+            
             EditorControls();
             TapToStartCheck();
         }
 
+        private void FixedUpdate()
+        {
+            OnFixedUpdate.Invoke();
+        }
+        
         private void Start()
         {
-            if (GameData.main.startByTap)
+            Application.targetFrameRate = 60;
+            if (GameData.MainData.startByTap)
             {
                 StartGame += StartCache;
             }
@@ -95,6 +118,7 @@ namespace Template.Managers
             {
                 StartCache();
             }
+            OnStart.Invoke();
         }
 
         #endregion
@@ -102,8 +126,9 @@ namespace Template.Managers
         public void StartCache()
         {
             Debug.Log("Start event Exec");
-            GameData.main.saves.AddToPref(Prefs.StartsCount, 1);
+            GameData.Saves.startsCount += 1;
             playedTime = Time.time;
+            
         }
         
         
@@ -134,19 +159,19 @@ namespace Template.Managers
         /// </summary>
         public void LoadLevel() //Создание уровня 
         {
-            var stdGameData = GameDataObject.GetData(true);
-            var stdData = stdGameData.main;
+            var stdGameData = dataManager.GetStandardData();
+            var stdData = stdGameData.MainData;
 #if UNITY_EDITOR
             if (stdGameData.DebugLevel.isDebugLevel)
             {
-                data.saves.SetPref(Prefs.Level, stdGameData.DebugLevel.levelID);
+                stdGameData.Saves.level = stdGameData.DebugLevel.levelID;
             }
 #endif
-            if (stdData.saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
-            if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + GameDataObject.GetData(true).name + "\" is empty"); return; }
+            if (stdGameData.Saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
+            if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + dataManager.GetStandardData().name + "\" is empty"); return; }
             
-            stdData.saves.SetLevel((int)stdData.saves.GetPref(Prefs.Level));
-            CurrentLevel = Instantiate(stdData.levelList[(int)stdData.saves.GetPref(Prefs.Level)]);
+            stdGameData.Saves.SetLevel(stdGameData.Saves.level);
+            CurrentLevel = Instantiate(stdData.levelList[stdGameData.Saves.level]);
             //Игрок и канвас
             SpawnPlayer();
             SpawnCanvas();
@@ -221,7 +246,7 @@ namespace Template.Managers
             }
             if (Input.GetKeyDown(KeyCode.P))
             {
-                data.saves.AddToPref(Prefs.Points, 10);
+                GameData.Saves.points += 10;
             }
 
 #endif
@@ -283,12 +308,12 @@ namespace Template.Managers
         /// </summary>
         public static void NextLevel()
         {
-            var data = GameDataObject.GetMain(true);
+            var data = Instance.dataManager.GetStandardData();
 
-            data.saves.SetPref(Prefs.Level, (int)data.saves.GetPref(Prefs.Level) + 1);
-
-            data.saves.SetLevel((int)data.saves.GetPref(Prefs.Level));
-            data.saves.AddToPref(Prefs.CompletedLevels, 1);
+            data.Saves.level++;
+            data.Saves.SetLevel(data.Saves.level);
+            data.Saves.completedLevels++;
+            
             SceneManager.LoadScene(0);
         }
 
@@ -299,13 +324,13 @@ namespace Template.Managers
         {
             if (pauseStatus)
             {
-                GameData.main.saves?.Save();
+                GameData.Saves?.Save();
             }
         }
 
         private void OnApplicationQuit()
         {
-            GameData.main.saves?.Save();
+            GameData.Saves?.Save();
         }
     }
 }

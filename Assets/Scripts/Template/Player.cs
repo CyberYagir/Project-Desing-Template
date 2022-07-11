@@ -1,18 +1,22 @@
+using System;
+using Template;
 using Template.Managers;
 using UnityEngine;
 
-/// <summary>
-/// Стандартный скрипт игрока
-/// </summary>
-public class Player : MonoBehaviour
+public class Player : MonoCustom
 {
     private Rigidbody rb;
-    private void Start()
+    
+
+    public override void OnStart()
     {
         rb = GetComponent<Rigidbody>();
     }
-    void Update()
+
+    public override void OnUpdate()
     {
         rb.isKinematic = GameManager.GameStage != GameStage.Game;
+        
+        print("PlayerUpdate");
     }
 }

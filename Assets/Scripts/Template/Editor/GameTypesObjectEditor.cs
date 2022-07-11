@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace Template.Editor
 {
-    [CustomEditor(typeof(GameDatasManagerObject))]
+    [CustomEditor(typeof(GameModesObject))]
     public class GameTypesObjectEditor : EditorTweaks
     {
-        GameDatasManagerObject types;
+        GameModesObject types;
 
         public void OnEnable()
         {
-            types = (GameDatasManagerObject)target;
+            types = (GameModesObject)target;
         }
 
         public void OnDisable()
@@ -63,9 +63,9 @@ namespace Template.Editor
                 }
 
                 var levelList = new List<string>();
-                if (GameDataObject.GetMain(true) != null)
+                if (DataManagerObject.StaticGetStandardData() != null)
                 {
-                    var mn = GameDataObject.GetMain(true);
+                    var mn = DataManagerObject.StaticGetStandardData().MainData;
                     for (int j = 0; j < mn.levelList.Count; j++)
                     {
                         levelList.Add(mn.levelList[j].name);

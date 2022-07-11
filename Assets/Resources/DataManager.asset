@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5562ead9a552d7e4aa8037685fcba78d, type: 3}
-  m_Name: SavesData
+  m_Script: {fileID: 11500000, guid: 6e8037910cdc0164d8bef98697893afa, type: 3}
+  m_Name: DataManager
   m_EditorClassIdentifier: 
-  level: 0
-  completedLevels: 1
-  startsCount: 1
-  points: 0
+  gameDatas:
+  - {fileID: 11400000, guid: 2a63f35561a11204f8aa763007afd304, type: 2}
+  gameTypes: {fileID: 11400000, guid: 59f6a2949b7478946a4127a81160aec5, type: 2}

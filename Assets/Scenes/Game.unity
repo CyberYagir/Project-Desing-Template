@@ -285,6 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1473b4fbe41efae449fdf1f31d495ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 0
 --- !u!1 &1241118939
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +316,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab317a61c88be84286e7f70db9bf1a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dataManager: {fileID: 11400000, guid: 22f55b698c74f39498ec49ece38894f8, type: 2}
   playedTime: 0
+  OnStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  OnFixedUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLateUpdate:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1241118941
 Transform:
   m_ObjectHideFlags: 0

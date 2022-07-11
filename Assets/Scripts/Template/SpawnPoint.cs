@@ -1,2 +1,2 @@
 using UnityEngine;
-public class SpawnPoint : MonoBehaviour {} //Пустой класс для поиска спавна по типу
+public class SpawnPoint : MonoBehaviour {} //РџСѓСЃС‚РѕР№ РєР»Р°СЃСЃ РґР»СЏ РїРѕРёСЃРєР° СЃРїР°РІРЅР° РїРѕ С‚РёРїСѓ

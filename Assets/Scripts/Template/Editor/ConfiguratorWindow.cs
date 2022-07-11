@@ -187,7 +187,7 @@ namespace Template.Editor
         [MenuItem("Template/Select GameData", false, priority = 10)]
         public static void SelectGameData()
         {
-            EditorGUIUtility.PingObject(GameDataObject.GetData());
+            EditorGUIUtility.PingObject(DataManagerObject.StaticGetStandardData());
         }
         public void ConfigureResourcesBtn()
         {
@@ -201,42 +201,63 @@ namespace Template.Editor
                 var path = AssetDatabase.GUIDToAssetPath(asset);
                 AssetDatabase.MoveAssetToTrash(path);
             }
+            
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
-            SavesDataObjectJson saves = null;
+            SaveDataObjectJson saves = null;
             if (Resources.Load<AbstractSavesDataObject>("SavesData") == null)
             {
-                saves = new SavesDataObjectJson();
+                saves = ScriptableObject.CreateInstance<SaveDataObjectJson>();
                 AssetDatabase.CreateAsset(saves, "Assets/Resources/SavesData.asset");
-                saves = Resources.Load<SavesDataObjectJson>("SavesData");
-
-                
-                EditorUtility.SetDirty(saves);
                 AssetDatabase.SaveAssets();
-                saves.Init();
+                EditorUtility.SetDirty(saves);
                 saves.Save();
-                Debug.Log($"Yaroslav: SavesData created! [Prefs added {saves.prefsData.Count}]");
             }
 
+            GameDataObject gameData = null;
             if (Resources.Load<GameDataObject>("GameData") == null)
             {
-                var gameData = new GameDataObject();
+                gameData = ScriptableObject.CreateInstance<GameDataObject>();
                 AssetDatabase.CreateAsset(gameData, "Assets/Resources/GameData.asset");
-                gameData.main = GetAllDataFromAssets();
-                gameData.main.saves = saves;
-                gameData.main.levelList = gameData.main.levelList.OrderBy(x => x.name).ToList();
-
+                
+                gameData.SetData(GetAllDataFromAssets(), saves);
+                
+                gameData.MainData.levelList = gameData.MainData.levelList.OrderBy(x => x.name).ToList();
+            
                 EditorUtility.SetDirty(gameData);
                 AssetDatabase.SaveAssets();
                 Debug.Log("Yaroslav: GameData created!");
             }
 
+            GameModesObject modes = null;
             if (Resources.Load<GameDataObject>("GameTypes") == null)
             {
-                AssetDatabase.CreateAsset(new GameDatasManagerObject() /*{ saves = saves}*/, "Assets/Resources/GameTypes.asset");
+                modes = ScriptableObject.CreateInstance<GameModesObject>();
+                AssetDatabase.CreateAsset(modes /*{ saves = saves}*/, "Assets/Resources/GameTypes.asset");
                 AssetDatabase.SaveAssets();
                 Debug.Log("Yaroslav: GameTypes created!");
             }
+
+            if (Resources.Load<DataManagerObject>("DataManager") == null)
+            {
+                var data = ScriptableObject.CreateInstance<DataManagerObject>();
+                data.AddGameData(gameData);
+                data.SetModesData(modes);
+            
+                AssetDatabase.CreateAsset(data /*{ saves = saves}*/, "Assets/Resources/DataManager.asset");
+            
+                AssetDatabase.SaveAssets();
+                
+                
+                
+                var gamemanager = FindObjectOfType<GameManager>();
+                gamemanager.dataManager = data;
+                EditorUtility.SetDirty(gamemanager);
+                
+                
+                Debug.Log("Yaroslav: GameTypes created!");
+            }
+
             AssetDatabase.SaveAssets();
         }
 

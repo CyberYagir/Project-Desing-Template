@@ -11,91 +11,47 @@ namespace Template.Scriptable
         public class GDOMain //Главные данные
         {
             public GameObject playerPrefab, canvas;
-            [HideInInspector]
-            public AbstractSavesDataObject saves;
+            [HideInInspector]public List<LevelManager> levelList = new List<LevelManager>();
             public bool startByTap;
-            [HideInInspector]
-            public List<LevelManager> levelList = new List<LevelManager>();
         }
-        [HideInInspector]
-        public DebugLevel DebugLevel = new DebugLevel();
+
+
+        [HideInInspector] public DebugLevel DebugLevel = new DebugLevel();
+
+        [HideInInspector] [SerializeField] private AbstractSavesDataObject saves;
+
+        [SerializeField] private GDOMain main;
         
-        public GDOMain main;
+        
+        public AbstractSavesDataObject Saves => saves;
+        public GDOMain MainData => main;
 
         //Остальные переменные
-    
-    
-    
+
+
+
         public GameDataObject()
         {
             main = new GDOMain();
         }
 
-        public static Dictionary<string, GameDataObject> CachedGameDatas;
 
-        public void Awake()
+        #region Editor
+
+
+
+        public void SetData(GDOMain newMain, AbstractSavesDataObject newSaveData) //Editor
         {
-            CacheGameDatas();
+            main = newMain;
+            SetSaves(newSaveData);
         }
 
-        /// <summary>
-        /// Кешированные геймдаты
-        /// </summary>
-        public static void CacheGameDatas()
+        public void SetSaves(AbstractSavesDataObject newSaveData) //Editor
         {
-            CachedGameDatas = new Dictionary<string, GameDataObject>();
-            var alldatas = Resources.LoadAll<GameDataObject>("");
-            foreach (var data in alldatas)
-            {
-                CachedGameDatas.Add(data.name, data);
-            }
+            saves = newSaveData;
         }
 
-        /// <summary>
-        /// Получение <b>GameData</b> из <b>Resources</b> в Assets
-        /// </summary>
-        /// <param name="getStandardData">������������ �� GameTypes?</param>
-        /// <returns></returns>
-        public static GameDataObject GetData(bool getStandardData = false)
-        {
-            GameDataObject data = null;
-            if (CachedGameDatas == null)
-            {
-                data = Resources.Load<GameDataObject>(getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"); 
-                CacheGameDatas();
-            }
-            else
-            {
-                try
-                {
-                    data = CachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
-                }
-                catch (System.Exception)
-                {
-                    CacheGameDatas();
-                    data = CachedGameDatas[getStandardData == false ? GameDatasManagerObject.GetGameDataByLevel() : "GameData"];
-                    throw;
-                }
-            }
-            if (data == null) { Debug.LogError("Yaroslav: GameData missing. Go to Menu>Tools>Yaroslav..."); return new GameDataObject(); };
-            if (getStandardData == false)
-            {
-                if (data.main.saves == null)
-                {
-                    data.main.saves = GetData(true).main.saves;
-                }
-            }
-            return data;
-        }
-
-        /// <summary>
-        /// �Получение <b>GDOMain</b> из <b>GameData</b> из <b>Resources</b> в Assets
-        /// </summary>
-        /// <returns></returns>
-        public static GDOMain GetMain(bool getStandardData = false)
-        {
-            return GetData(getStandardData).main;
-        }
+        #endregion
     }
 }
 

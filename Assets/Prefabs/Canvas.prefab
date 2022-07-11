@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 799664dd1cca2ba4799683fa49552628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 3
 --- !u!114 &4409560722399631421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,6 +1000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 140ee3a7a6ac361458b300ba3326809b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 3
   deathUI: {fileID: 3571249989138460997}
   winUI: {fileID: 6140330116709006749}
   tapToPlay: {fileID: 150766329522261575}

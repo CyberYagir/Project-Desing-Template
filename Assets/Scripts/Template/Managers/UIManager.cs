@@ -6,7 +6,7 @@ namespace Template.Managers
     /// <summary>
     /// Скрипт который находится на канвасе и управляет логикой UI
     /// </summary>
-    public class UIManager : MonoBehaviour
+    public class UIManager : MonoCustom
     {
         /// <summary>
         /// <b>Синглетон</b> менеджера для обращения к <b>НЕ</b> статическим методам и переменным. 
@@ -17,10 +17,13 @@ namespace Template.Managers
         [SerializeField] UIAnimate tapToPlay;
 
         #region Mono
-        private void Start()
+
+        public override void OnStart()
         {
+            base.OnStart();
             Instance = this;
             InitTapToPlay();
+            
         }
 
         /// <summary>
@@ -42,11 +45,11 @@ namespace Template.Managers
             }
         }
 
-        private void Update()
+        public override void OnUpdate()
         {
+            base.OnUpdate();
             EditorControls();
         }
-
         #endregion
 
         #region Buttons

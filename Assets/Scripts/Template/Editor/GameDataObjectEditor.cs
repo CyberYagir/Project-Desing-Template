@@ -18,53 +18,57 @@ namespace Template.Editor
         }
         public void OnDisable()
         {
-            gameData.main.levelList.RemoveAll(x => x == null);
+            gameData.MainData.levelList.RemoveAll(x => x == null);
             Save(gameData);
         }
         public void Sort()
         {
-            gameData.main.levelList.RemoveAll(x => x == null);
-            gameData.main.levelList = gameData.main.levelList.OrderBy(x => int.Parse(Regex.Match(x.name, @"\d+").Value)).ToList();
+            gameData.MainData.levelList.RemoveAll(x => x == null);
+            gameData.MainData.levelList = gameData.MainData.levelList.OrderBy(x => int.Parse(Regex.Match(x.name, @"\d+").Value)).ToList();
             Save(gameData);
         }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             DrawSeparator();
-            if (GameDataObject.GetData(true) == gameData)
+            if (DataManagerObject.StaticGetStandardData() == null)
+            {
+                GUILayout.Label("Create DataManager");
+                return;
+            }
+            if (DataManagerObject.StaticGetStandardData() == gameData)
             {
                 DrawMainGameData();
                 DrawSeparator();
 
+                
                 if (GUILayout.Button(gameData.DebugLevel.isDebugLevel ? "Disable Debug" : "Enable Debug"))
                 {
                     gameData.DebugLevel.isDebugLevel = !gameData.DebugLevel.isDebugLevel;
                     Save(this);
                 }
+
                 GUILayout.BeginHorizontal();
                 if (gameData.DebugLevel.isDebugLevel)
                 {
                     GUILayout.Label("Debug Level: ", GUILayout.MaxWidth(85));
                     List<string> levels = new List<string>();
-                    foreach (var it in gameData.main.levelList)
+                    foreach (var it in gameData.MainData.levelList)
                     {
                         levels.Add(it.name);
                     }
 
-                    gameData.DebugLevel.levelID = EditorGUILayout.Popup("", gameData.DebugLevel.levelID,
-                        levels.ToArray(), GUILayout.MinWidth(80));
-
+                    gameData.DebugLevel.levelID = EditorGUILayout.Popup("", gameData.DebugLevel.levelID, levels.ToArray(), GUILayout.MinWidth(80));
                 }
-                GUILayout.EndHorizontal();
 
+                GUILayout.EndHorizontal();
                 DrawSeparator();
             }
 
 
             if (GUILayout.Button("Find all objects"))
             {
-                gameData.main = ConfiguratorWindow.GetAllDataFromAssets();
-                gameData.main.saves = Resources.LoadAll<AbstractSavesDataObject>("")[0];
+                gameData.SetData(ConfiguratorWindow.GetAllDataFromAssets(), Resources.LoadAll<AbstractSavesDataObject>("")[0]);
                 Sort();
             }
         }
@@ -73,20 +77,20 @@ namespace Template.Editor
 
         public void DrawMainGameData()
         {
-            gameData.main.saves = (AbstractSavesDataObject) EditorGUILayout.ObjectField("Saves: ",
-                gameData.main.saves, typeof(AbstractSavesDataObject), false, GUILayout.MinWidth(50));
+            
+            gameData.SetSaves((AbstractSavesDataObject) EditorGUILayout.ObjectField("Saves: ", gameData.Saves, typeof(AbstractSavesDataObject), false, GUILayout.MinWidth(50)));
 
             GUILayout.Label("Levels List: ");
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Add Level"))
             {
-                gameData.main.levelList.Add(null);
+                gameData.MainData.levelList.Add(null);
             }
 
             if (GUILayout.Button("Autofind Levels"))
             {
-                gameData.main.levelList = FindLevels();
+                gameData.MainData.levelList = FindLevels();
                 Sort();
             }
 
@@ -99,18 +103,18 @@ namespace Template.Editor
             
             GUILayout.BeginHorizontal();
             {
-                gameData.main.levelList.RemoveAll(x => x == null);
+                gameData.MainData.levelList.RemoveAll(x => x == null);
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("main").FindPropertyRelative("levelList"), true);
                 if (serializedObject.FindProperty("main").FindPropertyRelative("levelList").isExpanded)
                 {
                     GUILayout.BeginVertical(GUILayout.MaxWidth(20));
                     {
                         GUILayout.Space(EditorGUIUtility.singleLineHeight + EditorGUIUtility.singleLineHeight / 2f);
-                        for (int i = 0; i < gameData.main.levelList.Count; i++)
+                        for (int i = 0; i < gameData.MainData.levelList.Count; i++)
                         {
                             if (GUILayout.Button("-", GUILayout.Width(20)))
                             {
-                                gameData.main.levelList.RemoveAt(i);
+                                gameData.MainData.levelList.RemoveAt(i);
                                 Save(gameData);
                                 return;
                             }
@@ -125,14 +129,14 @@ namespace Template.Editor
 
         public void DrawCustomLevelList()
         {
-            for (int i = 0; i < gameData.main.levelList.Count; i++)
+            for (int i = 0; i < gameData.MainData.levelList.Count; i++)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(i + ": ", GUILayout.MaxWidth(15));
-                var old = gameData.main.levelList[i];
-                gameData.main.levelList[i] = (LevelManager) EditorGUILayout.ObjectField("",
-                    gameData.main.levelList[i], typeof(LevelManager), false, GUILayout.MinWidth(50));
-                if (old != gameData.main.levelList[i])
+                var old = gameData.MainData.levelList[i];
+                gameData.MainData.levelList[i] = (LevelManager) EditorGUILayout.ObjectField("",
+                    gameData.MainData.levelList[i], typeof(LevelManager), false, GUILayout.MinWidth(50));
+                if (old != gameData.MainData.levelList[i])
                 {
                     Save(gameData);
                 }
@@ -141,9 +145,7 @@ namespace Template.Editor
                 {
                     if (i != 0)
                     {
-                        var th = gameData.main.levelList[i - 1];
-                        gameData.main.levelList[i - 1] = gameData.main.levelList[i];
-                        gameData.main.levelList[i] = th;
+                        (gameData.MainData.levelList[i - 1], gameData.MainData.levelList[i]) = (gameData.MainData.levelList[i], gameData.MainData.levelList[i - 1]);
                     }
 
                     Save(gameData);
@@ -153,11 +155,9 @@ namespace Template.Editor
 
                 if (GUILayout.Button("↓", GUILayout.Width(20)))
                 {
-                    if (i != gameData.main.levelList.Count - 1)
+                    if (i != gameData.MainData.levelList.Count - 1)
                     {
-                        var th = gameData.main.levelList[i + 1];
-                        gameData.main.levelList[i + 1] = gameData.main.levelList[i];
-                        gameData.main.levelList[i] = th;
+                        (gameData.MainData.levelList[i + 1], gameData.MainData.levelList[i]) = (gameData.MainData.levelList[i], gameData.MainData.levelList[i + 1]);
                     }
 
                     Save(gameData);
@@ -166,7 +166,7 @@ namespace Template.Editor
 
                 if (GUILayout.Button("-", GUILayout.Width(20)))
                 {
-                    gameData.main.levelList.RemoveAt(i);
+                    gameData.MainData.levelList.RemoveAt(i);
                     Save(gameData);
                     return;
                 }

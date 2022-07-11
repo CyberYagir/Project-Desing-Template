@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Template;
 using UnityEngine;
 
-public class ParticlesSpawn : MonoBehaviour
+public class ParticlesSpawn : MonoCustom
 {
     List<GameObject> particles = new List<GameObject>();
     GameObject holder;
     public GameObject prefab;
     public float particleSize = 0.3f;
-    private void Start()
+    public override void OnStart()
     {
+        base.OnStart();
         holder = new GameObject();
         holder.name = "Holder Particles: " + transform.GetInstanceID();
         for (int i = 0; i < 4; i++)

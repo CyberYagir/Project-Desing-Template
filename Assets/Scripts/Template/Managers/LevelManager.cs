@@ -3,9 +3,9 @@ using UnityEngine;
 namespace Template.Managers
 {
     /// <summary>
-    /// Скрипт для <b>каунтеров</b> левела, и <b>других объектов чтобы не искать FindObjectOfType</b>.
+    /// РЎРєСЂРёРїС‚ РґР»СЏ <b>РєР°СѓРЅС‚РµСЂРѕРІ</b> Р»РµРІРµР»Р°, Рё <b>РґСЂСѓРіРёС… РѕР±СЉРµРєС‚РѕРІ С‡С‚РѕР±С‹ РЅРµ РёСЃРєР°С‚СЊ FindObjectOfType</b>.
     /// </summary>
-    public class LevelManager : MonoBehaviour
+    public class LevelManager : MonoCustom
     {
         public SpawnPoint PlayerSpawn { get; private set; }
         private void Awake(){ PlayerSpawn = GetComponentInChildren<SpawnPoint>();}

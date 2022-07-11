@@ -1,4 +1,5 @@
 using Template.Managers;
+using Template.Scriptable;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ namespace Template.Editor
     {
         public override void OnInspectorGUI()
         {
+            var gameManager = target as GameManager;
+            gameManager.dataManager = (DataManagerObject) EditorGUILayout.ObjectField("Data Manager: ", gameManager.dataManager, typeof(DataManagerObject), allowSceneObjects: false);
+            DrawSeparator();
             if (Application.isPlaying)
             {
                 GUI.enabled = false;
@@ -16,6 +20,7 @@ namespace Template.Editor
                 EditorGUILayout.ObjectField("Player: ", GameManager.Player, typeof(GameObject), true);
                 EditorGUILayout.ObjectField("Level: ", GameManager.CurrentLevel, typeof(LevelManager), true);
                 EditorGUILayout.ObjectField("Camera: ", GameManager.Camera, typeof(Camera), true);
+                EditorGUILayout.ObjectField("GameData: ", GameManager.GameData, typeof(GameDataObject), true);
                 GUI.enabled = true;
             }
             else
