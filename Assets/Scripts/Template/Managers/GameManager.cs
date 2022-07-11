@@ -80,6 +80,13 @@ namespace Template.Managers
 
             QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
 
+
+            if (dataManager == null)
+            {
+                Debug.LogError("Yaroslav: DataManager is Empty. Move DataManager to GameManager or Click Template>Configurator>Configure Resources/All");
+                return;
+            }
+
             dataManager.SetSaveDataForAllGameData();
             GameData = dataManager.GetDataByMode();
             GameData.Saves.Load();
