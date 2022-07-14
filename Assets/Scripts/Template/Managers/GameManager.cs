@@ -7,22 +7,19 @@ using Event = Template.Tweaks.Event;
 
 namespace Template.Managers
 {
-    public enum GameStage { StartWait, Game, EndWait };
+    public enum GameStage { StartWait, Game, EndWait, Pause};
     /// <summary>
     /// Игровой менеджер.
     /// </summary>
-    public class GameManager : MonoBehaviour
+    public class GameManager : SingletonCustom<GameManager>
     {
-        /// <summary>
-        /// <b>Синглетон</b> менеджера для обращения к <b>НЕ</b> статическим методам и переменным. 
-        /// </summary>
-        public static GameManager Instance { get; private set; }
+        [SerializeField] private EventsController eventsController;
 
         //Юзабельное
         /// <summary>
         /// <i>Свойство:</i> <b>LevelManager</b> текущего уровная на сцене.
         /// </summary>
-        public static LevelManager CurrentLevel { get; private set; }
+        public static LevelLogic CurrentLevel { get; private set; }
         /// <summary>
         /// <i>Свойство:</i> Текущий игрок на сцене.
         /// </summary>
@@ -58,20 +55,18 @@ namespace Template.Managers
         /// </summary>
         public static event System.Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
 
-
+        [HideInInspector]
         public float playedTime = 0;
 
 
-        public Event OnStart = new Event();
-        public Event OnUpdate = new Event();
-        public Event OnFixedUpdate = new Event();
-        public Event OnLateUpdate = new Event();
         
         #region Mono
-        public void Awake()
-        {
-            Instance = this;
 
+        protected override void Awake()
+        {
+            SingletonSet(this);
+            eventsController.Init();
+            
             StartGame = delegate { };
             EndGame = delegate { };
             TapToPlayUI = delegate { };
@@ -93,29 +88,23 @@ namespace Template.Managers
             data = GameData.MainData;
             OnLevelStarted(data);
             LoadLevel();
+            
+            base.Awake();
         }
-        
-        
-        
-        
-        private void Update()
+
+
+        public override void OnUpdate()
         {
-            if (Instance == null) Instance = this;
-            
-            OnUpdate.Invoke();
-            OnLateUpdate.Invoke();
-            
-            EditorControls();
+            base.OnUpdate();
+            if (Instance == null)
+                SingletonSet(this);
             TapToStartCheck();
         }
 
-        private void FixedUpdate()
+
+        public override void OnStart()
         {
-            OnFixedUpdate.Invoke();
-        }
-        
-        private void Start()
-        {
+            base.OnStart();
             Application.targetFrameRate = 60;
             if (GameData.MainData.startByTap)
             {
@@ -125,9 +114,8 @@ namespace Template.Managers
             {
                 StartCache();
             }
-            OnStart.Invoke();
         }
-
+        
         #endregion
 
         public void StartCache()
@@ -239,26 +227,7 @@ namespace Template.Managers
         }
 
         #endregion
-
-        #region Editor
-        /// <summary>
-        /// Метод обрабатывает хоткеи во время игры в эдиторе.
-        /// </summary>
-        public void EditorControls()
-        {
-#if UNITY_EDITOR
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                NextLevel();
-            }
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                GameData.Saves.points += 10;
-            }
-
-#endif
-        }
-        #endregion
+        
 
         #region Static
         /// <summary>
@@ -307,7 +276,8 @@ namespace Template.Managers
         /// </summary>
         public static void Restart()
         {
-            SceneManager.LoadScene(0);
+            //SceneManager.LoadScene(0);
+            GameData.Saves.Save();
         }
 
         /// <summary>
@@ -320,8 +290,7 @@ namespace Template.Managers
             data.Saves.level++;
             data.Saves.SetLevel(data.Saves.level);
             data.Saves.completedLevels++;
-            
-            SceneManager.LoadScene(0);
+            data.Saves.Save();
         }
 
         #endregion

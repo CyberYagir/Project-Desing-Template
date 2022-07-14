@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Windows
+    uniqueID: 2415575019
+    locked: 0
+  - name: Overlay
+    uniqueID: 138193165
+    locked: 0
+  - name: Fader
+    uniqueID: 859080113
+    locked: 0

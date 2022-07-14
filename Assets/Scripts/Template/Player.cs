@@ -16,7 +16,5 @@ public class Player : MonoCustom
     public override void OnUpdate()
     {
         rb.isKinematic = GameManager.GameStage != GameStage.Game;
-        
-        print("PlayerUpdate");
     }
 }

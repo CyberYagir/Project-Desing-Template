@@ -1,4 +1,8 @@
+using DG.Tweening;
 using Template.Tweaks;
+using Template.UI;
+using Template.UI.Windows;
+using TMPro;
 using UnityEngine;
 
 namespace Template.Managers
@@ -8,13 +12,22 @@ namespace Template.Managers
     /// </summary>
     public class UIManager : MonoCustom
     {
+        [System.Serializable]
+        public class Overlays
+        {
+            public UIAnimatedOverlay loseOverlay, winOverlay;
+            public bool IsShowed => loseOverlay.IsShowed || winOverlay.IsShowed;
+        }
+        
         /// <summary>
         /// <b>Синглетон</b> менеджера для обращения к <b>НЕ</b> статическим методам и переменным. 
         /// </summary>
         public static UIManager Instance;
 
-        [SerializeField] GameObject deathUI, winUI;
-        [SerializeField] UIAnimate tapToPlay;
+        [SerializeField] private TMP_Text levelText;
+        [SerializeField] private Overlays overlays;
+        [SerializeField] private UICrossSceneFader crossFader;
+        [SerializeField] DOTweenAnimation tapToPlay;
 
         #region Mono
 
@@ -22,6 +35,7 @@ namespace Template.Managers
         {
             base.OnStart();
             Instance = this;
+            levelText.text = NonAllocString.instance + $"Level {GameManager.GameData.Saves.completedLevels}";
             InitTapToPlay();
             
         }
@@ -36,7 +50,11 @@ namespace Template.Managers
                 if (GameManager.GameStage == GameStage.StartWait)
                 {
                     tapToPlay.gameObject.SetActive(true);
-                    GameManager.TapToPlayUI += () => { tapToPlay.PlayForward(); }; //Анимации к эвенту тапа
+                    tapToPlay.DOPlay();
+                    GameManager.TapToPlayUI += () =>
+                    {
+                        tapToPlay.DOPlayBackwards();
+                    }; //Анимации к эвенту тапа
                 }
                 else
                 {
@@ -68,6 +86,11 @@ namespace Template.Managers
             {
                 Loose();
             }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                NextLevel();
+            }
+            
 #endif
         }
 
@@ -77,6 +100,7 @@ namespace Template.Managers
         public void NextLevel()
         {
             GameManager.NextLevel();
+            crossFader.LoadScene(NonAllocString.instance + "Game");
         }
 
         /// <summary>
@@ -85,6 +109,7 @@ namespace Template.Managers
         public void Restart()
         {
             GameManager.Restart();
+            crossFader.LoadScene("Game");
         }
 
         #endregion
@@ -95,10 +120,10 @@ namespace Template.Managers
         /// </summary>
         public void Win()
         {
-            if (!winUI.active && !deathUI.active)
+            if (!overlays.IsShowed)
             {
                 GameManager.OnLevelEnd();
-                winUI.SetActive(true);
+                overlays.winOverlay.Show();
             }
         }
 
@@ -107,10 +132,10 @@ namespace Template.Managers
         /// </summary>
         public void Loose()
         {
-            if (!winUI.active && !deathUI.active)
+            if (!overlays.IsShowed)
             {
                 GameManager.OnLevelEnd(false);
-                deathUI.SetActive(true);
+                overlays.loseOverlay.Show();
             }
         }
 

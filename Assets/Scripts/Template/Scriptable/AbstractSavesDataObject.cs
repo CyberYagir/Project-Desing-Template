@@ -6,11 +6,18 @@ namespace Template.Scriptable
 {
     public abstract class AbstractSavesDataObject : CustomScriptableObject
     {
-        public int level = 5;
+        [System.Serializable]
+        public class Options
+        {
+            public bool sound = true;
+            public bool vibration = true;
+        }
+        public int level;
         public int completedLevels;
         public int startsCount;
         public int points;
 
+        public Options options;
 
         /// <summary>
         /// Задать левел с учётом повторения. Если идекс будет слишком большой то вернёт 0 левел.

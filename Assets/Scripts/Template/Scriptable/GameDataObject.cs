@@ -11,7 +11,8 @@ namespace Template.Scriptable
         public class GDOMain //Главные данные
         {
             public GameObject playerPrefab, canvas;
-            [HideInInspector]public List<LevelManager> levelList = new List<LevelManager>();
+            [HideInInspector]public List<LevelLogic> levelList = new List<LevelLogic>();
+            public bool isDebugBuild;
             public bool startByTap;
         }
 

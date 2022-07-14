@@ -23,11 +23,11 @@ namespace Template
 
         [SerializeField] private Methods methods;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (methods.HasFlag(Methods.Start))
             {
-                GameManager.Instance.OnStart.AddListener(OnStart);
+                EventsController.Instance.OnStart.AddListener(OnStart);
             }
         }
 
@@ -40,17 +40,17 @@ namespace Template
         {
             if (methods.HasFlag(Methods.Update))
             {
-                GameManager.Instance.OnUpdate += OnUpdate;
+                EventsController.Instance.OnUpdate += OnUpdate;
             }
 
             if (methods.HasFlag(Methods.LateUpdate))
             {
-                GameManager.Instance.OnLateUpdate += OnLateUpdate;
+                EventsController.Instance.OnLateUpdate += OnLateUpdate;
             }
 
             if (methods.HasFlag(Methods.FixedUpdate))
             {
-                GameManager.Instance.OnFixedUpdate += OnFixedUpdate;
+                EventsController.Instance.OnFixedUpdate += OnFixedUpdate;
             }
         }
 
@@ -58,17 +58,17 @@ namespace Template
         {
             if (methods.HasFlag(Methods.Update))
             {
-                GameManager.Instance.OnUpdate -= OnUpdate;
+                EventsController.Instance.OnUpdate -= OnUpdate;
             }
 
             if (methods.HasFlag(Methods.LateUpdate))
             {
-                GameManager.Instance.OnLateUpdate -= OnLateUpdate;
+                EventsController.Instance.OnLateUpdate -= OnLateUpdate;
             }
 
             if (methods.HasFlag(Methods.FixedUpdate))
             {
-                GameManager.Instance.OnFixedUpdate -=OnFixedUpdate;
+                EventsController.Instance.OnFixedUpdate -=OnFixedUpdate;
             }
         }
 

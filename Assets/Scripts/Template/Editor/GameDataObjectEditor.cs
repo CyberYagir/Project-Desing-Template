@@ -175,13 +175,13 @@ namespace Template.Editor
             }
         }
 
-        public List<LevelManager> FindLevels()
+        public List<LevelLogic> FindLevels()
         {
             var prefabs = AssetDatabase.FindAssets("t:prefab");
-            var n = new List<LevelManager>();
+            var n = new List<LevelLogic>();
             foreach (var prefab in prefabs)
             {
-                var level = AssetDatabase.LoadAssetAtPath<LevelManager>(AssetDatabase.GUIDToAssetPath(prefab));
+                var level = AssetDatabase.LoadAssetAtPath<LevelLogic>(AssetDatabase.GUIDToAssetPath(prefab));
                 if (level != null)
                 {
                     n.Add(level);

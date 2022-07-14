@@ -10,8 +10,9 @@ namespace Template.Editor
     {
         public override void OnInspectorGUI()
         {
-            var gameManager = target as GameManager;
-            gameManager.dataManager = (DataManagerObject) EditorGUILayout.ObjectField("Data Manager: ", gameManager.dataManager, typeof(DataManagerObject), allowSceneObjects: false);
+            base.OnInspectorGUI();
+            // var gameManager = target as GameManager;
+            // gameManager.dataManager = (DataManagerObject) EditorGUILayout.ObjectField("Data Manager: ", gameManager.dataManager, typeof(DataManagerObject), allowSceneObjects: false);
             DrawSeparator();
             if (Application.isPlaying)
             {
