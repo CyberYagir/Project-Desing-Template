@@ -45,5 +45,10 @@ namespace Template.UI.Windows
         {
             UIManager.Instance.Loose();
         }
+
+        public void NextLevel()
+        {
+            UIManager.Instance.NextLevel();
+        }
     }
 }
