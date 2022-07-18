@@ -1,15 +1,15 @@
 using System;
 using Template.Tweaks;
-using Event = Template.Tweaks.Event;
 
 namespace Template
 {
     public class EventsController : Singleton<EventsController>
     {
-        public Event OnStart = new Event();
-        public Event OnUpdate = new Event();
-        public Event OnFixedUpdate = new Event();
-        public Event OnLateUpdate = new Event();
+        public Action OnStart { get; set; } = delegate { };
+        public Action OnUpdate { get; set; } = delegate { };
+        public Action OnFixedUpdate { get; set; } = delegate { };
+        public Action OnLateFixedUpdate { get; set; } = delegate { };
+        public Action OnLateUpdate { get; set; } = delegate { };
 
         public void Init()
         {
@@ -18,17 +18,18 @@ namespace Template
 
         private void Start()
         {
-            OnStart.Run();
+            OnStart.Invoke();
         }
 
         private void Update()
         {
-            OnUpdate.Run();
-            OnLateUpdate.Run();
+            OnUpdate.Invoke();
+            OnLateUpdate.Invoke();
         }
         private void FixedUpdate()
         {
-            OnFixedUpdate.Run();
+            OnFixedUpdate.Invoke();
+            OnLateFixedUpdate.Invoke();
         }
     }
 

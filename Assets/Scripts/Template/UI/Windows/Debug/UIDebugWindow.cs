@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Template.Managers;
+using Template.Tweaks;
 using TMPro;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace Template.UI.Windows
     {
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TMP_InputField moneyInput;
+        public UEvent HideAll = new UEvent();
         protected override void Awake()
         {
             base.Awake();
@@ -25,25 +27,27 @@ namespace Template.UI.Windows
 
         public void LoadLevel()
         {
-            GameManager.GameData.Saves.level = dropdown.value;
+            GameManager.GameData.Saves.LevelData.SetLevel(dropdown.value);
             GameManager.GameData.Saves.Save();
             UIManager.Instance.NextLevel();
         }
 
         public void Add()
         {
-            GameManager.GameData.Saves.points += int.Parse("0" + moneyInput.text);
+            GameManager.GameData.Saves.PlayerData.IncreaseMoney(int.Parse("0" + moneyInput.text));
             GameManager.GameData.Saves.Save();
         }
 
         public void Win()
         {
             UIManager.Instance.Win();
+            HideAll.Run();
         }
 
         public void Lose()
         {
             UIManager.Instance.Loose();
+            HideAll.Run();
         }
 
         public void NextLevel()

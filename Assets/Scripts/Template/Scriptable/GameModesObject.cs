@@ -24,7 +24,7 @@ public class GameModesObject : CustomScriptableObject
         var gameData = manager.GetStandardData();
         var saves = gameData.Saves;
 
-        var data = gameDatas.Find(x => x.levelID == saves.level);
+        var data = gameDatas.Find(x => x.levelID == saves.LevelData.Level);
         if (data != null)
         {
             return data.gameData;

@@ -3,63 +3,36 @@ using Template.Scriptable;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using Event = Template.Tweaks.Event;
 
 namespace Template.Managers
 {
     public enum GameStage { StartWait, Game, EndWait, Pause};
-    /// <summary>
-    /// Игровой менеджер.
-    /// </summary>
     public class GameManager : SingletonCustom<GameManager>
     {
         [SerializeField] private EventsController eventsController;
-
-        //Юзабельное
-        /// <summary>
-        /// <i>Свойство:</i> <b>LevelManager</b> текущего уровная на сцене.
-        /// </summary>
+        
         public static LevelLogic CurrentLevel { get; private set; }
-        /// <summary>
-        /// <i>Свойство:</i> Текущий игрок на сцене.
-        /// </summary>
         public static GameObject Player { get; private set; }
-        /// <summary>
-        /// <i>Свойство:</i> <b>Canvas</b> текущего уровная на сцене.
-        /// </summary>
         public static Canvas Canvas { get; private set; }
-        
         public static Camera Camera { get; private set; }
-        /// <summary>
-        /// <i>Свойство:</i> Стадия игры на которой сейчас находится игрок. 
-        /// </summary>
-        public static GameStage GameStage;
+
+        public static GameStage GameStage { get; set; }
         
-        public DataManagerObject dataManager;
-        
-        //Данные
-        GameDataObject.GDOMain data;
-        public static GameDataObject GameData;
+        [SerializeField] private DataManagerObject dataManager;
+
+        public static GameDataObject GameData { get; private set; }
+        private GameDataObject.GDOMain data => GameData?.MainData;
+        public static DataManagerObject DataManager => Instance?.dataManager;
     
         // Эвенты 
-        /// <summary>
-        /// <i>Эвент</i> Вызывается при <b>GameStage</b> равному <b>Game</b>
-        /// </summary>
-        public static event System.Action StartGame = delegate { }; //Когда gameStage становится Game
-        /// <summary>
-        /// <i>Эвент</i> Вызывается при <b>GameStage</b> равному <b>EndWait</b>
-        /// </summary>
-        public static event System.Action EndGame = delegate { }; //Когда gameStage становится EndWait
-        /// <summary>
-        /// <i>Эвент</i> Вызывается при первом нажатии на экран, если при этом свойство <b>startByTab</b> в <b>GameData</b> равно <b>True</b>
-        /// </summary>
-        public static event System.Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
+        public static event Action StartGame = delegate { }; //Когда gameStage становится Game
+        public static event Action EndGame = delegate { }; //Когда gameStage становится EndWait
+        public static event Action TapToPlayUI = delegate { }; //Когда игрок тапает в первый раз при data.startByTap
 
-        [HideInInspector]
-        public float playedTime = 0;
+        public float PlayedTime { get; private set; } = 0;
 
 
-        
+
         #region Mono
 
         protected override void Awake()
@@ -85,7 +58,6 @@ namespace Template.Managers
             dataManager.SetSaveDataForAllGameData();
             GameData = dataManager.GetDataByMode();
             GameData.Saves.Load();
-            data = GameData.MainData;
             OnLevelStarted(data);
             LoadLevel();
             
@@ -121,8 +93,8 @@ namespace Template.Managers
         public void StartCache()
         {
             Debug.Log("Start event Exec");
-            GameData.Saves.startsCount += 1;
-            playedTime = Time.time;
+            GameData.Saves.LevelData.AddStartCount();
+            PlayedTime = Time.time;
             
         }
         
@@ -159,14 +131,14 @@ namespace Template.Managers
 #if UNITY_EDITOR
             if (stdGameData.DebugLevel.isDebugLevel)
             {
-                stdGameData.Saves.level = stdGameData.DebugLevel.levelID;
+                stdGameData.Saves.LevelData.SetLevel(stdGameData.DebugLevel.levelID);
             }
 #endif
             if (stdGameData.Saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
             if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + dataManager.GetStandardData().name + "\" is empty"); return; }
             
-            stdGameData.Saves.SetLevel(stdGameData.Saves.level);
-            CurrentLevel = Instantiate(stdData.levelList[stdGameData.Saves.level]);
+            stdGameData.Saves.SetLevel(stdGameData.Saves.LevelData.Level);
+            CurrentLevel = Instantiate(stdData.levelList[stdGameData.Saves.LevelData.Level]);
             //Игрок и канвас
             SpawnPlayer();
             SpawnCanvas();
@@ -287,9 +259,9 @@ namespace Template.Managers
         {
             var data = Instance.dataManager.GetStandardData();
 
-            data.Saves.level++;
-            data.Saves.SetLevel(data.Saves.level);
-            data.Saves.completedLevels++;
+            data.Saves.LevelData.AddLevel();
+            data.Saves.SetLevel(data.Saves.LevelData.Level);
+            data.Saves.LevelData.AddCompletedCount();
             data.Saves.Save();
         }
 
@@ -307,6 +279,11 @@ namespace Template.Managers
         private void OnApplicationQuit()
         {
             GameData.Saves?.Save();
+        }
+
+        public void SetDataManager(DataManagerObject dataManagerObject)
+        {
+            dataManager = dataManagerObject;
         }
     }
 }

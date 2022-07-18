@@ -35,7 +35,7 @@ namespace Template.Managers
         {
             base.OnStart();
             Instance = this;
-            levelText.text = NonAllocString.instance + $"Level {GameManager.GameData.Saves.completedLevels}";
+            levelText.text = NonAllocString.instance + $"Level {GameManager.GameData.Saves.LevelData.CompletedCount}";
             InitTapToPlay();
             
         }

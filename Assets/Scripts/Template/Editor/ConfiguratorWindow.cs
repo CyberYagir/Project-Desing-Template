@@ -251,7 +251,7 @@ namespace Template.Editor
                 
                 
                 var gamemanager = FindObjectOfType<GameManager>();
-                gamemanager.dataManager = data;
+                gamemanager.SetDataManager(data);
                 EditorUtility.SetDirty(gamemanager);
                 
                 

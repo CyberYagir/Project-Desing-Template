@@ -9,8 +9,8 @@ namespace Template.Scriptable
     {
         private static SaveDataObjectJson defaultValues;
         private string path;
-        
-        public void SetPath()
+
+        private void SetPath()
         {
             if (string.IsNullOrEmpty(path))
             {

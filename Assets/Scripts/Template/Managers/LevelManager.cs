@@ -7,6 +7,5 @@ namespace Template.Managers
     /// </summary>
     public class LevelManager : LevelLogic
     {
-        private void Awake(){ PlayerSpawn = GetComponentInChildren<SpawnPoint>();}
     }
 }

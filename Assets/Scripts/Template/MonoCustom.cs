@@ -27,7 +27,7 @@ namespace Template
         {
             if (methods.HasFlag(Methods.Start))
             {
-                EventsController.Instance.OnStart.AddListener(OnStart);
+                EventsController.Instance.OnStart += OnStart;
             }
         }
 

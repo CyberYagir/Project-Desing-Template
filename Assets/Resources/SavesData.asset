@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5562ead9a552d7e4aa8037685fcba78d, type: 3}
   m_Name: SavesData
   m_EditorClassIdentifier: 
-  level: 0
-  completedLevels: 0
-  startsCount: 0
-  points: 0
-  options:
-    sound: 1
-    vibration: 1
+  levelData:
+    level: 2
+    completedLevels: 24
+    startsCount: 95
+  playerData:
+    coins: 5000
+  optionsData:
+    sound: 0
+    vibration: 0

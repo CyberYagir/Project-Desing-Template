@@ -14,7 +14,7 @@ namespace Template.Managers
 
         public static void PlayHaptic()
         {
-            if(!GameManager.GameData.Saves.options.vibration)
+            if(!GameManager.GameData.Saves.OptionsData.Vibration)
                 return;
         
             if (Time.time - Instance.lastTimeHaptic < 0.05f)

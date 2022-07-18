@@ -7,14 +7,14 @@ namespace Template.UI.Windows
     {
         private void OnEnable()
         {
-            active = GameManager.GameData.Saves.options.vibration;
+            active = GameManager.GameData.Saves.OptionsData.Vibration;
             Active();
         }
 
         public override void Active()
         {
             base.Active();
-            GameManager.GameData.Saves.options.vibration = active;
+            GameManager.GameData.Saves.OptionsData.SetVibration(active);
             GameManager.GameData.Saves.Save();
         }
     }

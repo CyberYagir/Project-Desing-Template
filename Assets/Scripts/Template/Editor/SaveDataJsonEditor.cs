@@ -2,21 +2,43 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Template.Editor;
 using Template.Scriptable;
 using UnityEditor;
 using UnityEngine;
 
 
 [CustomEditor(typeof(SaveDataObjectJson))]
-public class SaveDataJsonEditor : Editor
+public class SaveDataJsonEditor : EditorTweaks
 {
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
+        DrawSeparator();
+
+        var data = (target as SaveDataObjectJson);
+        
         if (GUILayout.Button("Reset"))
         {
-            (target as SaveDataObjectJson).ResetObject();
+            data.ResetObject();
         }
+
+        string currentJson = "";
+        string savedJson = "";
+        var path = Application.persistentDataPath + "/Save.json";
+        if (File.Exists(path))
+        {
+            savedJson = File.ReadAllText(path);
+            currentJson = JsonUtility.ToJson(data);
+        }
+
+        GUI.enabled = currentJson != savedJson;
+        if (GUILayout.Button("Save"))
+        {
+            data.Save();
+        }
+
+        GUI.enabled = true;
     }
 
     [MenuItem("Template/Open Saves")]
@@ -41,8 +63,8 @@ public class SaveDataJsonEditor : Editor
         (target as SaveDataObjectJson)?.Load();
     }
 
-    private void OnDisable()
-    {
-        (target as SaveDataObjectJson)?.Save();
-    }
+    // private void OnDisable()
+    // {
+    //     (target as SaveDataObjectJson)?.Save();
+    // }
 }

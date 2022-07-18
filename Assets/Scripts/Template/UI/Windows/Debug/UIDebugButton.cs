@@ -1,5 +1,6 @@
 using Template.Managers;
 using Template.UI.Windows;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,8 +21,14 @@ namespace Template.UI.Windows
             {
                 var debugW = Instantiate(debugWindow.gameObject, GameManager.Canvas.transform).GetComponent<WindowAnimations>();
                 debugW.GetCanvas().sortingLayerID = 1;
+                debugW.GetComponent<UIDebugWindow>().HideAll.AddListener(HideOptions);
                 button.onClick.AddListener(debugW.ShowWindow);
             }
+        }
+
+        public void HideOptions()
+        {
+            GetComponentInParent<WindowAnimations>().HideWindow(false);
         }
     }
 }
