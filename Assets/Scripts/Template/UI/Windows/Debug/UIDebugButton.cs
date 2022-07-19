@@ -13,7 +13,7 @@ namespace Template.UI.Windows
         public override void OnStart()
         {
             base.OnStart();
-            if (!GameManager.GameData.MainData.isDebugBuild)
+            if (!GameManager.GameData.isDebugBuild)
             {
                 gameObject.SetActive(false);
             }

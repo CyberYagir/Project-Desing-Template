@@ -19,11 +19,11 @@ namespace Template.UI.Windows
         {
             base.Awake();
             var options = new List<TMP_Dropdown.OptionData>();
-            for (int i = 0; i < GameManager.GameData.MainData.levelList.Count; i++)
+            for (int i = 0; i < GameManager.GameData.Levels.Count; i++)
             {
-                if (GameManager.GameData.MainData.levelList[i] != null)
+                if (GameManager.GameData.Levels[i] != null)
                 {
-                    options.Add(new TMP_Dropdown.OptionData(GameManager.GameData.MainData.levelList[i].transform.name));
+                    options.Add(new TMP_Dropdown.OptionData(GameManager.GameData.Levels[i].transform.name));
                 }
             }
             dropdown.options = options;

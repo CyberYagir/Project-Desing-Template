@@ -7,49 +7,48 @@ namespace Template.Scriptable
     [CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
     public class GameDataObject : CustomScriptableObject
     {
-        [System.Serializable]
-        public class GDOMain //Главные данные
-        {
-            [HideInInspector]public List<LevelLogic> levelList = new List<LevelLogic>();
-            public bool isDebugBuild;
-        }
 
+        
 
-        [HideInInspector] public DebugLevel DebugLevel = new DebugLevel();
-
+        [HideInInspector] [SerializeField] private List<LevelLogic> levelList = new List<LevelLogic>();
         [HideInInspector] [SerializeField] private AbstractSavesDataObject saves;
-
-        [SerializeField] private GDOMain main;
+        [HideInInspector] [SerializeField] private SoundDataObject sound;
+        
+        
+        
+        public bool isDebugBuild;
+        [HideInInspector] public DebugLevel DebugLevel = new DebugLevel();
+        
         
         
         public AbstractSavesDataObject Saves => saves;
-        public GDOMain MainData => main;
+        public SoundDataObject Sound => sound;
+        public List<LevelLogic> Levels => levelList;
 
         //Остальные переменные
 
-
-
-        public GameDataObject()
-        {
-            main = new GDOMain();
-        }
+        
 
 
         #region Editor
-
-
-
-        public void SetData(GDOMain newMain, AbstractSavesDataObject newSaveData) //Editor
+        public void SetData(List<LevelLogic> levels, AbstractSavesDataObject newSaveData) //Editor
         {
-            main = newMain;
+            SetLevels(levels);
             SetSaves(newSaveData);
         }
 
+        public void SetLevels(List<LevelLogic> levels)
+        {
+            levelList = levels;
+        }
         public void SetSaves(AbstractSavesDataObject newSaveData) //Editor
         {
             saves = newSaveData;
         }
-
+        public void SetSound(SoundDataObject soundData)
+        {
+            sound = soundData;
+        }
         #endregion
 
 
@@ -69,6 +68,7 @@ namespace Template.Scriptable
             return chache;
         }
 #endif
+
     }
 }
         

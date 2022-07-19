@@ -402,7 +402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   methods: 0
   levelData:
-    playerController: {fileID: 2347415505109782433, guid: a446188be2d78ac499f745a73b20a814,
+    playerController: {fileID: 2347415505109782433, guid: 57656ad4767841545be5677efc0c5139,
       type: 3}
     canvasController: {fileID: 4995606290776614337, guid: 93c1f840ab8d52144a21145685ef2058,
       type: 3}

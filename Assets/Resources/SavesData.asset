@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SavesData
   m_EditorClassIdentifier: 
   levelData:
-    level: 2
-    completedLevels: 24
-    startsCount: 95
+    level: 0
+    completedLevels: 44
+    startsCount: 0
   playerData:
-    coins: 5000
+    coins: 11500
   optionsData:
-    sound: 0
-    vibration: 0
+    sound: 1
+    vibration: 1

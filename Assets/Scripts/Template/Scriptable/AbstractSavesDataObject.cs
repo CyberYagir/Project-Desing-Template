@@ -10,8 +10,8 @@ namespace Template.Scriptable
         [System.Serializable]
         public class OptionsSaveData
         {
-            [SerializeField] private bool sound = false;
-            [SerializeField] private bool vibration = false;
+            [SerializeField] private bool sound = true;
+            [SerializeField] private bool vibration = true;
 
             public bool Sound => sound;
             public bool Vibration => vibration;
@@ -108,7 +108,7 @@ namespace Template.Scriptable
                 LevelData.SetCompetedCount(1);
             }
 
-            if (id >= GameManager.GameData.MainData.levelList.Count)
+            if (id >= GameManager.GameData.Levels.Count)
             {
                 LevelData.SetLevel(0);
             }

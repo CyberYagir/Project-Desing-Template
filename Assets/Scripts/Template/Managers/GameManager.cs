@@ -22,7 +22,6 @@ namespace Template.Managers
         [Header("Spawned Data")]
         [ReadOnly] [SerializeField] private LevelLogic CurrentLevel;
 
-        private GameDataObject.GDOMain data => GameData?.MainData;
         private float playedTime = 0;
 
         #region Mono
@@ -74,7 +73,6 @@ namespace Template.Managers
         public void SpawnLevel()
         {
             var stdGameData = gameData;
-            var stdData = stdGameData.MainData;
 #if UNITY_EDITOR
             if (stdGameData.DebugLevel.isDebugLevel)
             {
@@ -82,10 +80,10 @@ namespace Template.Managers
             }
 #endif
             if (stdGameData.Saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
-            if (stdData.levelList == null || stdData.levelList.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + gameData.name + "\" is empty"); return; }
+            if (stdGameData.Levels == null || stdGameData.Levels.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + gameData.name + "\" is empty"); return; }
             
             stdGameData.Saves.SetLevel(stdGameData.Saves.LevelData.Level);
-            CurrentLevel = Instantiate(stdData.levelList[stdGameData.Saves.LevelData.Level]);
+            CurrentLevel = Instantiate(stdGameData.Levels[stdGameData.Saves.LevelData.Level]);
 
         }
         

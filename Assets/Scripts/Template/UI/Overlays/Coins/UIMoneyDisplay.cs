@@ -17,13 +17,22 @@ namespace Template.UI.Overlays
         {
             SingletonSet(this);   
             GameManager.GameData.Saves.PlayerData.OnIncreaseMoney += UpdateText;
-            UpdateText();
+            UpdateText(false);
         }
 
         public void UpdateText()
         {
             text.text = FormatNumber(GameManager.GameData.Saves.PlayerData.Coins);
-            Punch();     
+            Punch();
+        }
+        
+        public void UpdateText(bool punch)
+        {
+            text.text = FormatNumber(GameManager.GameData.Saves.PlayerData.Coins);
+            if (punch)
+            {
+                Punch();
+            }
         }
 
         public void Punch()
@@ -54,9 +63,9 @@ namespace Template.UI.Overlays
             if (num >= 100000) {
                 return (num / 1000D).ToString("0.#k");
             }
-            if (num >= 10000) {
-                return (num / 1000D).ToString("0.##k");
-            }
+            // if (num >= 10000) {
+            //     return (num / 1000D).ToString("0.##k");
+            // }
             return num.ToString("#,0");
         }
     }
