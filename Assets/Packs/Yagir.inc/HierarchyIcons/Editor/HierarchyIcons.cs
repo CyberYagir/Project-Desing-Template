@@ -109,7 +109,6 @@ class HierarchyIcons
     public static void RepaintFolders(GameObject go, Rect iconPos)
     {
         GUIContent folder = new GUIContent();
-        bool isOpened = false;
         if (go.transform.childCount == 0)
         {
             folder = EditorGUIUtility.IconContent("d_FolderEmpty Icon");
@@ -119,7 +118,6 @@ class HierarchyIcons
             if (openedFolders.ContainsKey(go.transform))
             {
                 folder = EditorGUIUtility.IconContent("Folder On Icon");
-                isOpened = true;
             }
             else
             {

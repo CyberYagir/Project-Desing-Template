@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Template.UI.Windows
 {
-    public class WindowAnimations: MonoBehaviour
+    public class WindowAnimations: UIControllerElement
     {
         [SerializeField] protected Image background;
         [SerializeField] protected Transform window;
@@ -28,7 +28,7 @@ namespace Template.UI.Windows
             canvas.enabled = false;
         }
 
-        private GameStage stageOnShow;
+        private GamePhase phaseOnShow;
 
     
     
@@ -42,8 +42,8 @@ namespace Template.UI.Windows
                 background.raycastTarget = true;
                 background.DOFade(alpha, speed).SetLink(background.gameObject);
                 window.DOScale(Vector3.one,speed).SetLink(window.gameObject);
-                stageOnShow = GameManager.GameStage;
-                GameManager.GameStage = GameStage.Pause;
+                phaseOnShow = controller.GamePhase;
+                controller.GamePhase = GamePhase.Pause;
                 isShowed = true;
                 OnShow.Invoke();
             }
@@ -56,7 +56,8 @@ namespace Template.UI.Windows
                 background.raycastTarget = false;
                 background.DOFade(0, speed).SetLink(background.gameObject);
                 window.DOScale(Vector3.zero, speed).SetLink(window.gameObject);
-                GameManager.GameStage = stageOnShow;
+                print(phaseOnShow);
+                controller.GamePhase = phaseOnShow;
                 OnHide.Invoke();
                 StopAllCoroutines();
                 StartCoroutine(Wait(unblock));

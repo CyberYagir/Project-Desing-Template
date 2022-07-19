@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class ParticlesSpawn : MonoCustom
 {
-    List<GameObject> particles = new List<GameObject>();
-    GameObject holder;
-    public GameObject prefab;
-    public float particleSize = 0.3f;
+    private List<GameObject> particles = new List<GameObject>();
+    private GameObject holder;
+    [SerializeField] private GameObject prefab;
+    [SerializeField] private float particleSize = 0.3f;
     public override void OnStart()
     {
         base.OnStart();

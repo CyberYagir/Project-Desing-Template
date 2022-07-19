@@ -6,7 +6,7 @@ namespace Template.UI.Windows
     public class UIAnimatedOverlay : MonoCustom
     {
         [SerializeField] private Canvas canvas;
-        [SerializeField] private Animation animation;
+        [SerializeField] private new Animation animation;
         [SerializeField] private UnityEvent OnShow;
         public bool IsShowed => canvas.enabled;
 

@@ -10,10 +10,8 @@ namespace Template.Scriptable
         [System.Serializable]
         public class GDOMain //Главные данные
         {
-            public GameObject playerPrefab, canvas;
             [HideInInspector]public List<LevelLogic> levelList = new List<LevelLogic>();
             public bool isDebugBuild;
-            public bool startByTap;
         }
 
 
@@ -53,6 +51,25 @@ namespace Template.Scriptable
         }
 
         #endregion
+
+
+#if UNITY_EDITOR
+        private static GameDataObject chache;
+        public static GameDataObject StaticGetStandardData() //For Editor
+        {
+            if (chache == null)
+            {
+                var datas = Resources.LoadAll<GameDataObject>("");
+                if (datas.Length != 0)
+                {
+                    chache = datas[0];
+                }
+            }
+
+            return chache;
+        }
+#endif
     }
 }
+        
 

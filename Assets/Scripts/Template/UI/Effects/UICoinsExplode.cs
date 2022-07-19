@@ -11,7 +11,7 @@ namespace Template.UI.Effects
     public class UICoinsExplode : MonoCustom
     {
         [SerializeField] private UIParticleSystem particles;
-        [SerializeField] private ParticleSystem particleSystem;
+        [SerializeField] private new ParticleSystem particleSystem;
         [SerializeField] private float speed;
         [SerializeField] private float timeToGravity;
 
@@ -58,7 +58,7 @@ namespace Template.UI.Effects
                     Vector3 v1 = particleSystem.transform.TransformPoint(coins[i].position);
                     Vector3 v2 = point.transform.position;
 
-                    v1 = Vector3.MoveTowards(v1, v2, (coins[i].startLifetime / particleSystem.startLifetime) * speed * Time.deltaTime);
+                    v1 = Vector3.MoveTowards(v1, v2, (coins[i].startLifetime / particleSystem.main.startLifetime.constant) * speed * Time.deltaTime);
 
                     if ((v1 - v2).sqrMagnitude < 0.01f)
                     {

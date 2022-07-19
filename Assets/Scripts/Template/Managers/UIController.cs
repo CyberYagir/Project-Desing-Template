@@ -10,7 +10,7 @@ namespace Template.Managers
     /// <summary>
     /// Скрипт который находится на канвасе и управляет логикой UI
     /// </summary>
-    public class UIManager : MonoCustom
+    public class UIController : MonoCustom
     {
         [System.Serializable]
         public class Overlays
@@ -18,50 +18,41 @@ namespace Template.Managers
             public UIAnimatedOverlay loseOverlay, winOverlay;
             public bool IsShowed => loseOverlay.IsShowed || winOverlay.IsShowed;
         }
-        
-        /// <summary>
-        /// <b>Синглетон</b> менеджера для обращения к <b>НЕ</b> статическим методам и переменным. 
-        /// </summary>
-        public static UIManager Instance;
 
         [SerializeField] private TMP_Text levelText;
-        [SerializeField] private Overlays overlays;
         [SerializeField] private UICrossSceneFader crossFader;
-        [SerializeField] DOTweenAnimation tapToPlay;
+        [Space]
+        [SerializeField] private ElementsController elementsController;
+        [SerializeField] private Overlays overlays;
+
+        [Header("Data")]
+        [ReadOnly] [SerializeField] private LevelLogic levelLogic;
+        [ReadOnly] [SerializeField] private GameManager gameManager;
+
+
+        public bool IsOverUI => elementsController.IsOverElements();
+        
+        public GamePhase GamePhase
+        {
+            get => levelLogic.GamePhase;
+            set => levelLogic.ChangePhase(value);
+        }
 
         #region Mono
 
+        public void Init(ref LevelLogic level)
+        {
+            levelLogic = level;
+            gameManager = GameManager.Instance;
+            elementsController.Init(this);
+        }
+        
         public override void OnStart()
         {
             base.OnStart();
-            Instance = this;
             levelText.text = NonAllocString.instance + $"Level {GameManager.GameData.Saves.LevelData.CompletedCount}";
-            InitTapToPlay();
-            
         }
 
-        /// <summary>
-        /// Скрытие текста TapToPlay при первом нажатии путём привязывания к эвенту. 
-        /// </summary>
-        public void InitTapToPlay()
-        {
-            if (tapToPlay != null)
-            {
-                if (GameManager.GameStage == GameStage.StartWait)
-                {
-                    tapToPlay.gameObject.SetActive(true);
-                    tapToPlay.DOPlay();
-                    GameManager.TapToPlayUI += () =>
-                    {
-                        tapToPlay.DOPlayBackwards();
-                    }; //Анимации к эвенту тапа
-                }
-                else
-                {
-                    tapToPlay.gameObject.SetActive(false);
-                }
-            }
-        }
 
         public override void OnUpdate()
         {
@@ -122,7 +113,7 @@ namespace Template.Managers
         {
             if (!overlays.IsShowed)
             {
-                GameManager.OnLevelEnd();
+                gameManager.OnLevelEnd();
                 overlays.winOverlay.Show();
             }
         }
@@ -134,7 +125,7 @@ namespace Template.Managers
         {
             if (!overlays.IsShowed)
             {
-                GameManager.OnLevelEnd(false);
+                gameManager.OnLevelEnd(false);
                 overlays.loseOverlay.Show();
             }
         }

@@ -210,7 +210,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 508.51575, y: 0}
   m_SizeDelta: {x: 819.733, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6478971507520451996
@@ -2544,7 +2544,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7031241461502427453}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.84083813
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2801,7 +2801,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -1879392277
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_TargetDisplay: 0
 --- !u!114 &3092819980613944229
 MonoBehaviour:
@@ -2859,6 +2859,9 @@ MonoBehaviour:
   methods: 0
   dropdown: {fileID: 1280915860126820592}
   moneyInput: {fileID: 2821300791206145954}
+  HideAll:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7490040471198631712
 GameObject:
   m_ObjectHideFlags: 0

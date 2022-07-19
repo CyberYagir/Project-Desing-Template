@@ -108,7 +108,7 @@ namespace Template.Scriptable
                 LevelData.SetCompetedCount(1);
             }
 
-            if (id >= GameManager.DataManager.GetStandardData().MainData.levelList.Count)
+            if (id >= GameManager.GameData.MainData.levelList.Count)
             {
                 LevelData.SetLevel(0);
             }

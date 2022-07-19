@@ -10,7 +10,11 @@ namespace Template.UI.Windows
     {
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TMP_InputField moneyInput;
+
+        private UIController controller;
+        
         public UEvent HideAll = new UEvent();
+        
         protected override void Awake()
         {
             base.Awake();
@@ -23,13 +27,16 @@ namespace Template.UI.Windows
                 }
             }
             dropdown.options = options;
+
+            controller = GetComponentInParent<UIController>();
         }
 
         public void LoadLevel()
         {
             GameManager.GameData.Saves.LevelData.SetLevel(dropdown.value);
             GameManager.GameData.Saves.Save();
-            UIManager.Instance.NextLevel();
+            
+            controller.NextLevel();
         }
 
         public void Add()
@@ -40,19 +47,19 @@ namespace Template.UI.Windows
 
         public void Win()
         {
-            UIManager.Instance.Win();
+            controller.Win();
             HideAll.Run();
         }
 
         public void Lose()
         {
-            UIManager.Instance.Loose();
+            controller.Loose();
             HideAll.Run();
         }
 
         public void NextLevel()
         {
-            UIManager.Instance.NextLevel();
+            controller.NextLevel();
         }
     }
 }

@@ -26,7 +26,9 @@ namespace Template.Editor
                     GUILayout.BeginHorizontal();
                     {
                         GUI.enabled = false;
+#pragma warning disable 618
                         EditorGUILayout.ObjectField(prefabs[i], typeof(GameObject));
+#pragma warning restore 618
                         GUI.enabled = true;
                         if (GUILayout.Button("Open Prefab"))
                         {

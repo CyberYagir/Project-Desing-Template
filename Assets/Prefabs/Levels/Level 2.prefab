@@ -400,7 +400,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3450d63d70effb4db544c3bf702f2a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpawn: {fileID: 2435215453836847680}
+  methods: 0
+  levelData:
+    playerController: {fileID: 2347415505109782433, guid: a446188be2d78ac499f745a73b20a814,
+      type: 3}
+    canvasController: {fileID: 4995606290776614337, guid: 93c1f840ab8d52144a21145685ef2058,
+      type: 3}
+    cameraController: {fileID: 3718510629360013981, guid: 0bd53e1101959a845b4f2b0b0c635be3,
+      type: 3}
+  playerSpawn: {fileID: 6693574437078907557}
+  gamePhase: 0
 --- !u!1 &4814675072849027475
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,6 +764,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c413c61bccc1b3d408441fa0b28085b5, type: 3}
+--- !u!114 &6693574437078907557 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5186533717602916066, guid: c413c61bccc1b3d408441fa0b28085b5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1954032906292161607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7fa362717957b444801a8ae7cda25ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2435215453836847680 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4239436593435985415, guid: c413c61bccc1b3d408441fa0b28085b5,

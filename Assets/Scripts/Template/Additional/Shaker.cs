@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace Template.Tweaks
 {
-    public class Shaker : Singleton<Shaker>
+    public class Shaker
     {
-        [ReadOnly] [SerializeField] private int currentShakeLayer;
         [System.Serializable]
         public class ShakeOptions
         {
@@ -17,12 +16,20 @@ namespace Template.Tweaks
             public bool snapping = false;
             public bool fadeOut = true;
         }
-        void Awake()
+
+        public static Shaker Instance { get; private set; }
+
+        [ReadOnly] [SerializeField] private Transform transform;
+        [ReadOnly] [SerializeField] private int currentShakeLayer;
+        
+
+        public Shaker(Transform cameraObject)
         {
-            SingletonSet(this);
+            Instance = this;
+            transform = cameraObject;
         }
 
-        public static void Shake(ShakeOptions shake)
+        public void Shake(ShakeOptions shake)
         {
             if (shake.shakeLayer >= Instance.currentShakeLayer)
             {

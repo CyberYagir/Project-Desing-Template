@@ -19,8 +19,10 @@ namespace Template.UI.Windows
             }
             else
             {
-                var debugW = Instantiate(debugWindow.gameObject, GameManager.Canvas.transform).GetComponent<WindowAnimations>();
+                var controller = GetComponentInParent<UIController>();
+                var debugW = Instantiate(debugWindow.gameObject, controller.transform).GetComponent<WindowAnimations>();
                 debugW.GetCanvas().sortingLayerID = 1;
+                debugW.Init(controller);
                 debugW.GetComponent<UIDebugWindow>().HideAll.AddListener(HideOptions);
                 button.onClick.AddListener(debugW.ShowWindow);
             }

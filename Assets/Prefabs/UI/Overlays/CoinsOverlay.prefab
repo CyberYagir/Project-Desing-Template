@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5662207334951534654}
   - component: {fileID: 5519816526017965870}
   - component: {fileID: 8943453878549671285}
+  - component: {fileID: 802838212837841906}
   m_Layer: 5
   m_Name: CoinsOverlay
   m_TagString: Untagged
@@ -67,6 +68,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2075200828621353564}
   m_CullTransparentMesh: 1
+--- !u!114 &802838212837841906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2075200828621353564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2308081391791664879
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,11 +134,11 @@ RectTransform:
   m_Father: {fileID: 5662207334951534654}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 962.2121, y: 968.99976}
-  m_SizeDelta: {x: 606.1404, y: 165.4203}
-  m_Pivot: {x: 1.0000001, y: 0.5}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -45.788147, y: -292.29028}
+  m_SizeDelta: {x: 606.1404, y: 165.42029}
+  m_Pivot: {x: 1.0000001, y: 1}
 --- !u!222 &3102365781210610740
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -161,7 +192,7 @@ Canvas:
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 1
+  m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
@@ -216,7 +247,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -99.501465, y: 6.14}
+  m_AnchoredPosition: {x: -99.501465, y: 6.1400146}
   m_SizeDelta: {x: 137.003, y: 137.003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3732017065279102624
@@ -292,7 +323,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -98.15432, y: 7.1042}
+  m_AnchoredPosition: {x: -98.15433, y: 7.104187}
   m_SizeDelta: {x: 409.8333, y: 151.21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8035218284553950624

@@ -31,12 +31,12 @@ namespace Template.Editor
         {
             base.OnInspectorGUI();
             DrawSeparator();
-            if (DataManagerObject.StaticGetStandardData() == null)
+            if (GameDataObject.StaticGetStandardData() == null)
             {
                 GUILayout.Label("Create DataManager");
                 return;
             }
-            if (DataManagerObject.StaticGetStandardData() == gameData)
+            if (GameDataObject.StaticGetStandardData() == gameData)
             {
                 DrawMainGameData();
                 DrawSeparator();
@@ -66,11 +66,11 @@ namespace Template.Editor
             }
 
 
-            if (GUILayout.Button("Find all objects"))
-            {
-                gameData.SetData(ConfiguratorWindow.GetAllDataFromAssets(), Resources.LoadAll<AbstractSavesDataObject>("")[0]);
-                Sort();
-            }
+            // if (GUILayout.Button("Find all objects"))
+            // {
+            //     gameData.SetData(ConfiguratorWindow.GetAllDataFromAssets(), Resources.LoadAll<AbstractSavesDataObject>("")[0]);
+            //     Sort();
+            // }
         }
 
 
