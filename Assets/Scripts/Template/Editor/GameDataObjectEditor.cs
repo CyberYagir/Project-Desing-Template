@@ -88,9 +88,10 @@ namespace Template.Editor
         {
             
             gameData.SetSaves((AbstractSavesDataObject) EditorGUILayout.ObjectField("Saves: ", gameData.Saves, typeof(AbstractSavesDataObject), false, GUILayout.MinWidth(50)));
-            gameData.SetSound((SoundDataObject) EditorGUILayout.ObjectField("Saves: ", gameData.Sound, typeof(SoundDataObject), false, GUILayout.MinWidth(50)));
+            gameData.SetSound((SoundDataObject) EditorGUILayout.ObjectField("Sounds: ", gameData.Sound, typeof(SoundDataObject), false, GUILayout.MinWidth(50)));
 
-            GUILayout.Label("Levels List: ");
+            DrawSeparator();
+            GUILayout.Space(10);
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Add Level"))

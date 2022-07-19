@@ -14,9 +14,12 @@ namespace Template.UI.Overlays
         public override void Init(UIController controller)
         {
             base.Init(controller);
-            dotween.DOPlay();
-            controller.GamePhase = GamePhase.StartWait;
-            StartCoroutine(WaitForTap());
+            if (gameObject.active)
+            {
+                dotween.DOPlay();
+                controller.GamePhase = GamePhase.StartWait;
+                StartCoroutine(WaitForTap());
+            }
         }
 
         IEnumerator WaitForTap()
