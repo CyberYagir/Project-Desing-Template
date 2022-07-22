@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Template.Scriptable;
 using Template.Tweaks;
 using Template.UI;
 using Template.UI.Windows;
@@ -37,20 +38,22 @@ namespace Template.Managers
             get => levelLogic.GamePhase;
             set => levelLogic.ChangePhase(value);
         }
+        public GameDataObject GameData => gameManager?.GameData;
+        
 
         #region Mono
 
-        public void Init(ref LevelLogic level)
+        public void Init(LevelLogic level, GameManager gameManager)
         {
             levelLogic = level;
-            gameManager = GameManager.Instance;
+            this.gameManager = gameManager;
             elementsController.Init(this);
         }
         
         public override void OnStart()
         {
             base.OnStart();
-            levelText.text = NonAllocString.instance + $"Level {GameManager.GameData.Saves.LevelData.CompletedCount}";
+            levelText.text = NonAllocString.instance + $"Level {gameManager.GameData.Saves.LevelData.CompletedCount}";
         }
 
 
@@ -90,7 +93,7 @@ namespace Template.Managers
         /// </summary>
         public void NextLevel()
         {
-            GameManager.NextLevel();
+            GameManager.NextLevel(gameManager.GameData);
             crossFader.LoadScene(NonAllocString.instance + "Game");
         }
 
@@ -99,7 +102,7 @@ namespace Template.Managers
         /// </summary>
         public void Restart()
         {
-            GameManager.Restart();
+            GameManager.Restart(gameManager.GameData);
             crossFader.LoadScene("Game");
         }
 

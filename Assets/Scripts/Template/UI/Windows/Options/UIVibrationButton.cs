@@ -5,17 +5,23 @@ namespace Template.UI.Windows
 {
     public class UIVibrationButton : UIOptionsButton
     {
-        private void OnEnable()
+        public override void Init(UIController controller)
         {
-            active = GameManager.GameData.Saves.OptionsData.Vibration;
+            base.Init(controller);
+            active = controller.GameData.Saves.OptionsData.Vibration;
             Active();
+
+        }
+        public override void OnStart()
+        {
+            base.OnStart();
         }
 
         public override void Active()
         {
             base.Active();
-            GameManager.GameData.Saves.OptionsData.SetVibration(active);
-            GameManager.GameData.Saves.Save();
+            controller.GameData.Saves.OptionsData.SetVibration(active);
+            controller.GameData.Saves.Save();
         }
     }
 }

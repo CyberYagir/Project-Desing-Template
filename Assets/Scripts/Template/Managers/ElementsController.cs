@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Template.UI;
+using Template.UI.Overlays;
 using Template.UI.Windows;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -39,8 +41,6 @@ namespace Template.Managers
                 });
             }
         }
-        
-
         public bool IsOverElements()
         {
             var eventData = new PointerEventData(EventSystem.current)

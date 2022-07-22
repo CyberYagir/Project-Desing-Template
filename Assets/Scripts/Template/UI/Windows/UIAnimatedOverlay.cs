@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Template.UI.Windows
 {
-    public class UIAnimatedOverlay : MonoCustom
+    public class UIAnimatedOverlay : UIControllerElement
     {
         [SerializeField] private Canvas canvas;
         [SerializeField] private new Animation animation;

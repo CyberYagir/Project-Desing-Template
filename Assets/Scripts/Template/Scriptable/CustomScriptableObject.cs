@@ -2,5 +2,5 @@ using UnityEngine;
 
 namespace Template.Scriptable
 {
-    public class CustomScriptableObject:ScriptableObject{}
+    public abstract class CustomScriptableObject:ScriptableObject{}
 }

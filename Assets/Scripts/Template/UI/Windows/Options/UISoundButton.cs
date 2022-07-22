@@ -4,17 +4,19 @@ namespace Template.UI.Windows
 {
     public class UISoundButton : UIOptionsButton
     {
-        private void OnEnable()
+
+        public override void Init(UIController controller)
         {
-            active = GameManager.GameData.Saves.OptionsData.Sound;
+            base.Init(controller);
+            active = controller.GameData.Saves.OptionsData.Sound;
             Active();
         }
 
         public override void Active()
         {
             base.Active();
-            GameManager.GameData.Saves.OptionsData.SetSound(active);
-            GameManager.GameData.Saves.Save();
+            controller.GameData.Saves.OptionsData.SetSound(active);
+            controller.GameData.Saves.Save();
         }
     }
 }

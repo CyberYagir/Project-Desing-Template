@@ -101,14 +101,14 @@ namespace Template.Scriptable
         /// Задать левел с учётом повторения. Если идекс будет слишком большой то вернёт 0 левел.
         /// </summary>
         /// <param name="id">Номер левела</param>
-        public virtual void SetLevel(int id)
+        public virtual void SetLevel(int id, GameDataObject gameData)
         {
             if (LevelData.CompletedCount == 0)
             {
                 LevelData.SetCompetedCount(1);
             }
 
-            if (id >= GameManager.GameData.Levels.Count)
+            if (id >= gameData.Levels.Count)
             {
                 LevelData.SetLevel(0);
             }

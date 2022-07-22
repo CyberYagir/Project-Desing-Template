@@ -8,13 +8,8 @@ using UnityEngine.SceneManagement;
 namespace Template.Managers
 {
     public enum GamePhase { StartWait, Game, EndWait, Pause};
-    public class GameManager : SingletonCustom<GameManager>
+    public class GameManager : MonoCustom
     {
-        
-        public static GameDataObject GameData => Instance.gameData;
-        
-        
-        
         [Header("References")]
         [SerializeField] private GameDataObject gameData;
         [SerializeField] private EventsController eventsController;
@@ -22,13 +17,15 @@ namespace Template.Managers
         [Header("Spawned Data")]
         [ReadOnly] [SerializeField] private LevelLogic CurrentLevel;
 
+
+        public GameDataObject GameData => gameData;
+
         private float playedTime = 0;
 
         #region Mono
 
         protected override void Awake()
         {
-            SingletonSet(this);
             eventsController.Init();
             QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1);
             if (gameData == null)
@@ -36,7 +33,7 @@ namespace Template.Managers
                 Debug.LogError("Yaroslav: GameData is Empty. Move GameData to GameManager or Click Template>Configurator>Configure Resources/All");
                 return;
             }
-            GameData.Saves.Load();
+            gameData.Saves.Load();
             LoadLevel();
             base.Awake();
         }
@@ -49,12 +46,6 @@ namespace Template.Managers
             playedTime = Time.time;
         }
         
-        public override void OnUpdate()
-        {
-            base.OnUpdate();
-            if (Instance == null)
-                SingletonSet(this);
-        }
         #endregion
         
         
@@ -68,7 +59,7 @@ namespace Template.Managers
         {
             //Игрок и канвас
             SpawnLevel();
-            CurrentLevel.Init();   
+            CurrentLevel.Init(this);   
         } 
         public void SpawnLevel()
         {
@@ -82,7 +73,7 @@ namespace Template.Managers
             if (stdGameData.Saves == null) { Debug.LogError("Yaroslav: Saves Not Found"); return; }
             if (stdGameData.Levels == null || stdGameData.Levels.Count == 0) { Debug.LogError("Yaroslav: Levels List in \"" + gameData.name + "\" is empty"); return; }
             
-            stdGameData.Saves.SetLevel(stdGameData.Saves.LevelData.Level);
+            stdGameData.Saves.SetLevel(stdGameData.Saves.LevelData.Level, gameData);
             CurrentLevel = Instantiate(stdGameData.Levels[stdGameData.Saves.LevelData.Level]);
 
         }
@@ -113,20 +104,20 @@ namespace Template.Managers
         /// <summary>
         /// Перезапускает текущий левел. 
         /// </summary>
-        public static void Restart()
+        public static void Restart(GameDataObject gameData)
         {
-            GameData.Saves.Save();
+            gameData.Saves.Save();
         }
 
         /// <summary>
         /// Загружает следующий левел (Уровни залуплены).
         /// </summary>
-        public static void NextLevel()
+        public static void NextLevel(GameDataObject gameData)
         {
-            var data = GameData;
+            var data = gameData;
 
             data.Saves.LevelData.AddLevel();
-            data.Saves.SetLevel(data.Saves.LevelData.Level);
+            data.Saves.SetLevel(data.Saves.LevelData.Level, gameData);
             data.Saves.LevelData.AddCompletedCount();
             data.Saves.Save();
         }

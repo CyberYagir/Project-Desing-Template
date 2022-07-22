@@ -855,6 +855,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abbfce1c4cc08a54e99e999db4653f09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 1
+  subElements: []
   onSprite: {fileID: 2446018579940278777, guid: dc7d676d566579048bd56ffab950bd2a,
     type: 3}
   offSprite: {fileID: -6977984014213172740, guid: dc7d676d566579048bd56ffab950bd2a,
@@ -1008,6 +1010,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1f88f93a7fe6f40950d28476e4ff80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 1
+  subElements: []
   onSprite: {fileID: 3348966455116883120, guid: dc7d676d566579048bd56ffab950bd2a,
     type: 3}
   offSprite: {fileID: -4849292597985875402, guid: dc7d676d566579048bd56ffab950bd2a,
@@ -1149,6 +1153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   methods: 1
+  subElements: []
   debugWindow: {fileID: 7831461593830955849, guid: 327f73139686000479452c5e353dcb8b,
     type: 3}
   button: {fileID: 3038212243319965328}
@@ -1795,6 +1800,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39af07136e28e354c8ec3ea8282b515d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 0
+  subElements:
+  - {fileID: 8348064542960278656}
+  - {fileID: 1335906918949645068}
+  - {fileID: 1552951968378765323}
   background: {fileID: 8585829091321745664}
   window: {fileID: 1126329170312964149}
   canvas: {fileID: 1472914300759224818}

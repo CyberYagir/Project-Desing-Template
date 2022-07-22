@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5519816526017965870}
   - component: {fileID: 8943453878549671285}
   - component: {fileID: 802838212837841906}
+  - component: {fileID: 7529062856516341302}
   m_Layer: 5
   m_Name: CoinsOverlay
   m_TagString: Untagged
@@ -98,6 +99,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7529062856516341302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2075200828621353564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a6d552bb0960f4c9d3fd29b3102da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  methods: 1
+  subElements: []
+  text: {fileID: 7356617839523856698}
+  punchTransform: {fileID: 3169350428777356610}
+  magnetPoint: {fileID: 5723212303391461718}
 --- !u!1 &2308081391791664879
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,7 +128,6 @@ GameObject:
   - component: {fileID: 3102365781210610740}
   - component: {fileID: 4412945302145595558}
   - component: {fileID: 6560652456826582469}
-  - component: {fileID: 5759157020703506648}
   m_Layer: 5
   m_Name: Counter
   m_TagString: Untagged
@@ -199,20 +216,6 @@ Canvas:
   m_SortingLayerID: 138193165
   m_SortingOrder: 2
   m_TargetDisplay: 0
---- !u!114 &5759157020703506648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2308081391791664879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5a6d552bb0960f4c9d3fd29b3102da9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 7356617839523856698}
-  magnetPoint: {fileID: 5723212303391461718}
 --- !u!1 &2762405806224434434
 GameObject:
   m_ObjectHideFlags: 0

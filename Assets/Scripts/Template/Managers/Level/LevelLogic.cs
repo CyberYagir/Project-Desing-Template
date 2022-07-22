@@ -14,7 +14,7 @@ namespace Template.Managers
         
         [Space] [SerializeField] private SpawnPoint playerSpawn;
         [SerializeField] private GamePhase gamePhase;
-        
+        private GameManager gameManager;
         public SpawnPoint PlayerSpawn => playerSpawn;
         public GamePhase GamePhase => gamePhase;
         public UnityEvent<GamePhase> OnChangePhase { get; set; } = new UnityEvent<GamePhase>();
@@ -42,10 +42,11 @@ namespace Template.Managers
             OnChangePhase?.Invoke(gamePhase);
         }
 
-        public void Init()
+        public void Init(GameManager gameManager)
         {
+            this.gameManager = gameManager;
             ChangePhase(GamePhase.Game);
-            levelCreator = new LevelCreator(levelData, this);
+            levelCreator = new LevelCreator(levelData, this, gameManager);
             levelEvents = new LevelEvents();
             ConfigurePlayer();
         }

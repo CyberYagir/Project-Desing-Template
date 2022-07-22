@@ -1,3 +1,4 @@
+using Template.Scriptable;
 using UnityEngine;
 
 namespace Template.Managers
@@ -5,6 +6,7 @@ namespace Template.Managers
     public class HapticManager : MonoBehaviour
     {
         public static HapticManager Instance;
+        [SerializeField] private GameManager gameManager;
         private float lastTimeHaptic;
         private void Awake()
         {
@@ -14,7 +16,7 @@ namespace Template.Managers
 
         public static void PlayHaptic()
         {
-            if(!GameManager.GameData.Saves.OptionsData.Vibration)
+            if(!Instance.gameManager.GameData.Saves.OptionsData.Vibration)
                 return;
         
             if (Time.time - Instance.lastTimeHaptic < 0.05f)

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Template.Managers;
 using Template.Tweaks;
+using Template.UI.Overlays;
 using TMPro;
 using UnityEngine;
 
 namespace Template.UI.Windows
 {
-    public class UIDebugWindow : MonoCustom
+    public class UIDebugWindow : UIControllerElement
     {
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TMP_InputField moneyInput;
@@ -14,35 +15,35 @@ namespace Template.UI.Windows
         private UIController controller;
         
         public UEvent HideAll = new UEvent();
-        
-        protected override void Awake()
+
+        public override void Init(UIController controller)
         {
-            base.Awake();
             var options = new List<TMP_Dropdown.OptionData>();
-            for (int i = 0; i < GameManager.GameData.Levels.Count; i++)
+            for (int i = 0; i < controller.GameData.Levels.Count; i++)
             {
-                if (GameManager.GameData.Levels[i] != null)
+                if (controller.GameData.Levels[i] != null)
                 {
-                    options.Add(new TMP_Dropdown.OptionData(GameManager.GameData.Levels[i].transform.name));
+                    options.Add(new TMP_Dropdown.OptionData(controller.GameData.Levels[i].transform.name));
                 }
             }
             dropdown.options = options;
 
-            controller = GetComponentInParent<UIController>();
+
         }
+        
 
         public void LoadLevel()
         {
-            GameManager.GameData.Saves.LevelData.SetLevel(dropdown.value);
-            GameManager.GameData.Saves.Save();
+            controller.GameData.Saves.LevelData.SetLevel(dropdown.value);
+            controller.GameData.Saves.Save();
             
             controller.NextLevel();
         }
 
         public void Add()
         {
-            GameManager.GameData.Saves.PlayerData.IncreaseMoney(int.Parse("0" + moneyInput.text));
-            GameManager.GameData.Saves.Save();
+            controller.GameData.Saves.PlayerData.IncreaseMoney(int.Parse("0" + moneyInput.text));
+            controller.GameData.Saves.Save();
         }
 
         public void Win()

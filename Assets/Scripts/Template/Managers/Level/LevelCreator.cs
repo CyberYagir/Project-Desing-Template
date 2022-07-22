@@ -10,19 +10,19 @@ namespace Template.Managers
         public UIController Canvas { get; private set; }
         public CameraController Camera { get; private set; }
 
-        public LevelCreator(LevelData data, LevelLogic logic)
+        public LevelCreator(LevelData data, LevelLogic logic, GameManager gameManager)
         {
             levelData = data;
             SpawnPlayer();
             SpawnCamera();
             SpawnUI();
-            InitAll(logic);
+            InitAll(logic, gameManager);
         }
 
-        private void InitAll(LevelLogic logic)
+        private void InitAll(LevelLogic logic, GameManager gameManager)
         {
             Player.Init(logic);
-            Canvas.Init(ref logic);
+            Canvas.Init(logic, gameManager);
             Camera.Init();
         }
 

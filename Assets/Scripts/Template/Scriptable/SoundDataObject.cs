@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Template.Scriptable
 {
     [CreateAssetMenu(fileName = "Sounds", menuName = "Yaroslav/Sounds Data", order = 2)]
-    public class SoundDataObject : ScriptableObject
+    public class SoundDataObject : CustomScriptableObject
     {
         [System.Serializable]
         public class Sound
@@ -13,10 +13,10 @@ namespace Template.Scriptable
             [SerializeField]
             private List<AudioClip> clips;
 
-            public AudioClip GetRandomClip()
+            public AudioClip GetRandomClip(AbstractSavesDataObject saves)
             {
                 if (clips.Count == 0) return null;
-                if (!GameManager.GameData.Saves.OptionsData.Sound) return null;
+                if (!saves.OptionsData.Sound) return null;
                 return clips[Random.Range(0, clips.Count)];
             }
 

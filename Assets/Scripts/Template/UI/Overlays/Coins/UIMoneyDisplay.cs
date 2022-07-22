@@ -1,34 +1,37 @@
 using DG.Tweening;
 using Template.Managers;
+using Template.UI.Windows;
 using TMPro;
 using UnityEngine;
 
 namespace Template.UI.Overlays
 {
-    public class UIMoneyDisplay : Singleton<UIMoneyDisplay>
+    public class UIMoneyDisplay : UIControllerElement
     {
         [SerializeField] private TMP_Text text;
+        [SerializeField] private Transform punchTransform;
         [SerializeField] private Transform magnetPoint;
         private bool canPunch;
 
         public Transform CoinPoint => magnetPoint;
 
-        protected void Awake()
+        public override void Init(UIController controller)
         {
-            SingletonSet(this);   
-            GameManager.GameData.Saves.PlayerData.OnIncreaseMoney += UpdateText;
+            base.Init(controller);
+            Controller.GameData.Saves.PlayerData.OnIncreaseMoney += UpdateText;
             UpdateText(false);
         }
-
+        
+        
         public void UpdateText()
         {
-            text.text = FormatNumber(GameManager.GameData.Saves.PlayerData.Coins);
+            text.text = FormatNumber(Controller.GameData.Saves.PlayerData.Coins);
             Punch();
         }
         
         public void UpdateText(bool punch)
         {
-            text.text = FormatNumber(GameManager.GameData.Saves.PlayerData.Coins);
+            text.text = FormatNumber(Controller.GameData.Saves.PlayerData.Coins);
             if (punch)
             {
                 Punch();
@@ -39,9 +42,9 @@ namespace Template.UI.Overlays
         {
             if (!canPunch)
             {
-                transform.DOKill();
-                transform.localScale = Vector3.one;
-                transform.DOPunchScale(Vector3.one * 0.2f, 0.1f).SetLink(gameObject).onComplete += () => { canPunch = false;};
+                punchTransform.DOKill();
+                punchTransform.localScale = Vector3.one;
+                punchTransform.DOPunchScale(Vector3.one * 0.2f, 0.1f).SetLink(gameObject).onComplete += () => { canPunch = false;};
                 canPunch = true;
             }
         }
