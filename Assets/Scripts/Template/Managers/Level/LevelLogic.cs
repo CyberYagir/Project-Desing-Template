@@ -50,5 +50,15 @@ namespace Template.Managers
             levelEvents = new LevelEvents();
             ConfigurePlayer();
         }
+
+        public void StartGame()
+        {
+            levelEvents.Start();
+        }
+        
+        public void EndGame()
+        {
+            levelEvents.End();
+        }
     }
 }

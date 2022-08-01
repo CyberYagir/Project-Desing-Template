@@ -11,13 +11,12 @@ namespace Template.UI.Windows
     {
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TMP_InputField moneyInput;
-
-        private UIController controller;
-        
+ 
         public UEvent HideAll = new UEvent();
 
         public override void Init(UIController controller)
         {
+            base.Init(controller);
             var options = new List<TMP_Dropdown.OptionData>();
             for (int i = 0; i < controller.GameData.Levels.Count; i++)
             {

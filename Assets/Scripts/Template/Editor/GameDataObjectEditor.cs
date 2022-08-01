@@ -16,11 +16,11 @@ namespace Template.Editor
         {
             gameData = (GameDataObject)target;
         }
-        public void OnDisable()
-        {
-            RemoveAllNull();
-            Save(gameData);
-        }
+        // public void OnDisable()
+        // {
+        //     RemoveAllNull();
+        //     Save(gameData);
+        // }
 
         public void RemoveAllNull()
         {
