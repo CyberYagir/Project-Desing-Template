@@ -4,6 +4,6 @@ namespace Template.Scriptable
     public class DebugLevel
     {
         public int levelID;
-        public bool isDebugLevel;
+        public bool enableDebug;
     }
 }

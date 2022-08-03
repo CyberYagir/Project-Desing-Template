@@ -16,12 +16,6 @@ namespace Template.Editor
         {
             gameData = (GameDataObject)target;
         }
-        // public void OnDisable()
-        // {
-        //     RemoveAllNull();
-        //     Save(gameData);
-        // }
-
         public void RemoveAllNull()
         {
             var levels = gameData.Levels;
@@ -39,47 +33,56 @@ namespace Template.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            DrawSeparator();
-            if (GameDataObject.StaticGetStandardData() == null)
-            {
-                GUILayout.Label("Create DataManager");
-                return;
-            }
+
             if (GameDataObject.StaticGetStandardData() == gameData)
             {
-                DrawMainGameData();
-                DrawSeparator();
-
-                
-                if (GUILayout.Button(gameData.DebugLevel.isDebugLevel ? "Disable Debug" : "Enable Debug"))
-                {
-                    gameData.DebugLevel.isDebugLevel = !gameData.DebugLevel.isDebugLevel;
-                    Save(this);
-                }
-
-                GUILayout.BeginHorizontal();
-                if (gameData.DebugLevel.isDebugLevel)
-                {
-                    GUILayout.Label("Debug Level: ", GUILayout.MaxWidth(85));
-                    List<string> levels = new List<string>();
-                    foreach (var it in gameData.Levels)
-                    {
-                        levels.Add(it.name);
-                    }
-
-                    gameData.DebugLevel.levelID = EditorGUILayout.Popup("", gameData.DebugLevel.levelID, levels.ToArray(), GUILayout.MinWidth(80));
-                }
-
-                GUILayout.EndHorizontal();
-                DrawSeparator();
+                IsDebugBuild();
+                DrawDebug();
             }
+        }
 
-
-            if (GUILayout.Button("Find all objects"))
+        public void IsDebugBuild()
+        {
+            DrawSeparator();
+            var oldColor = GUI.color;
+            if (gameData.IsDebugBuild)
             {
-                gameData.SetData(ConfiguratorWindow.GetAllDataFromAssets(), Resources.LoadAll<AbstractSavesDataObject>("")[0]);
-                Sort();
+                GUI.color = Color.red;
             }
+
+            if (GUILayout.Button(gameData.IsDebugBuild ? "Is Debug Build" : "Not Debug Build"))
+            {
+                gameData.IsDebugBuild = !gameData.IsDebugBuild;
+                Save(gameData);
+            }
+
+            GUI.color = oldColor;
+        }
+        
+        public void DrawDebug()
+        {
+            DrawSeparator();
+            if (GUILayout.Button(gameData.DebugLevel.enableDebug ? "Disable Debug Level" : "Enable Debug Level"))
+            {
+                gameData.DebugLevel.enableDebug = !gameData.DebugLevel.enableDebug;
+                Save(gameData);
+            }
+
+            GUILayout.BeginHorizontal();
+            if (gameData.DebugLevel.enableDebug)
+            {
+                GUILayout.Label("Debug Level: ", GUILayout.MaxWidth(85));
+                List<string> levels = new List<string>();
+                foreach (var it in gameData.Levels)
+                {
+                    levels.Add(it.name);
+                }
+
+                gameData.DebugLevel.levelID = EditorGUILayout.Popup("", gameData.DebugLevel.levelID, levels.ToArray(), GUILayout.MinWidth(80));
+            }
+
+            GUILayout.EndHorizontal();
+
         }
 
 

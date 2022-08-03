@@ -1,29 +1,33 @@
 using System.Collections.Generic;
 using Template.Managers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Template.Scriptable
 {
     [CreateAssetMenu(fileName = "GameData", menuName = "Yaroslav/GameData", order = 1)]
     public class GameDataObject : CustomScriptableObject
     {
-
-        
-
-        [HideInInspector] [SerializeField] private List<LevelLogic> levelList = new List<LevelLogic>();
-        [HideInInspector] [SerializeField] private AbstractSavesDataObject saves;
-        [HideInInspector] [SerializeField] private SoundDataObject sound;
+        [Separator()]
+        [SerializeField] private List<LevelLogic> levelList = new List<LevelLogic>();
+        [SerializeField] private AbstractSavesDataObject saves;
+        [SerializeField] private SoundDataObject sound;
         
         
         
-        public bool isDebugBuild;
-        [HideInInspector] public DebugLevel DebugLevel = new DebugLevel();
-        
+        [HideInInspector] [SerializeField] private DebugLevel debugLevel;
+        [FormerlySerializedAs("isDebugBuild")] [HideInInspector] [SerializeField] private bool isDebugBuildBuild;
         
         
         public AbstractSavesDataObject Saves => saves;
         public SoundDataObject Sound => sound;
         public List<LevelLogic> Levels => levelList;
+        public DebugLevel DebugLevel => debugLevel;
+        public bool IsDebugBuild
+        {
+            get => isDebugBuildBuild;
+            set => isDebugBuildBuild = value;
+        }
 
         //Остальные переменные
 

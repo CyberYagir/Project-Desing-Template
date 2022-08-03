@@ -65,7 +65,7 @@ namespace Template.Managers
         {
             var stdGameData = gameData;
 #if UNITY_EDITOR
-            if (stdGameData.DebugLevel.isDebugLevel)
+            if (stdGameData.DebugLevel.enableDebug)
             {
                 stdGameData.Saves.LevelData.SetLevel(stdGameData.DebugLevel.levelID);
             }

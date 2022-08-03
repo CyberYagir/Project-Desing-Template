@@ -15,7 +15,7 @@ namespace Template.UI.Windows
         public override void Init(UIController controller)
         {
             base.Init(controller);
-            if (!controller.GameData.isDebugBuild)
+            if (!controller.GameData.IsDebugBuild)
             {
                 gameObject.SetActive(false);
             }
