@@ -2832,6 +2832,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39af07136e28e354c8ec3ea8282b515d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  methods: 0
+  subElements:
+  - {fileID: 8671363220363221758}
   background: {fileID: 8585829091321745664}
   window: {fileID: 1126329170312964149}
   canvas: {fileID: 1472914300759224818}
@@ -2857,6 +2860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   methods: 0
+  subElements: []
   dropdown: {fileID: 1280915860126820592}
   moneyInput: {fileID: 2821300791206145954}
   HideAll:

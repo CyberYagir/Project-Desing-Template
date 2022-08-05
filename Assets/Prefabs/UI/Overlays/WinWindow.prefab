@@ -699,6 +699,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   methods: 1
+  subElements:
+  - {fileID: 3082131220410226123}
   canvas: {fileID: 759610474183557256}
   animation: {fileID: 3434329237900043653}
   OnShow:
@@ -729,9 +731,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   methods: 0
+  subElements: []
   text: {fileID: 3724514538047141204}
   explode: {fileID: 4558382833802127419}
   showAnimation: {fileID: 7474777066397678861}
+  moneyDisplay: {fileID: 0}
 --- !u!1 &7484715502883255896
 GameObject:
   m_ObjectHideFlags: 0
