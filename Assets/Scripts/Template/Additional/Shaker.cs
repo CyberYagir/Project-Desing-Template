@@ -21,9 +21,17 @@ namespace Template.Tweaks
 
         [ReadOnly] [SerializeField] private Transform transform;
         [ReadOnly] [SerializeField] private int currentShakeLayer;
-        
+
+
+        private Tweener tweener;
 
         public Shaker(Transform cameraObject)
+        {
+            Instance = this;
+            transform = cameraObject;
+        }
+
+        public void Init(Transform cameraObject)
         {
             Instance = this;
             transform = cameraObject;
@@ -35,8 +43,10 @@ namespace Template.Tweaks
             {
                 var camera = Instance.transform;
                 camera.localPosition = Vector3.zero;
-                camera.DOKill();
-                camera.DOShakePosition(shake.duration, shake.strength, shake.vibrato, shake.randomness, shake.snapping, shake.fadeOut).onComplete += () => Instance.currentShakeLayer = 0;
+                tweener.Kill();
+                tweener = camera.DOShakePosition(shake.duration, shake.strength, shake.vibrato, shake.randomness, shake.snapping, shake.fadeOut);
+                tweener.onComplete += () => Instance.currentShakeLayer = 0;
+                tweener.Play();
                 Instance.currentShakeLayer = shake.shakeLayer;
             }
         }

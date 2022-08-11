@@ -29,11 +29,19 @@ namespace Template.Scriptable
         {
             ResetObject();
             SetPath();
-            if (File.Exists(path))
+            try
             {
-                var json = NonAllocString.instance + File.ReadAllText(path);
-                JsonUtility.FromJsonOverwrite(json, this);
+                if (File.Exists(path))
+                {
+                    var json = NonAllocString.instance + File.ReadAllText(path);
+                    JsonUtility.FromJsonOverwrite(json, this);
+                }
             }
+            catch (Exception e)
+            {
+                ResetObject();
+            }
+
         }
 
         public void ResetObject()

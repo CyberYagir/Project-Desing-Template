@@ -1,10 +1,11 @@
 using System;
-using Template.Tweaks;
+using UnityEngine;
 
 namespace Template
 {
     public class EventsController : Singleton<EventsController>
     {
+
         public Action OnStart { get; set; } = delegate { };
         public Action OnUpdate { get; set; } = delegate { };
         public Action OnFixedUpdate { get; set; } = delegate { };
@@ -18,18 +19,35 @@ namespace Template
 
         private void Start()
         {
-            OnStart.Invoke();
+            InvokeTry(OnStart);
         }
 
         private void Update()
         {
-            OnUpdate.Invoke();
-            OnLateUpdate.Invoke();
+            InvokeTry(OnUpdate);
+            InvokeTry(OnLateUpdate);
         }
+
         private void FixedUpdate()
         {
-            OnFixedUpdate.Invoke();
-            OnLateFixedUpdate.Invoke();
+            
+            InvokeTry(OnFixedUpdate);
+            InvokeTry(OnLateFixedUpdate);
+        }
+
+        public void InvokeTry(Action action)
+        {
+            foreach (var actionEl in action.GetInvocationList())
+            {
+                try
+                {
+                    actionEl.DynamicInvoke();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
         }
     }
 
