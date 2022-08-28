@@ -10,7 +10,7 @@ namespace Template.Scriptable
     {
         [Separator()]
         [SerializeField] private List<LevelLogic> levelList = new List<LevelLogic>();
-        [SerializeField] private AbstractSavesDataObject saves;
+        [SerializeField] private SavesDataObject saves;
         [SerializeField] private SoundDataObject sound;
         
         
@@ -19,7 +19,7 @@ namespace Template.Scriptable
         [FormerlySerializedAs("isDebugBuild")] [HideInInspector] [SerializeField] private bool isDebugBuildBuild;
         
         
-        public AbstractSavesDataObject Saves => saves;
+        public SavesDataObject Saves => saves;
         public SoundDataObject Sound => sound;
         public List<LevelLogic> Levels => levelList;
         public DebugLevel DebugLevel => debugLevel;
@@ -35,7 +35,7 @@ namespace Template.Scriptable
 
 
         #region Editor
-        public void SetData(List<LevelLogic> levels, AbstractSavesDataObject newSaveData) //Editor
+        public void SetData(List<LevelLogic> levels, SavesDataObject newSaveData) //Editor
         {
             SetLevels(levels);
             SetSaves(newSaveData);
@@ -45,7 +45,7 @@ namespace Template.Scriptable
         {
             levelList = levels;
         }
-        public void SetSaves(AbstractSavesDataObject newSaveData) //Editor
+        public void SetSaves(SavesDataObject newSaveData) //Editor
         {
             saves = newSaveData;
         }

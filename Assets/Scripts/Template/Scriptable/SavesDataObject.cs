@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Template.Scriptable
 {
-    public abstract class AbstractSavesDataObject : CustomScriptableObject
+    public abstract class SavesDataObject : CustomScriptableObject
     {
         [System.Serializable]
         public class OptionsSaveData

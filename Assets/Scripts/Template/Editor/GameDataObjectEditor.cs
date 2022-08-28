@@ -90,7 +90,7 @@ namespace Template.Editor
         public void DrawMainGameData()
         {
             
-            gameData.SetSaves((AbstractSavesDataObject) EditorGUILayout.ObjectField("Saves: ", gameData.Saves, typeof(AbstractSavesDataObject), false, GUILayout.MinWidth(50)));
+            gameData.SetSaves((SavesDataObject) EditorGUILayout.ObjectField("Saves: ", gameData.Saves, typeof(SavesDataObject), false, GUILayout.MinWidth(50)));
             gameData.SetSound((SoundDataObject) EditorGUILayout.ObjectField("Sounds: ", gameData.Sound, typeof(SoundDataObject), false, GUILayout.MinWidth(50)));
 
             DrawSeparator();

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Template.Scriptable
 {
     [CreateAssetMenu(fileName = "SavesDataJson", menuName = "Yaroslav/SavesDataJson", order = 5)]
-    public class SaveDataObjectJson : AbstractSavesDataObject
+    public class SaveDataObjectJson : SavesDataObject
     {
         private static SaveDataObjectJson defaultValues;
         private string path;

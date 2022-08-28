@@ -13,7 +13,7 @@ namespace Template.Scriptable
             [SerializeField]
             private List<AudioClip> clips;
 
-            public AudioClip GetRandomClip(AbstractSavesDataObject saves)
+            public AudioClip GetRandomClip(SavesDataObject saves)
             {
                 if (clips.Count == 0) return null;
                 if (!saves.OptionsData.Sound) return null;

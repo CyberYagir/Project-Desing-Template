@@ -206,7 +206,7 @@ namespace Template.Editor
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
             SaveDataObjectJson saves = null;
-            if (Resources.Load<AbstractSavesDataObject>("SavesData") == null)
+            if (Resources.Load<SavesDataObject>("SavesData") == null)
             {
                 saves = ScriptableObject.CreateInstance<SaveDataObjectJson>();
                 AssetDatabase.CreateAsset(saves, "Assets/Resources/SavesData.asset");
