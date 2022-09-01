@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: GameData
   m_EditorClassIdentifier: 
   levelList:
-  - {fileID: 4743487555137618502, guid: a56b1b407fee1464d8436e2c95e39909, type: 3}
-  - {fileID: 4743487555137618502, guid: 778bd18b31aaf2342b6c79e8a06ed54e, type: 3}
-  - {fileID: 4743487555137618502, guid: e24ee17d38771ea4eba049738cf52dc8, type: 3}
+  - Level 1
+  - Level 2
+  - Level 3
   saves: {fileID: 11400000, guid: ba95f1827617af943839024b1362b2b5, type: 2}
-  sound: {fileID: 11400000, guid: 92b59dfd5441597479bbf2a38e13cae7, type: 2}
-  isDebugBuild: 1
-  DebugLevel:
-    levelID: 0
-    isDebugLevel: 0
+  sound: {fileID: 0}
+  debugLevel:
+    levelID: 1
+    enableDebug: 0
+  isDebugBuildBuild: 1

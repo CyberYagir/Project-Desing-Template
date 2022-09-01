@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelData:
     level: 0
-    completedLevels: 44
+    completedLevels: 0
     startsCount: 0
   playerData:
-    coins: 11500
+    coins: 0
   optionsData:
     sound: 1
     vibration: 1
