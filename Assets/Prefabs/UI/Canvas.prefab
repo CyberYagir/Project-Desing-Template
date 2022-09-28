@@ -909,7 +909,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 140ee3a7a6ac361458b300ba3326809b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  methods: 3
   levelText: {fileID: 2041294784426663355}
   crossFader: {fileID: 1630774731507162162}
   elementsController:
@@ -1264,7 +1263,7 @@ PrefabInstance:
     - target: {fileID: 5333990665891484266, guid: cf9607aabeac0f641ae171b028208910,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 508.51575
       objectReference: {fileID: 0}
     - target: {fileID: 5333990665891484266, guid: cf9607aabeac0f641ae171b028208910,
         type: 3}
@@ -2076,6 +2075,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3082131220410226123, guid: b38af0a7801530040ad9aa5b9d562e36,
+        type: 3}
+      propertyPath: moneyDisplay
+      value: 
+      objectReference: {fileID: 965111147925531499}
     - target: {fileID: 3082131220410226123, guid: b38af0a7801530040ad9aa5b9d562e36,
         type: 3}
       propertyPath: uiController
