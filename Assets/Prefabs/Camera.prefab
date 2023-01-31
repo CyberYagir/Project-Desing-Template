@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3718510628770311396}
   - component: {fileID: 3718510628770311395}
   - component: {fileID: 3718510628770311394}
+  - component: {fileID: 5925025634726689183}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -83,6 +84,20 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3718510628770311393}
   m_Enabled: 1
+--- !u!114 &5925025634726689183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3718510628770311393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec2a254eb083fe24ea0c74a8ab6abe83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localLightning: {fileID: 11400000, guid: b7f415e6311b2594baecbb359fd3d77e, type: 2}
+  customSun: {fileID: 0}
 --- !u!1 &3718510629360013980
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,5 +156,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1473b4fbe41efae449fdf1f31d495ac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  methods: 0
   camera: {fileID: 3718510628770311395}

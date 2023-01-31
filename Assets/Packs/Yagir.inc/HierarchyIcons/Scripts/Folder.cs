@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Packs.Yagir.inc.HierarchyIcons.Scripts
+namespace YagirDev
 {
     [ExecuteAlways]
     public class Folder : MonoBehaviour
