@@ -1,12 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace YagirDev
+[CreateAssetMenu(fileName = "", menuName = "Editor/Icons List", order = 1)]
+public class IconsList : ScriptableObject
 {
-    [CreateAssetMenu(fileName = "", menuName = "Editor/Icons List", order = 1)]
-    public class IconsList : ScriptableObject
-    {
-        public List<string> icons = new List<string>();
-        public bool allEmptyFolders;
-    }
+    public List<string> icons = new List<string>();
+    public bool allEmptyFolders;
 }

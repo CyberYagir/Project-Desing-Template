@@ -13,36 +13,34 @@ MonoBehaviour:
   m_Name: IconsList
   m_EditorClassIdentifier: 
   icons:
+  - Camera
   - Rigidbody
   - MeshRenderer
-  - Animator
-  - NavMeshAgent
-  - NavMeshObstacle
-  - Camera
-  - Canvas
-  - GraphicRaycaster
   - CapsuleCollider
   - BoxCollider
   - SphereCollider
   - MeshCollider
-  - Cloth
-  - HingeJoint
-  - LineRenderer
+  - Canvas
+  - GraphicRaycaster
+  - Text
+  - Outline
+  - Mask
+  - Image
+  - Button
   - ParticleSystem
   - ReflectionProbe
-  - LODGroup
-  - SpriteRenderer
+  - Animator
+  - Animation
+  - SkinnedMeshRenderer
+  - LineRenderer
   - TrailRenderer
   - EventSystem
-  - Button
-  - Mask
+  - SpriteRenderer
   - GridLayoutGroup
   - HorizontalLayoutGroup
   - VerticalLayoutGroup
-  - Text
-  - Outline
-  - InputField
-  - Dropdown
-  - Image
-  - SkinnedMeshRenderer
+  - NavMeshObstacle
+  - NavMeshAgent
+  - Cloth
+  - LODGroup
   allEmptyFolders: 0
